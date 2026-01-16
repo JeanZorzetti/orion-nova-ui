@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Orion ERP Design System - Deep Space Theme */
+
+@layer base {
+  :root {
+    --background: 222 59% 2%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 187 100% 50%;
+    --primary-foreground: 222 59% 2%;
+
+    --secondary: 217 33% 12%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 10%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 271 91% 65%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 15%;
+    --input: 217 33% 15%;
+    --ring: 187 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Orion Deep Space Colors */
+    --orion-void: 222 59% 2%;
+    --orion-deep: 222 47% 4%;
+    --orion-surface: 222 47% 8%;
+    --orion-surface-elevated: 222 47% 12%;
+    --orion-cyan: 187 100% 50%;
+    --orion-purple: 271 91% 65%;
+    --orion-blue: 217 91% 60%;
+
+    /* Neon Glow Colors */
+    --glow-cyan: 187 100% 50%;
+    --glow-purple: 271 91% 65%;
+    --glow-blue: 217 91% 60%;
+
+    /* Sidebar */
+    --sidebar-background: 222 47% 3%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 187 100% 50%;
+    --sidebar-primary-foreground: 222 59% 2%;
+    --sidebar-accent: 222 47% 10%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 12%;
+    --sidebar-ring: 187 100% 50%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(187, 100%, 50%), hsl(271, 91%, 65%));
+    --gradient-hero: linear-gradient(180deg, hsl(222, 59%, 2%) 0%, hsl(271, 50%, 8%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(187, 100%, 50%, 0.15) 0%, transparent 70%);
+    --gradient-surface: linear-gradient(180deg, hsl(222, 47%, 10%, 0.8), hsl(222, 47%, 6%, 0.6));
+
+    /* Glassmorphism */
+    --glass-bg: hsl(222, 47%, 10%, 0.4);
+    --glass-border: hsl(0, 0%, 100%, 0.08);
+    --glass-blur: 20px;
+
+    /* Shadows & Glows */
+    --shadow-sm: 0 2px 8px hsl(222, 47%, 2%, 0.4);
+    --shadow-md: 0 4px 20px hsl(222, 47%, 2%, 0.5);
+    --shadow-lg: 0 8px 40px hsl(222, 47%, 2%, 0.6);
+    --shadow-glow-cyan: 0 0 40px hsl(187, 100%, 50%, 0.3);
+    --shadow-glow-purple: 0 0 40px hsl(271, 91%, 65%, 0.3);
+    --shadow-glow-mixed: 0 0 60px hsl(187, 100%, 50%, 0.2), 0 0 100px hsl(271, 91%, 65%, 0.15);
+  }
+
+  .dark {
+    --background: 222 59% 2%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: linear-gradient(180deg, hsl(222, 59%, 2%) 0%, hsl(271, 30%, 4%) 50%, hsl(222, 59%, 2%) 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border;
+    background: var(--glass-bg);
+    border-color: var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+
+  .glass-nav {
+    background: hsl(222, 47%, 4%, 0.7);
+    border-bottom: 1px solid hsl(0, 0%, 100%, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-cyan {
+    box-shadow: var(--shadow-glow-cyan);
+  }
+
+  .glow-purple {
+    box-shadow: var(--shadow-glow-purple);
+  }
+
+  .glow-mixed {
+    box-shadow: var(--shadow-glow-mixed);
+  }
+
+  .hover-glow {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow-cyan);
+    transform: translateY(-4px);
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300;
+    background: var(--gradient-primary);
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 0 20px hsl(187, 100%, 50%, 0.3);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 40px hsl(187, 100%, 50%, 0.5), 0 0 80px hsl(271, 91%, 65%, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    @apply px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300;
+    border: 1px solid hsl(0, 0%, 100%, 0.2);
+    color: hsl(var(--foreground));
+  }
+
+  .btn-ghost:hover {
+    border-color: hsl(187, 100%, 50%, 0.5);
+    background: hsl(187, 100%, 50%, 0.1);
+  }
+
+  /* Animated background grid */
+  .grid-bg {
+    background-image: 
+      linear-gradient(hsl(217, 33%, 15%, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(217, 33%, 15%, 0.3) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .orb-cyan {
+    background: hsl(187, 100%, 50%);
+  }
+
+  .orb-purple {
+    background: hsl(271, 91%, 65%);
+  }
+
+  /* Star field effect */
+  .stars {
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, hsl(0, 0%, 100%, 0.3), transparent),
+      radial-gradient(2px 2px at 40px 70px, hsl(0, 0%, 100%, 0.2), transparent),
+      radial-gradient(1px 1px at 90px 40px, hsl(0, 0%, 100%, 0.4), transparent),
+      radial-gradient(2px 2px at 130px 80px, hsl(0, 0%, 100%, 0.2), transparent),
+      radial-gradient(1px 1px at 160px 120px, hsl(0, 0%, 100%, 0.3), transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-20px) translateX(10px); }
+  50% { transform: translateY(-10px) translateX(-10px); }
+  75% { transform: translateY(-30px) translateX(5px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
