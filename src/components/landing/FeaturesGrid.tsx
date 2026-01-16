@@ -1,7 +1,9 @@
+"use client";
+
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  Users, 
+import {
+  TrendingUp,
+  Users,
   Package, 
   Brain,
   LineChart,

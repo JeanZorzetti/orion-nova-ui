@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { X, Check, AlertTriangle, Sparkles, Clock, Zap } from "lucide-react";
 
