@@ -33,27 +33,34 @@ A IA tem acesso aos seguintes dados (sempre filtrados por usuário logado):
 - Contas em atraso
 
 #### Clientes
-- 5 clientes mais recentes
+- **Clientes cadastrados na última semana**
 - Informações: nome, tipo (PF/PJ), email, telefone
 - Data de cadastro
+- Filtro: últimos 7 dias
 
 #### Produtos
-- Produtos com estoque baixo (≤ estoque mínimo)
+- **Produtos com estoque baixo** (≤ estoque mínimo)
 - Informações: nome, SKU, quantidade atual, quantidade mínima
 - Alertas automáticos de estoque
+- Sem limite de tempo (sempre relevante)
 
 #### Vendas
-- 5 vendas mais recentes
+- **Vendas realizadas na última semana**
 - Informações: número do pedido, cliente, valor, status, data
 - Status traduzido para português
+- Filtro: últimos 7 dias
 
 #### Contas a Receber (próximos 30 dias)
+- **Todas as contas a receber** com vencimento nos próximos 30 dias
 - Descrição, cliente, valor, data de vencimento
 - Dias até o vencimento
+- Filtro: próximos 30 dias
 
 #### Contas a Pagar (próximos 30 dias)
+- **Todas as contas a pagar** com vencimento nos próximos 30 dias
 - Descrição, valor, data de vencimento
 - Dias até o vencimento
+- Filtro: próximos 30 dias
 
 ## Exemplos de Uso
 

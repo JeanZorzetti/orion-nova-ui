@@ -5,6 +5,11 @@ import { prisma } from "@/lib/prisma";
  */
 export async function getUserContextForAI(userId: string): Promise<string> {
   try {
+    // Definir períodos de tempo
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAhead = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
     // Buscar dados em paralelo para otimizar performance
     const [
       customerStats,
@@ -41,12 +46,15 @@ export async function getUserContextForAI(userId: string): Promise<string> {
         _count: { id: true },
       }),
 
-      // Clientes mais recentes (últimos 5)
+      // Clientes cadastrados na última semana
       prisma.customer.findMany({
-        where: { userId, isActive: true },
+        where: {
+          userId,
+          isActive: true,
+          createdAt: { gte: oneWeekAgo },
+        },
         select: { name: true, email: true, phone: true, type: true, createdAt: true },
         orderBy: { createdAt: "desc" },
-        take: 5,
       }),
 
       // Produtos com estoque baixo (buscar todos ativos para filtrar depois)
@@ -59,9 +67,12 @@ export async function getUserContextForAI(userId: string): Promise<string> {
         orderBy: { stockQuantity: "asc" },
       }),
 
-      // Vendas recentes (últimas 5)
+      // Vendas da última semana
       prisma.salesOrder.findMany({
-        where: { userId },
+        where: {
+          userId,
+          orderDate: { gte: oneWeekAgo },
+        },
         select: {
           orderNumber: true,
           total: true,
@@ -70,7 +81,6 @@ export async function getUserContextForAI(userId: string): Promise<string> {
           customer: { select: { name: true } },
         },
         orderBy: { orderDate: "desc" },
-        take: 5,
       }),
 
       // Contas a receber próximas (próximos 30 dias)
@@ -80,8 +90,8 @@ export async function getUserContextForAI(userId: string): Promise<string> {
           type: "RECEIVABLE",
           status: "PENDING",
           dueDate: {
-            gte: new Date(),
-            lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            gte: now,
+            lte: thirtyDaysAhead,
           },
         },
         select: {
@@ -91,7 +101,6 @@ export async function getUserContextForAI(userId: string): Promise<string> {
           customer: { select: { name: true } },
         },
         orderBy: { dueDate: "asc" },
-        take: 5,
       }),
 
       // Contas a pagar próximas (próximos 30 dias)
@@ -101,8 +110,8 @@ export async function getUserContextForAI(userId: string): Promise<string> {
           type: "PAYABLE",
           status: "PENDING",
           dueDate: {
-            gte: new Date(),
-            lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            gte: now,
+            lte: thirtyDaysAhead,
           },
         },
         select: {
@@ -111,7 +120,6 @@ export async function getUserContextForAI(userId: string): Promise<string> {
           dueDate: true,
         },
         orderBy: { dueDate: "asc" },
-        take: 5,
       }),
     ]);
 
@@ -158,7 +166,7 @@ export async function getUserContextForAI(userId: string): Promise<string> {
 
 ${
   recentCustomers.length > 0
-    ? `## Clientes Recentes
+    ? `## Clientes Cadastrados na Última Semana (${recentCustomers.length} ${recentCustomers.length === 1 ? "cliente" : "clientes"})
 ${recentCustomers
   .map(
     (c, i) =>
@@ -188,7 +196,7 @@ ${lowStockProducts
 
 ${
   recentSales.length > 0
-    ? `## Vendas Recentes
+    ? `## Vendas da Última Semana (${recentSales.length} ${recentSales.length === 1 ? "venda" : "vendas"})
 ${recentSales
   .map(
     (s, i) =>
@@ -203,7 +211,7 @@ ${recentSales
 
 ${
   upcomingReceivables.length > 0
-    ? `## Contas a Receber (Próximos 30 dias)
+    ? `## Contas a Receber (Próximos 30 dias - ${upcomingReceivables.length} ${upcomingReceivables.length === 1 ? "conta" : "contas"})
 ${upcomingReceivables
   .map(
     (r, i) =>
@@ -218,7 +226,7 @@ ${upcomingReceivables
 
 ${
   upcomingPayables.length > 0
-    ? `## Contas a Pagar (Próximos 30 dias)
+    ? `## Contas a Pagar (Próximos 30 dias - ${upcomingPayables.length} ${upcomingPayables.length === 1 ? "conta" : "contas"})
 ${upcomingPayables
   .map(
     (p, i) =>
