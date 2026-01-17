@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 import OrionLogo from "../OrionLogo";
 
 const navLinks = [
@@ -52,11 +53,17 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* CTA Button */}
+          {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="#demo" className="btn-primary">
-              Agendar Demo
-            </a>
+            <Link
+              href="/login"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Login
+            </Link>
+            <Link href="/cadastro" className="btn-primary">
+              Começar Grátis
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -86,9 +93,22 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
-              <a href="#demo" className="btn-primary text-center mt-4">
-                Agendar Demo
-              </a>
+              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
+                <Link
+                  href="/login"
+                  className="text-center py-2 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/cadastro"
+                  className="btn-primary text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Começar Grátis
+                </Link>
+              </div>
             </nav>
           </motion.div>
         )}
