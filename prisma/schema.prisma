@@ -92,6 +92,7 @@ model Plan {
 
   isActive        Boolean  @default(true)
   stripePriceId   String?  @unique
+  mercadoPagoId   String?  @unique  // ID do plano no Mercado Pago
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -122,6 +123,10 @@ model Subscription {
   stripeSubscriptionId  String?           @unique
   stripeCustomerId      String?
 
+  // Mercado Pago
+  mercadoPagoPaymentId  String?           @unique
+  mercadoPagoPayerId    String?
+
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
 
@@ -150,6 +155,10 @@ model Order {
 
   stripePaymentIntentId String? @unique
   stripeInvoiceId       String? @unique
+
+  // Mercado Pago
+  mercadoPagoPaymentId  String? @unique
+  mercadoPagoPreferenceId String?
 
   paidAt          DateTime?
   createdAt       DateTime     @default(now())

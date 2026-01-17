@@ -51,149 +51,135 @@ NEXTAUTH_URL="http://localhost:3000"
 
 ## 📅 Plano de 7 Dias
 
-### 🟢 Dia 1: Database (3-4 horas)
+### ✅ Dia 1: Database (CONCLUÍDO)
 **Objetivo:** Setup completo do PostgreSQL + Prisma
 
-```bash
-# Instalar Prisma
-npm install prisma @prisma/client
-npm install -D tsx
+**Status:** ✅ COMPLETO
 
-# Inicializar Prisma
-npx prisma init
+**O que foi feito:**
+- ✅ Instalado Prisma 5.22.0 + @prisma/client + tsx + bcryptjs
+- ✅ Criado schema.prisma com 15+ modelos (User, Plan, Subscription, Post, etc.)
+- ✅ Configurado conexão com PostgreSQL (Dados.dev)
+- ✅ Executado migrations: `npx prisma migrate dev --name init`
+- ✅ Executado seed com dados de teste
+- ✅ Verificado dados no Prisma Studio
 
-# Copiar schema do roadmap 02
-# (arquivo: roadmaps/02-database-setup.md)
-# Colar em: prisma/schema.prisma
+**Credenciais de teste criadas:**
+- Admin: admin@orion.com / admin123
+- User: joao@example.com / user123
 
-# Executar migration
-npx prisma migrate dev --name init
-
-# Criar seed.ts (copiar do roadmap)
-# Executar seed
-npm run prisma:seed
-
-# Verificar dados
-npx prisma studio
-```
-
-✅ **Validação:** Prisma Studio mostra tabelas criadas com dados
+**Planos criados:**
+- Starter: R$ 99,90/mês
+- Professional: R$ 299,90/mês
+- Enterprise: R$ 999,90/mês
 
 ---
 
-### 🔵 Dia 2: Autenticação - Parte 1 (3-4 horas)
+### ✅ Dia 2: Autenticação - Parte 1 (CONCLUÍDO)
 **Objetivo:** Login básico funcionando
 
-```bash
-# Instalar dependências
-npm install next-auth@beta @auth/prisma-adapter bcryptjs
-npm install @types/bcryptjs -D
-```
+**Status:** ✅ COMPLETO
 
-**Tarefas:**
-1. ✅ Criar `src/lib/auth.ts` (copiar do roadmap 01)
-2. ✅ Criar `src/lib/prisma.ts` (copiar do roadmap 02)
-3. ✅ Criar `src/app/api/auth/[...nextauth]/route.ts`
-4. ✅ Criar `src/app/(auth)/login/page.tsx`
-5. ✅ Testar login com usuário do seed (admin@orion.com / admin123)
+**O que foi feito:**
+- ✅ Instalado next-auth@beta e @auth/prisma-adapter
+- ✅ Criado `src/lib/auth.ts` com:
+  - Provedor Google OAuth
+  - Provedor Credentials (email/senha)
+  - JWT session strategy
+  - Callbacks para role no token/session
+- ✅ Criado `src/lib/prisma.ts` (singleton)
+- ✅ Criado `src/app/api/auth/[...nextauth]/route.ts`
+- ✅ Criado `src/app/(auth)/login/page.tsx` com:
+  - Login com Google
+  - Login com email/senha
+  - Design responsivo com tema Orion
+  - Suspense boundary para SSR
+- ✅ Criado types em `src/types/next-auth.d.ts`
+- ✅ Adicionado SessionProvider no providers.tsx
 
-✅ **Validação:** Consegue fazer login e ver sessão
+**Credenciais de teste:**
+- Admin: admin@orion.com / admin123
+- User: joao@example.com / user123
+
+**Testar:** Acesse http://localhost:3000/login
 
 ---
 
-### 🔵 Dia 3: Autenticação - Parte 2 (3-4 horas)
+### ✅ Dia 3: Autenticação - Parte 2 (CONCLUÍDO)
 **Objetivo:** Cadastro e proteção de rotas
 
-**Tarefas:**
-1. ✅ Criar `src/app/(auth)/cadastro/page.tsx`
-2. ✅ Criar `src/app/api/register/route.ts`
-3. ✅ Criar `src/middleware.ts` (proteção de rotas)
-4. ✅ Criar `src/app/perfil/page.tsx`
-5. ✅ Testar fluxo completo: cadastro → login → perfil
+**Status:** ✅ COMPLETO
 
-✅ **Validação:** Usuário consegue se cadastrar, logar e ver perfil
+**O que foi feito:**
+- ✅ Criado `src/app/(auth)/cadastro/page.tsx` com formulário completo
+- ✅ Criado `src/app/api/register/route.ts` com validação e hash
+- ✅ Criado `src/middleware.ts` com proteção de rotas
+- ✅ Criado `src/app/perfil/page.tsx` com dados do usuário
+
+**Testar:**
+1. Cadastro: http://localhost:3000/cadastro
+2. Login: http://localhost:3000/login
+3. Perfil: http://localhost:3000/perfil
 
 ---
 
-### 🟡 Dia 4: Stripe Setup (2-3 horas)
-**Objetivo:** Configurar Stripe e criar produtos
+### ✅ Dia 4-6: Mercado Pago Setup e Checkout (CONCLUÍDO)
+**Objetivo:** Configurar Mercado Pago e checkout completo
 
-```bash
-# Instalar Stripe
-npm install stripe @stripe/stripe-js @stripe/react-stripe-js
-```
+**Status:** ✅ COMPLETO
 
-**Tarefas:**
-1. ✅ Criar conta em [stripe.com](https://stripe.com)
-2. ✅ Ativar modo teste
-3. ✅ Criar 3 produtos no Dashboard:
-   - Starter: R$ 99,90/mês
-   - Professional: R$ 299,90/mês
-   - Enterprise: R$ 999,90/mês
-4. ✅ Copiar API Keys para `.env.local`:
+**O que foi feito:**
+- ✅ Instalado SDK `mercadopago`
+- ✅ Criado `src/lib/mercadopago.ts` com:
+  - Configuração do cliente Mercado Pago
+  - Função para criar preferência de pagamento
+  - Função para buscar informações de pagamento
+  - Definição dos 3 planos (Starter, Professional, Enterprise)
+- ✅ Atualizado `prisma/schema.prisma` com campos Mercado Pago:
+  - `mercadoPagoId` no Plan
+  - `mercadoPagoPaymentId` e `mercadoPagoPayerId` no Subscription
+  - `mercadoPagoPaymentId` e `mercadoPagoPreferenceId` no Order
+- ✅ Criado `src/app/api/mercadopago/checkout/route.ts`
+- ✅ Criado `src/app/api/mercadopago/webhooks/route.ts`
+- ✅ Criado `src/app/precos/page.tsx` com cards de preços
+- ✅ Criado páginas de resultado:
+  - `src/app/checkout/sucesso/page.tsx`
+  - `src/app/checkout/erro/page.tsx`
+  - `src/app/checkout/pendente/page.tsx`
 
+**Configurar credenciais no .env.local:**
 ```env
-STRIPE_SECRET_KEY="sk_test_..."
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+MERCADOPAGO_ACCESS_TOKEN="TEST-seu-token-aqui"
+MERCADOPAGO_PUBLIC_KEY="TEST-sua-public-key-aqui"
 ```
 
-5. ✅ Atualizar `prisma/schema.prisma` com `stripePriceId`
-6. ✅ Migrar database: `npx prisma migrate dev --name add_stripe_price_id`
-7. ✅ Atualizar seed com Price IDs
+**Testar:** Acesse http://localhost:3000/precos
 
-✅ **Validação:** Planos no database têm stripePriceId
+**Validação:** Checkout do Mercado Pago abre corretamente
 
 ---
 
-### 🟡 Dia 5: Checkout - Parte 1 (3-4 horas)
-**Objetivo:** Checkout básico funcionando
-
-**Tarefas:**
-1. ✅ Criar `src/lib/stripe.ts` (server)
-2. ✅ Criar `src/lib/stripe-client.ts` (client)
-3. ✅ Criar `src/components/checkout/PricingCard.tsx`
-4. ✅ Atualizar `src/app/precos/page.tsx`
-5. ✅ Criar `src/app/api/stripe/checkout/route.ts`
-6. ✅ Testar: clicar em "Assinar" → redireciona para Stripe
-
-✅ **Validação:** Checkout do Stripe abre corretamente
-
----
-
-### 🟡 Dia 6: Checkout - Parte 2 (3-4 horas)
-**Objetivo:** Webhooks e confirmação
-
-```bash
-# Instalar Stripe CLI
-# https://stripe.com/docs/stripe-cli
-
-# Redirecionar webhooks
-stripe listen --forward-to localhost:3000/api/stripe/webhooks
-```
-
-**Tarefas:**
-1. ✅ Criar `src/app/api/stripe/webhooks/route.ts`
-2. ✅ Criar `src/webhooks/stripe-handlers.ts`
-3. ✅ Adicionar `STRIPE_WEBHOOK_SECRET` ao `.env.local`
-4. ✅ Criar `src/app/checkout/sucesso/page.tsx`
-5. ✅ Testar checkout completo com cartão teste:
-   - Número: `4242 4242 4242 4242`
-   - Data: qualquer futura
-   - CVV: qualquer 3 dígitos
-
-✅ **Validação:** Assinatura criada no database após pagamento
-
----
-
-### 🟢 Dia 7: Gerenciamento (2-3 horas)
+### ✅ Dia 7: Gerenciamento (CONCLUÍDO)
 **Objetivo:** Usuário pode ver e gerenciar assinatura
 
-**Tarefas:**
-1. ✅ Criar `src/app/assinaturas/page.tsx`
-2. ✅ Criar `src/app/api/stripe/portal/route.ts`
-3. ✅ Testar: visualizar assinatura → abrir portal → cancelar
+**Status:** ✅ COMPLETO
 
-✅ **Validação:** Usuário consegue gerenciar assinatura pelo portal
+**O que foi feito:**
+- ✅ Criado `src/app/assinaturas/page.tsx` com:
+  - Visualização da assinatura ativa
+  - Detalhes do plano e preço
+  - Período atual e próxima cobrança
+  - Lista de recursos do plano
+  - Estado vazio quando sem assinatura
+- ✅ Criado `src/app/assinaturas/cancel-button.tsx`:
+  - Dialog de confirmação
+  - Feedback de loading
+- ✅ Criado `src/app/api/subscriptions/cancel/route.ts`:
+  - Validação de autenticação
+  - Verificação de propriedade
+  - Cancelamento ao fim do período
+
+**Testar:** Acesse http://localhost:3000/assinaturas
 
 ---
 

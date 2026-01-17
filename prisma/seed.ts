@@ -1,7 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { config } from 'dotenv';
 import bcrypt from 'bcryptjs';
+import { prisma } from '../src/lib/prisma.js';
 
-const prisma = new PrismaClient();
+// Carregar .env.local
+config({ path: '.env.local' });
 
 async function main() {
   console.log('🌱 Iniciando seed...');
