@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { getUserContextForAI } from "@/lib/ai-context";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
@@ -265,11 +266,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Adiciona o system prompt no início
+    // Buscar contexto do usuário do banco de dados
+    const userContext = await getUserContextForAI(session.user.id);
+    console.log("✅ Contexto do usuário carregado com sucesso");
+
+    // Adiciona o system prompt e contexto do usuário no início
     const fullMessages: Message[] = [
       {
         role: "system",
-        content: SYSTEM_PROMPT,
+        content: `${SYSTEM_PROMPT}\n\n${userContext}`,
       },
       ...messages,
     ];
