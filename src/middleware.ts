@@ -27,7 +27,7 @@ export default auth((req) => {
 
   // Redirecionar usuários logados que tentam acessar login/cadastro
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/", req.url));
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // Redirecionar usuários não logados que tentam acessar rotas protegidas
@@ -39,7 +39,7 @@ export default auth((req) => {
 
   // Redirecionar não admins que tentam acessar rotas de admin
   if (isAdminRoute && !isAdmin) {
-    return NextResponse.redirect(new URL("/", req.url));
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return NextResponse.next();
