@@ -7,7 +7,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationsDropdown } from "@/components/notifications-dropdown";
 import { CalendarDropdown } from "@/components/calendar-dropdown";
 import { AIAssistant } from "@/components/ai-assistant";
-import { Calendar, User } from "lucide-react";
+import { Onboarding, ReopenOnboarding } from "@/components/onboarding";
+import { Calendar, User, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -89,6 +90,12 @@ export default async function DashboardLayout({
                     Assinaturas
                   </Link>
                 </DropdownMenuItem>
+                <ReopenOnboarding>
+                  <DropdownMenuItem>
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    Tutorial
+                  </DropdownMenuItem>
+                </ReopenOnboarding>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <form
@@ -117,6 +124,9 @@ export default async function DashboardLayout({
 
       {/* AI Assistant */}
       <AIAssistant />
+
+      {/* Onboarding */}
+      <Onboarding />
     </div>
   );
 }

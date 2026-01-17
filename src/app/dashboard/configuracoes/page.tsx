@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { SampleDataManager } from "@/components/sample-data-manager";
 
 export default function ConfiguracoesPage() {
   const { data: session, update } = useSession();
@@ -300,6 +301,9 @@ export default function ConfiguracoesPage() {
               </div>
             </div>
           </div>
+
+          {/* Dados de Exemplo */}
+          <SampleDataManager />
         </div>
       </div>
     </div>
