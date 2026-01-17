@@ -121,7 +121,7 @@ export function AIAssistant() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[600px] glass-card shadow-2xl rounded-2xl flex flex-col z-50 overflow-hidden">
+        <div className="fixed bottom-24 right-6 w-96 h-[600px] bg-card border border-border shadow-2xl rounded-2xl flex flex-col z-50 overflow-hidden">
           {/* Header */}
           <div className="px-6 py-4 border-b border-border flex items-center gap-3 bg-gradient-to-r from-primary/10 to-accent/10">
             <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
