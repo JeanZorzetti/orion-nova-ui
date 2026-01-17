@@ -174,8 +174,10 @@ enum ProductType {
 
 ---
 
-#### Dia 7: Módulo de Vendas/Pedidos - Parte 1
+#### ✅ Dia 7: Módulo de Vendas/Pedidos - Parte 1 (CONCLUÍDO)
 **Objetivo:** Criar pedidos de venda
+
+**Status:** ✅ COMPLETO
 
 **Schema Prisma:**
 ```prisma
@@ -248,12 +250,12 @@ enum PaymentStatus {
 ```
 
 **Tarefas:**
-- [ ] Criar schemas SalesOrder e OrderItem
-- [ ] Criar página de novo pedido
-- [ ] Implementar seletor de cliente
-- [ ] Implementar adicionar produtos ao pedido
-- [ ] Calcular totais automaticamente
-- [ ] Gerar número de pedido automático
+- [x] Criar schemas SalesOrder e OrderItem
+- [x] Criar página de novo pedido
+- [x] Implementar seletor de cliente
+- [x] Implementar adicionar produtos ao pedido
+- [x] Calcular totais automaticamente
+- [x] Gerar número de pedido automático
 
 **Validação:** Criar pedido de venda com itens
 
