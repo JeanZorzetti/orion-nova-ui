@@ -1,0 +1,117 @@
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import DashboardSidebar from "@/components/DashboardSidebar";
+import SearchCommand from "@/components/SearchCommand";
+import { Bell, Calendar, User } from "lucide-react";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signOut } from "@/lib/auth";
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login?callbackUrl=/dashboard");
+  }
+
+  const userInitials = session.user.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || "U";
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar */}
+      <DashboardSidebar />
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        {/* Top Bar */}
+        <header className="px-8 py-5 border-b border-border flex items-center gap-6">
+          <div className="flex-1">
+            <SearchCommand />
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-3">
+            <button className="p-2.5 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
+            </button>
+            <button className="p-2.5 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+              <Calendar className="w-5 h-5" />
+            </button>
+
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1.5 rounded-xl hover:bg-muted transition-colors">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={session.user.image || undefined} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{session.user.name}</span>
+                    <span className="text-xs text-muted-foreground">{session.user.email}</span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/perfil" className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    Meu Perfil
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/assinaturas" className="cursor-pointer">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Assinaturas
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await signOut({ redirectTo: "/" });
+                    }}
+                    className="w-full"
+                  >
+                    <button type="submit" className="w-full text-left text-sm">
+                      Sair
+                    </button>
+                  </form>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+
+        {/* Dashboard Content */}
+        <div className="flex-1 p-8 overflow-auto">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
