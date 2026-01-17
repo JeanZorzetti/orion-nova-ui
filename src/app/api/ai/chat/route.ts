@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 
-const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
-const GROK_API_KEY = process.env.GROK_API_KEY;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 // Sistema de prompt especializado em ERP
 const SYSTEM_PROMPT = `Você é Orion AI, um assistente especializado em ERP e gestão empresarial integrado ao sistema Orion ERP.
@@ -55,9 +55,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!GROK_API_KEY) {
+    if (!GROQ_API_KEY) {
       return NextResponse.json(
-        { error: "GROK_API_KEY não configurada no servidor" },
+        { error: "GROQ_API_KEY não configurada no servidor" },
         { status: 500 }
       );
     }
@@ -80,15 +80,15 @@ export async function POST(request: NextRequest) {
       ...messages,
     ];
 
-    // Chamada para a API do Grok
-    const response = await fetch(GROK_API_URL, {
+    // Chamada para a API do Groq
+    const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${GROK_API_KEY}`,
+        Authorization: `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "grok-beta",
+        model: "llama-3.1-70b-versatile",
         messages: fullMessages,
         temperature,
         max_tokens: 2000,
@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Erro na API do Grok:", errorData);
+      console.error("Erro na API do Groq:", errorData);
       return NextResponse.json(
-        { error: "Erro ao comunicar com Grok AI", details: errorData },
+        { error: "Erro ao comunicar com Groq AI", details: errorData },
         { status: response.status }
       );
     }
