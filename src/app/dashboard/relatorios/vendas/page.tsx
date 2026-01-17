@@ -61,7 +61,7 @@ export default function RelatorioVendasPage() {
   // Filtros
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("ALL");
   const [groupBy, setGroupBy] = useState("day");
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function RelatorioVendasPage() {
       const params = new URLSearchParams();
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
-      if (status) params.append("status", status);
+      if (status && status !== "ALL") params.append("status", status);
       if (groupBy) params.append("groupBy", groupBy);
 
       const response = await fetch(`/api/reports/sales?${params.toString()}`);
@@ -201,7 +201,7 @@ export default function RelatorioVendasPage() {
                 <SelectValue placeholder="Todos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="ALL">Todos</SelectItem>
                 <SelectItem value="CONFIRMED">Confirmado</SelectItem>
                 <SelectItem value="PROCESSING">Processando</SelectItem>
                 <SelectItem value="COMPLETED">Concluído</SelectItem>

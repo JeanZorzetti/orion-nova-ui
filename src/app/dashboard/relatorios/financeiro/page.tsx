@@ -78,7 +78,7 @@ export default function RelatorioFinanceiroPage() {
   // Filtros
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("ALL");
 
   useEffect(() => {
     // Definir período padrão (mês atual)
@@ -97,7 +97,7 @@ export default function RelatorioFinanceiroPage() {
       const params = new URLSearchParams();
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
-      if (type) params.append("type", type);
+      if (type && type !== "ALL") params.append("type", type);
 
       const response = await fetch(
         `/api/reports/financial?${params.toString()}`
@@ -223,7 +223,7 @@ export default function RelatorioFinanceiroPage() {
                 <SelectValue placeholder="Todos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="ALL">Todos</SelectItem>
                 <SelectItem value="RECEIVABLE">Recebíveis</SelectItem>
                 <SelectItem value="PAYABLE">Pagáveis</SelectItem>
               </SelectContent>

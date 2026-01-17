@@ -60,8 +60,8 @@ export default function RelatorioClientesPage() {
   const [reportData, setReportData] = useState<ReportData | null>(null);
 
   // Filtros
-  const [type, setType] = useState("");
-  const [isActive, setIsActive] = useState("");
+  const [type, setType] = useState("ALL");
+  const [isActive, setIsActive] = useState("ALL");
 
   useEffect(() => {
     fetchReport();
@@ -71,8 +71,8 @@ export default function RelatorioClientesPage() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (type) params.append("type", type);
-      if (isActive) params.append("isActive", isActive);
+      if (type && type !== "ALL") params.append("type", type);
+      if (isActive && isActive !== "ALL") params.append("isActive", isActive);
 
       const response = await fetch(
         `/api/reports/customers?${params.toString()}`
@@ -188,7 +188,7 @@ export default function RelatorioClientesPage() {
                 <SelectValue placeholder="Todos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="ALL">Todos</SelectItem>
                 <SelectItem value="PESSOA_FISICA">Pessoa Física</SelectItem>
                 <SelectItem value="PESSOA_JURIDICA">Pessoa Jurídica</SelectItem>
               </SelectContent>
@@ -201,7 +201,7 @@ export default function RelatorioClientesPage() {
                 <SelectValue placeholder="Todos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="ALL">Todos</SelectItem>
                 <SelectItem value="true">Ativos</SelectItem>
                 <SelectItem value="false">Inativos</SelectItem>
               </SelectContent>
