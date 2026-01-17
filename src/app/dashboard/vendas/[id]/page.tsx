@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, FileDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui/table";
+import { generateOrderPDF } from "@/lib/pdf-generator";
 
 interface OrderDetails {
   id: string;
@@ -120,6 +121,31 @@ export default function ViewOrderPage({ params }: ViewOrderPageProps) {
     return <Badge variant={config.variant}>{config.label}</Badge>;
   }
 
+  function handleGeneratePDF() {
+    if (!order) return;
+
+    generateOrderPDF({
+      orderNumber: order.orderNumber,
+      customerName: order.customer.name,
+      customerEmail: order.customer.email || undefined,
+      customerPhone: order.customer.phone || undefined,
+      orderDate: order.orderDate,
+      dueDate: order.dueDate || undefined,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      items: order.items.map((item) => ({
+        productName: item.product.name,
+        quantity: item.quantity,
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+      subtotal: Number(order.subtotal),
+      discount: Number(order.discount),
+      total: Number(order.total),
+      notes: order.notes || undefined,
+    });
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -156,9 +182,9 @@ export default function ViewOrderPage({ params }: ViewOrderPageProps) {
               Criado em {formatDate(order.orderDate)}
             </p>
           </div>
-          <Button variant="outline" className="gap-2">
-            <Printer className="w-4 h-4" />
-            Imprimir
+          <Button variant="outline" className="gap-2" onClick={handleGeneratePDF}>
+            <FileDown className="w-4 h-4" />
+            Gerar PDF
           </Button>
         </div>
       </div>

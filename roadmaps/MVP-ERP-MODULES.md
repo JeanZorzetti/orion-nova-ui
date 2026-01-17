@@ -280,7 +280,16 @@ enum PaymentStatus {
 - [x] Permitir edição de pedidos (DRAFT)
 - [x] Implementar mudança de status (API)
 - [x] Registrar pagamentos (API)
-- [ ] Gerar PDF do pedido
+- [x] Gerar PDF do pedido
+
+**Arquivos Adicionais:**
+```
+src/lib/
+└── pdf-generator.ts        # Gerador de PDF com jsPDF e autotable
+
+src/types/
+└── jspdf-autotable.d.ts    # Tipos TypeScript para jsPDF
+```
 
 **Validação:** Workflow completo de vendas
 
