@@ -6,6 +6,83 @@
 
 @layer base {
   :root {
+    /* Light Mode - Clean and Professional */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 187 85% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 20% 95%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 217 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 271 70% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 20% 88%;
+    --input: 217 20% 88%;
+    --ring: 187 85% 45%;
+
+    --radius: 0.75rem;
+
+    /* Orion Light Colors */
+    --orion-void: 0 0% 100%;
+    --orion-deep: 217 25% 98%;
+    --orion-surface: 217 25% 96%;
+    --orion-surface-elevated: 217 25% 94%;
+    --orion-cyan: 187 85% 45%;
+    --orion-purple: 271 70% 60%;
+    --orion-blue: 217 75% 55%;
+
+    /* Light Glow Colors */
+    --glow-cyan: 187 85% 45%;
+    --glow-purple: 271 70% 60%;
+    --glow-blue: 217 75% 55%;
+
+    /* Sidebar Light */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 16% 35%;
+    --sidebar-primary: 187 85% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 20% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 217 20% 88%;
+    --sidebar-ring: 187 85% 45%;
+
+    /* Light Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(187, 85%, 45%), hsl(271, 70%, 60%));
+    --gradient-hero: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(217, 25%, 98%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(187, 85%, 45%, 0.1) 0%, transparent 70%);
+    --gradient-surface: linear-gradient(180deg, hsl(217, 25%, 98%, 0.8), hsl(217, 25%, 96%, 0.6));
+
+    /* Light Glassmorphism */
+    --glass-bg: hsl(0, 0%, 100%, 0.7);
+    --glass-border: hsl(0, 0%, 0%, 0.08);
+    --glass-blur: 20px;
+
+    /* Light Shadows */
+    --shadow-sm: 0 2px 8px hsl(222, 47%, 11%, 0.05);
+    --shadow-md: 0 4px 20px hsl(222, 47%, 11%, 0.08);
+    --shadow-lg: 0 8px 40px hsl(222, 47%, 11%, 0.1);
+    --shadow-glow-cyan: 0 0 40px hsl(187, 85%, 45%, 0.15);
+    --shadow-glow-purple: 0 0 40px hsl(271, 70%, 60%, 0.15);
+    --shadow-glow-mixed: 0 0 60px hsl(187, 85%, 45%, 0.1), 0 0 100px hsl(271, 70%, 60%, 0.08);
+  }
+
+  .dark {
+    /* Dark Mode - Deep Space Theme */
     --background: 222 59% 2%;
     --foreground: 210 40% 98%;
 
@@ -34,8 +111,6 @@
     --input: 217 33% 15%;
     --ring: 187 100% 50%;
 
-    --radius: 0.75rem;
-
     /* Orion Deep Space Colors */
     --orion-void: 222 59% 2%;
     --orion-deep: 222 47% 4%;
@@ -50,7 +125,7 @@
     --glow-purple: 271 91% 65%;
     --glow-blue: 217 91% 60%;
 
-    /* Sidebar */
+    /* Sidebar Dark */
     --sidebar-background: 222 47% 3%;
     --sidebar-foreground: 215 20% 65%;
     --sidebar-primary: 187 100% 50%;
@@ -60,29 +135,24 @@
     --sidebar-border: 217 33% 12%;
     --sidebar-ring: 187 100% 50%;
 
-    /* Gradients */
+    /* Dark Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(187, 100%, 50%), hsl(271, 91%, 65%));
     --gradient-hero: linear-gradient(180deg, hsl(222, 59%, 2%) 0%, hsl(271, 50%, 8%) 100%);
     --gradient-glow: radial-gradient(ellipse at center, hsl(187, 100%, 50%, 0.15) 0%, transparent 70%);
     --gradient-surface: linear-gradient(180deg, hsl(222, 47%, 10%, 0.8), hsl(222, 47%, 6%, 0.6));
 
-    /* Glassmorphism */
+    /* Dark Glassmorphism */
     --glass-bg: hsl(222, 47%, 10%, 0.4);
     --glass-border: hsl(0, 0%, 100%, 0.08);
     --glass-blur: 20px;
 
-    /* Shadows & Glows */
+    /* Dark Shadows & Glows */
     --shadow-sm: 0 2px 8px hsl(222, 47%, 2%, 0.4);
     --shadow-md: 0 4px 20px hsl(222, 47%, 2%, 0.5);
     --shadow-lg: 0 8px 40px hsl(222, 47%, 2%, 0.6);
     --shadow-glow-cyan: 0 0 40px hsl(187, 100%, 50%, 0.3);
     --shadow-glow-purple: 0 0 40px hsl(271, 91%, 65%, 0.3);
     --shadow-glow-mixed: 0 0 60px hsl(187, 100%, 50%, 0.2), 0 0 100px hsl(271, 91%, 65%, 0.15);
-  }
-
-  .dark {
-    --background: 222 59% 2%;
-    --foreground: 210 40% 98%;
   }
 }
 
@@ -98,8 +168,12 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    background: linear-gradient(180deg, hsl(222, 59%, 2%) 0%, hsl(271, 30%, 4%) 50%, hsl(222, 59%, 2%) 100%);
+    background: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(217, 25%, 98%) 50%, hsl(0, 0%, 100%) 100%);
     background-attachment: fixed;
+  }
+
+  .dark body {
+    background: linear-gradient(180deg, hsl(222, 59%, 2%) 0%, hsl(271, 30%, 4%) 50%, hsl(222, 59%, 2%) 100%);
   }
 }
 
