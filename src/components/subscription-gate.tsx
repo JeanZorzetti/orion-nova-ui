@@ -27,7 +27,7 @@ export function SubscriptionGate({ isBlocked, reason }: SubscriptionGateProps) {
 
   return (
     <Dialog open={isBlocked} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" hideClose>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-primary/10 rounded-full">
