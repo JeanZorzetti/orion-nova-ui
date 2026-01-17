@@ -177,10 +177,11 @@ export default function FinanceiroPage() {
 
   const summary = transactions.reduce(
     (acc, t) => {
+      const amount = typeof t.amount === 'string' ? parseFloat(t.amount) : t.amount;
       if (t.status === "PAID") {
-        acc.paid += t.amount;
+        acc.paid += amount;
       } else if (t.status === "PENDING" || t.status === "OVERDUE") {
-        acc.pending += t.amount;
+        acc.pending += amount;
       }
       return acc;
     },

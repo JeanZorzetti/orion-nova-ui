@@ -98,8 +98,14 @@ export async function GET(request: NextRequest) {
       prisma.financialTransaction.count({ where }),
     ]);
 
+    // Converter Decimals para números
+    const formattedTransactions = transactions.map((t) => ({
+      ...t,
+      amount: Number(t.amount),
+    }));
+
     return NextResponse.json({
-      transactions,
+      transactions: formattedTransactions,
       pagination: {
         page,
         limit,

@@ -49,7 +49,13 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(transaction);
+    // Converter Decimal para número
+    const formattedTransaction = {
+      ...transaction,
+      amount: Number(transaction.amount),
+    };
+
+    return NextResponse.json(formattedTransaction);
   } catch (error) {
     console.error("Erro ao buscar transação:", error);
     return NextResponse.json(
