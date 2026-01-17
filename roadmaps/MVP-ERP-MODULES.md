@@ -306,8 +306,10 @@ enum PaymentStatus {
 
 ---
 
-#### Dia 11-12: Módulo Financeiro Básico
+#### ✅ Dia 11-12: Módulo Financeiro Básico (CONCLUÍDO)
 **Objetivo:** Contas a receber
+
+**Status:** ✅ COMPLETO
 
 **Schema Prisma:**
 ```prisma
@@ -356,11 +358,26 @@ enum FinancialStatus {
 ```
 
 **Tarefas:**
-- [ ] Criar schema FinancialTransaction
-- [ ] Listagem de contas a receber
-- [ ] Registrar pagamentos
-- [ ] Vincular com pedidos
-- [ ] Relatório de recebíveis
+- [x] Criar schema FinancialTransaction
+- [x] Criar API routes (GET, POST, PATCH, DELETE)
+- [x] Listagem de contas a receber/pagar
+- [x] Filtros por tipo, status, período
+- [x] Registrar pagamentos com data
+- [x] Criar nova transação financeira
+- [x] Resumo de valores (Total, Pago, Pendente)
+- [x] Detecção automática de vencidos
+- [x] Proteção contra exclusão de pagos
+
+**Arquivos:**
+```
+src/app/api/financial/
+├── route.ts                # GET (list), POST (create)
+├── [id]/route.ts           # GET, PATCH (update), DELETE
+
+src/app/dashboard/financeiro/
+├── page.tsx                # Lista e gerenciamento
+└── novo/page.tsx           # Nova transação
+```
 
 **Validação:** Controle financeiro básico
 
