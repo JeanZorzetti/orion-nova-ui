@@ -90,16 +90,18 @@ export async function GET(request: NextRequest) {
         take: 5,
       }),
 
-      // Produtos com estoque baixo
-      prisma.$queryRaw`
-        SELECT * FROM products
-        WHERE "userId" = ${userId}
-        AND type = 'PRODUCT'
-        AND "stockQuantity" <= "minStock"
-        AND "isActive" = true
-        ORDER BY "stockQuantity" ASC
-        LIMIT 5
-      `,
+      // Produtos com estoque baixo - buscar todos e filtrar
+      prisma.product.findMany({
+        where: {
+          userId,
+          type: "PRODUCT",
+          isActive: true,
+        },
+        orderBy: {
+          stockQuantity: "asc",
+        },
+        take: 100, // Buscar mais para filtrar depois
+      }),
 
       // Vendas dos últimos 30 dias (agrupadas por dia)
       prisma.salesOrder.groupBy({
@@ -176,6 +178,11 @@ export async function GET(request: NextRequest) {
       count: sale._count.id,
     }));
 
+    // Filtrar produtos com estoque baixo
+    const filteredLowStock = lowStockProducts
+      .filter((product) => product.stockQuantity <= product.minStock)
+      .slice(0, 5);
+
     return NextResponse.json({
       summary: {
         totalCustomers,
@@ -193,7 +200,7 @@ export async function GET(request: NextRequest) {
         paymentStatus: order.paymentStatus,
         orderDate: order.orderDate,
       })),
-      lowStockProducts,
+      lowStockProducts: filteredLowStock,
       salesChart: salesChartData,
       topCustomers: topCustomersWithNames,
     });
