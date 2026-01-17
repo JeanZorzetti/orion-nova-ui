@@ -4,6 +4,7 @@ import SocialProof from "@/components/landing/SocialProof";
 import ProblemSolution from "@/components/landing/ProblemSolution";
 import FeaturesGrid from "@/components/landing/FeaturesGrid";
 import ProductShowcase from "@/components/landing/ProductShowcase";
+import AIPreview from "@/components/landing/AIPreview";
 import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
 
@@ -17,6 +18,7 @@ export default function Home() {
         <ProblemSolution />
         <FeaturesGrid />
         <ProductShowcase />
+        <AIPreview />
         <CTASection />
       </main>
       <Footer />
