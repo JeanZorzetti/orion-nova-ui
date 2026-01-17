@@ -55,13 +55,24 @@ export function AIAssistant() {
     setIsLoading(true);
 
     try {
+      // Filtra mensagens: só envia mensagens do usuário e assistente (não a mensagem inicial de boas-vindas se for a primeira interação)
+      const conversationMessages = [...messages, userMessage].filter(
+        (m, index) => {
+          // Remove a primeira mensagem se for do assistente (mensagem de boas-vindas)
+          if (index === 0 && m.role === "assistant") {
+            return false;
+          }
+          return true;
+        }
+      );
+
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
+          messages: conversationMessages.map((m) => ({
             role: m.role,
             content: m.content,
           })),
