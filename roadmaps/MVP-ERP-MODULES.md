@@ -33,8 +33,8 @@ Plano de implementação dos módulos funcionais do ERP em 14 dias.
 - [x] Criar header com perfil do usuário
 - [x] Implementar navegação entre módulos
 - [x] Criar página inicial (overview/dashboard)
-- [ ] Adicionar breadcrumbs
-- [ ] Implementar tema claro/escuro
+- [x] Adicionar breadcrumbs
+- [x] Implementar tema claro/escuro
 
 **Arquivos:**
 ```
@@ -45,6 +45,11 @@ src/app/dashboard/
 │   ├── sidebar.tsx         # Menu lateral
 │   ├── header.tsx          # Header do dashboard
 │   └── stats-card.tsx      # Card de estatísticas
+
+src/components/
+├── breadcrumbs.tsx         # Breadcrumbs de navegação
+├── theme-provider.tsx      # Provider de tema
+└── theme-toggle.tsx        # Botão de alternância de tema
 ```
 
 **Validação:** Navegação fluida entre páginas
