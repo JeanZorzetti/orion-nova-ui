@@ -4,7 +4,9 @@ import DashboardSidebar from "@/components/DashboardSidebar";
 import SearchCommand from "@/components/SearchCommand";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Bell, Calendar, User } from "lucide-react";
+import { NotificationsDropdown } from "@/components/notifications-dropdown";
+import { CalendarDropdown } from "@/components/calendar-dropdown";
+import { Calendar, User } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -51,13 +53,8 @@ export default async function DashboardLayout({
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button className="p-2.5 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
-            </button>
-            <button className="p-2.5 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
-              <Calendar className="w-5 h-5" />
-            </button>
+            <NotificationsDropdown />
+            <CalendarDropdown />
 
             {/* User Menu */}
             <DropdownMenu>
