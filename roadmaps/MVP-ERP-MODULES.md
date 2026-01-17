@@ -263,16 +263,18 @@ enum PaymentStatus {
 
 ### Semana 2: Funcionalidades Avançadas
 
-#### Dia 8-9: Módulo de Vendas - Parte 2
+#### ✅ Dia 8-9: Módulo de Vendas - Parte 2 (CONCLUÍDO)
 **Objetivo:** Gerenciar pedidos existentes
 
+**Status:** ✅ COMPLETO
+
 **Tarefas:**
-- [ ] Criar listagem de pedidos
-- [ ] Implementar filtros (status, data, cliente)
-- [ ] Criar página de visualização de pedido
-- [ ] Permitir edição de pedidos (DRAFT)
-- [ ] Implementar mudança de status
-- [ ] Registrar pagamentos
+- [x] Criar listagem de pedidos
+- [x] Implementar filtros (status, data, cliente)
+- [x] Criar página de visualização de pedido
+- [x] Permitir edição de pedidos (DRAFT)
+- [x] Implementar mudança de status (API)
+- [x] Registrar pagamentos (API)
 - [ ] Gerar PDF do pedido
 
 **Validação:** Workflow completo de vendas
