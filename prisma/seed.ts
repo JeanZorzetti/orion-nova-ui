@@ -1,318 +1,620 @@
-import { config } from 'dotenv';
-import bcrypt from 'bcryptjs';
-import { prisma } from '../src/lib/prisma.js';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-// Carregar .env.local
-config({ path: '.env.local' });
+const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando seed...');
+  console.log("🌱 Iniciando seed do banco de dados ERP...");
 
-  // 1. Criar usuários
-  console.log('👤 Criando usuários...');
+  // Limpar dados existentes do ERP
+  console.log("🗑️  Limpando dados existentes do ERP...");
+  await prisma.orderItem.deleteMany();
+  await prisma.salesOrder.deleteMany();
+  await prisma.financialTransaction.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.customer.deleteMany();
 
-  const adminPassword = await bcrypt.hash('admin123', 10);
-  const userPassword = await bcrypt.hash('user123', 10);
-
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@orion.com' },
-    update: {},
-    create: {
-      name: 'Admin Orion',
-      email: 'admin@orion.com',
-      password: adminPassword,
-      role: 'ADMIN',
-      emailVerified: new Date(),
-    },
-  });
-
-  const user = await prisma.user.upsert({
-    where: { email: 'joao@example.com' },
-    update: {},
-    create: {
-      name: 'João Silva',
-      email: 'joao@example.com',
-      password: userPassword,
-      role: 'USER',
-      emailVerified: new Date(),
-    },
-  });
-
-  console.log('✅ Usuários criados:', { admin: admin.email, user: user.email });
-
-  // 2. Criar planos
-  console.log('💼 Criando planos...');
-
-  const starterPlan = await prisma.plan.upsert({
-    where: { slug: 'starter' },
-    update: {},
-    create: {
-      name: 'Starter',
-      slug: 'starter',
-      description: 'Perfeito para começar',
-      price: 99.90,
-      billingPeriod: 'MONTHLY',
-      features: JSON.stringify([
-        'Até 5 usuários',
-        '10GB de armazenamento',
-        'Suporte por email',
-        'Dashboard básico',
-      ]),
-      maxUsers: 5,
-      maxStorage: 10,
-      isActive: true,
-    },
-  });
-
-  const proPlan = await prisma.plan.upsert({
-    where: { slug: 'professional' },
-    update: {},
-    create: {
-      name: 'Professional',
-      slug: 'professional',
-      description: 'Para empresas em crescimento',
-      price: 299.90,
-      billingPeriod: 'MONTHLY',
-      features: JSON.stringify([
-        'Até 25 usuários',
-        '100GB de armazenamento',
-        'Suporte prioritário',
-        'Relatórios avançados',
-        'API access',
-        'Integrações premium',
-      ]),
-      maxUsers: 25,
-      maxStorage: 100,
-      isActive: true,
-    },
-  });
-
-  const enterprisePlan = await prisma.plan.upsert({
-    where: { slug: 'enterprise' },
-    update: {},
-    create: {
-      name: 'Enterprise',
-      slug: 'enterprise',
-      description: 'Solução completa para grandes empresas',
-      price: 999.90,
-      billingPeriod: 'MONTHLY',
-      features: JSON.stringify([
-        'Usuários ilimitados',
-        '1TB de armazenamento',
-        'Suporte 24/7',
-        'Gerente de conta dedicado',
-        'SLA 99.9%',
-        'Customizações',
-        'Treinamento incluso',
-      ]),
-      maxUsers: null,
-      maxStorage: 1000,
-      isActive: true,
-    },
-  });
-
-  console.log('✅ Planos criados:', [starterPlan.name, proPlan.name, enterprisePlan.name]);
-
-  // 3. Criar categorias do blog
-  console.log('📚 Criando categorias...');
-
-  const techCategory = await prisma.category.upsert({
-    where: { slug: 'tecnologia' },
-    update: {},
-    create: {
-      name: 'Tecnologia',
-      slug: 'tecnologia',
-      description: 'Artigos sobre tecnologia e inovação',
-    },
-  });
-
-  const businessCategory = await prisma.category.upsert({
-    where: { slug: 'negocios' },
-    update: {},
-    create: {
-      name: 'Negócios',
-      slug: 'negocios',
-      description: 'Dicas e estratégias de negócios',
-    },
-  });
-
-  console.log('✅ Categorias criadas');
-
-  // 4. Criar tags
-  console.log('🏷️ Criando tags...');
-
-  const erpTag = await prisma.tag.upsert({
-    where: { slug: 'erp' },
-    update: {},
-    create: { name: 'ERP', slug: 'erp' },
-  });
-
-  const productivityTag = await prisma.tag.upsert({
-    where: { slug: 'produtividade' },
-    update: {},
-    create: { name: 'Produtividade', slug: 'produtividade' },
-  });
-
-  const automationTag = await prisma.tag.upsert({
-    where: { slug: 'automacao' },
-    update: {},
-    create: { name: 'Automação', slug: 'automacao' },
-  });
-
-  console.log('✅ Tags criadas');
-
-  // 5. Criar posts do blog
-  console.log('📝 Criando posts...');
-
-  const post1 = await prisma.post.upsert({
-    where: { slug: '10-dicas-produtividade-empresa' },
-    update: {},
-    create: {
-      title: '10 Dicas para Aumentar a Produtividade da sua Empresa',
-      slug: '10-dicas-produtividade-empresa',
-      excerpt: 'Descubra estratégias comprovadas para otimizar processos e aumentar resultados.',
-      content: `# 10 Dicas para Aumentar a Produtividade
-
-A produtividade é fundamental para o sucesso de qualquer empresa. Neste artigo, compartilhamos 10 dicas práticas que podem transformar a eficiência da sua equipe.
-
-## 1. Automatize Tarefas Repetitivas
-
-Utilize ferramentas de automação para eliminar tarefas manuais e repetitivas.
-
-## 2. Estabeleça Metas Claras
-
-Defina objetivos mensuráveis e compartilhe com toda a equipe.
-
-## 3. Use um Sistema ERP Integrado
-
-Centralize todas as operações em uma única plataforma.
-
-[Continua...]`,
-      coverImage: '/blog/produtividade.jpg',
-      authorId: admin.id,
-      categoryId: businessCategory.id,
-      status: 'PUBLISHED',
-      publishedAt: new Date(),
-      metaTitle: '10 Dicas de Produtividade Empresarial - Orion ERP',
-      metaDescription: 'Guia completo com estratégias comprovadas para aumentar a produtividade da sua empresa.',
-    },
-  });
-
-  await prisma.tagOnPost.upsert({
+  // Limpar apenas o usuário de teste
+  await prisma.user.deleteMany({
     where: {
-      postId_tagId: {
-        postId: post1.id,
-        tagId: productivityTag.id,
+      email: "admin@teste.com"
+    }
+  });
+
+  // Criar usuário de teste
+  console.log("👤 Criando usuário de teste...");
+  const hashedPassword = await bcrypt.hash("123456", 10);
+  const user = await prisma.user.create({
+    data: {
+      name: "Admin Teste",
+      email: "admin@teste.com",
+      password: hashedPassword,
+      role: "ADMIN",
+      emailVerified: new Date(),
+    },
+  });
+  console.log(`✅ Usuário criado: ${user.email} (senha: 123456)`);
+
+  // Criar clientes
+  console.log("👥 Criando clientes...");
+  const customers = await Promise.all([
+    prisma.customer.create({
+      data: {
+        name: "João Silva Comércio LTDA",
+        email: "joao@silva.com.br",
+        phone: "(11) 98765-4321",
+        cpfCnpj: "12.345.678/0001-90",
+        type: "PESSOA_JURIDICA",
+        address: "Rua das Flores, 123",
+        city: "São Paulo",
+        state: "SP",
+        zipCode: "01234-567",
+        notes: "Cliente VIP - Prioridade máxima",
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.customer.create({
+      data: {
+        name: "Maria Santos",
+        email: "maria@email.com",
+        phone: "(21) 99876-5432",
+        cpfCnpj: "123.456.789-00",
+        type: "PESSOA_FISICA",
+        address: "Av. Paulista, 1000",
+        city: "Rio de Janeiro",
+        state: "RJ",
+        zipCode: "20000-000",
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.customer.create({
+      data: {
+        name: "Tech Solutions Brasil",
+        email: "contato@techsolutions.com.br",
+        phone: "(31) 3333-4444",
+        cpfCnpj: "98.765.432/0001-11",
+        type: "PESSOA_JURIDICA",
+        address: "Rua da Tecnologia, 500",
+        city: "Belo Horizonte",
+        state: "MG",
+        zipCode: "30000-000",
+        notes: "Parceiro comercial",
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.customer.create({
+      data: {
+        name: "Carlos Oliveira",
+        email: "carlos@oliveira.com",
+        phone: "(48) 98888-7777",
+        cpfCnpj: "987.654.321-00",
+        type: "PESSOA_FISICA",
+        address: "Rua das Palmeiras, 789",
+        city: "Florianópolis",
+        state: "SC",
+        zipCode: "88000-000",
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.customer.create({
+      data: {
+        name: "Distribuidora Norte LTDA",
+        email: "vendas@norte.com.br",
+        phone: "(85) 3200-1000",
+        cpfCnpj: "11.222.333/0001-44",
+        type: "PESSOA_JURIDICA",
+        address: "Av. Central, 2000",
+        city: "Fortaleza",
+        state: "CE",
+        zipCode: "60000-000",
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+  ]);
+  console.log(`✅ ${customers.length} clientes criados`);
+
+  // Criar produtos
+  console.log("📦 Criando produtos...");
+  const products = await Promise.all([
+    prisma.product.create({
+      data: {
+        name: "Notebook Dell Inspiron 15",
+        sku: "NB-DELL-001",
+        description: "Notebook Dell Inspiron 15, Intel Core i7, 16GB RAM, 512GB SSD",
+        category: "Informática",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 3500.00,
+        cost: 2800.00,
+        stockQuantity: 25,
+        minStock: 5,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Mouse Logitech MX Master 3",
+        sku: "MS-LOG-001",
+        description: "Mouse sem fio Logitech MX Master 3, sensor de alta precisão",
+        category: "Periféricos",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 450.00,
+        cost: 320.00,
+        stockQuantity: 50,
+        minStock: 10,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Teclado Mecânico RGB",
+        sku: "KB-RGB-001",
+        description: "Teclado mecânico gamer com iluminação RGB, switches blue",
+        category: "Periféricos",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 650.00,
+        cost: 480.00,
+        stockQuantity: 30,
+        minStock: 8,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Monitor LG UltraWide 29\"",
+        sku: "MON-LG-001",
+        description: "Monitor LG UltraWide 29 polegadas, Full HD, IPS",
+        category: "Monitores",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 1200.00,
+        cost: 950.00,
+        stockQuantity: 15,
+        minStock: 3,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Webcam Logitech C920",
+        sku: "WC-LOG-001",
+        description: "Webcam Full HD 1080p com microfone integrado",
+        category: "Periféricos",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 380.00,
+        cost: 280.00,
+        stockQuantity: 40,
+        minStock: 10,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Headset Gamer HyperX Cloud II",
+        sku: "HS-HYP-001",
+        description: "Headset gamer com som surround 7.1, microfone removível",
+        category: "Áudio",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 550.00,
+        cost: 420.00,
+        stockQuantity: 20,
+        minStock: 5,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "SSD Samsung 1TB NVMe",
+        sku: "SSD-SAM-001",
+        description: "SSD Samsung 1TB, interface NVMe M.2, 3500MB/s leitura",
+        category: "Armazenamento",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 580.00,
+        cost: 450.00,
+        stockQuantity: 35,
+        minStock: 10,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Memória RAM 16GB DDR4",
+        sku: "RAM-16GB-001",
+        description: "Memória RAM 16GB DDR4 3200MHz",
+        category: "Componentes",
+        type: "PRODUCT",
+        unit: "UN",
+        price: 320.00,
+        cost: 240.00,
+        stockQuantity: 60,
+        minStock: 15,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Suporte Técnico - 1 Hora",
+        sku: "SRV-SUP-001",
+        description: "Suporte técnico especializado por hora",
+        category: "Serviços",
+        type: "SERVICE",
+        unit: "HR",
+        price: 150.00,
+        cost: 80.00,
+        stockQuantity: 0,
+        minStock: 0,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+    prisma.product.create({
+      data: {
+        name: "Instalação de Sistema Operacional",
+        sku: "SRV-INST-001",
+        description: "Instalação completa de sistema operacional e drivers",
+        category: "Serviços",
+        type: "SERVICE",
+        unit: "UN",
+        price: 200.00,
+        cost: 100.00,
+        stockQuantity: 0,
+        minStock: 0,
+        isActive: true,
+        userId: user.id,
+      },
+    }),
+  ]);
+  console.log(`✅ ${products.length} produtos criados`);
+
+  // Criar pedidos
+  console.log("🛒 Criando pedidos de venda...");
+
+  // Pedido 1 - COMPLETED
+  const order1 = await prisma.salesOrder.create({
+    data: {
+      orderNumber: "PED-2024-001",
+      orderDate: new Date("2024-01-15"),
+      dueDate: new Date("2024-01-30"),
+      status: "COMPLETED",
+      paymentStatus: "PAID",
+      paidAt: new Date("2024-01-28"),
+      subtotal: 7250.00,
+      discount: 250.00,
+      total: 7000.00,
+      notes: "Primeiro pedido do cliente - Desconto especial",
+      customerId: customers[0].id,
+      userId: user.id,
+      items: {
+        create: [
+          {
+            productId: products[0].id,
+            quantity: 2,
+            unitPrice: 3500.00,
+            total: 7000.00,
+          },
+          {
+            productId: products[1].id,
+            quantity: 1,
+            unitPrice: 450.00,
+            total: 450.00,
+          },
+        ],
       },
     },
-    update: {},
-    create: {
-      postId: post1.id,
-      tagId: productivityTag.id,
-    },
   });
 
-  const post2 = await prisma.post.upsert({
-    where: { slug: 'transformacao-digital-guia-completo' },
-    update: {},
-    create: {
-      title: 'Transformação Digital: Guia Completo para Empresas',
-      slug: 'transformacao-digital-guia-completo',
-      excerpt: 'Entenda como digitalizar processos e se manter competitivo no mercado.',
-      content: `# Transformação Digital: O Futuro é Agora
-
-A transformação digital não é mais uma opção, é uma necessidade. Descubra como sua empresa pode se adaptar e prosperar na era digital.
-
-## O que é Transformação Digital?
-
-É o processo de integração de tecnologia digital em todas as áreas de um negócio...
-
-[Continua...]`,
-      coverImage: '/blog/transformacao-digital.jpg',
-      authorId: admin.id,
-      categoryId: techCategory.id,
-      status: 'PUBLISHED',
-      publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
-      metaTitle: 'Transformação Digital - Guia Completo',
-      metaDescription: 'Tudo o que você precisa saber sobre transformação digital para empresas.',
-    },
-  });
-
-  await prisma.tagOnPost.createMany({
-    data: [
-      { postId: post2.id, tagId: erpTag.id },
-      { postId: post2.id, tagId: automationTag.id },
-    ],
-    skipDuplicates: true,
-  });
-
-  console.log('✅ Posts criados');
-
-  // 6. Criar assinatura de exemplo para o usuário
-  console.log('💳 Criando assinatura...');
-
-  const subscription = await prisma.subscription.upsert({
-    where: {
-      id: 'seed-subscription-1',
-    },
-    update: {},
-    create: {
-      id: 'seed-subscription-1',
+  // Pedido 2 - PROCESSING
+  const order2 = await prisma.salesOrder.create({
+    data: {
+      orderNumber: "PED-2024-002",
+      orderDate: new Date("2024-01-18"),
+      dueDate: new Date("2024-02-05"),
+      status: "PROCESSING",
+      paymentStatus: "PENDING",
+      subtotal: 2130.00,
+      discount: 0,
+      total: 2130.00,
+      notes: "Pedido urgente - Entregar em 3 dias",
+      customerId: customers[1].id,
       userId: user.id,
-      planId: proPlan.id,
-      status: 'ACTIVE',
-      currentPeriodStart: new Date(),
-      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 dias
+      items: {
+        create: [
+          {
+            productId: products[3].id,
+            quantity: 1,
+            unitPrice: 1200.00,
+            total: 1200.00,
+          },
+          {
+            productId: products[4].id,
+            quantity: 1,
+            unitPrice: 380.00,
+            total: 380.00,
+          },
+          {
+            productId: products[5].id,
+            quantity: 1,
+            unitPrice: 550.00,
+            total: 550.00,
+          },
+        ],
+      },
     },
   });
 
-  console.log('✅ Assinatura criada');
-
-  // 7. Criar cupons
-  console.log('🎫 Criando cupons...');
-
-  await prisma.coupon.upsert({
-    where: { code: 'WELCOME20' },
-    update: {},
-    create: {
-      code: 'WELCOME20',
-      description: '20% de desconto para novos clientes',
-      discountType: 'PERCENTAGE',
-      discountValue: 20,
-      maxUses: 100,
-      validFrom: new Date(),
-      validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // +90 dias
-      isActive: true,
+  // Pedido 3 - CONFIRMED
+  const order3 = await prisma.salesOrder.create({
+    data: {
+      orderNumber: "PED-2024-003",
+      orderDate: new Date("2024-01-20"),
+      dueDate: new Date("2024-02-10"),
+      status: "CONFIRMED",
+      paymentStatus: "PENDING",
+      subtotal: 5760.00,
+      discount: 260.00,
+      total: 5500.00,
+      notes: "Cliente solicitou nota fiscal eletrônica",
+      customerId: customers[2].id,
+      userId: user.id,
+      items: {
+        create: [
+          {
+            productId: products[0].id,
+            quantity: 1,
+            unitPrice: 3500.00,
+            total: 3500.00,
+          },
+          {
+            productId: products[2].id,
+            quantity: 1,
+            unitPrice: 650.00,
+            total: 650.00,
+          },
+          {
+            productId: products[6].id,
+            quantity: 2,
+            unitPrice: 580.00,
+            total: 1160.00,
+          },
+          {
+            productId: products[8].id,
+            quantity: 3,
+            unitPrice: 150.00,
+            total: 450.00,
+          },
+        ],
+      },
     },
   });
 
-  await prisma.coupon.upsert({
-    where: { code: 'PRIMEIRACOMPRA50' },
-    update: {},
-    create: {
-      code: 'PRIMEIRACOMPRA50',
-      description: 'R$ 50 de desconto na primeira compra',
-      discountType: 'FIXED_AMOUNT',
-      discountValue: 50,
-      maxUses: 50,
-      validFrom: new Date(),
-      validUntil: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // +60 dias
-      isActive: true,
+  // Pedido 4 - DRAFT
+  const order4 = await prisma.salesOrder.create({
+    data: {
+      orderNumber: "PED-2024-004",
+      orderDate: new Date("2024-01-22"),
+      status: "DRAFT",
+      paymentStatus: "PENDING",
+      subtotal: 1280.00,
+      discount: 0,
+      total: 1280.00,
+      customerId: customers[3].id,
+      userId: user.id,
+      items: {
+        create: [
+          {
+            productId: products[7].id,
+            quantity: 4,
+            unitPrice: 320.00,
+            total: 1280.00,
+          },
+        ],
+      },
     },
   });
 
-  console.log('✅ Cupons criados');
+  // Pedido 5 - COMPLETED com pagamento
+  const order5 = await prisma.salesOrder.create({
+    data: {
+      orderNumber: "PED-2024-005",
+      orderDate: new Date("2024-01-10"),
+      dueDate: new Date("2024-01-25"),
+      status: "COMPLETED",
+      paymentStatus: "PAID",
+      paidAt: new Date("2024-01-24"),
+      subtotal: 3100.00,
+      discount: 100.00,
+      total: 3000.00,
+      notes: "Pagamento à vista - Desconto aplicado",
+      customerId: customers[4].id,
+      userId: user.id,
+      items: {
+        create: [
+          {
+            productId: products[1].id,
+            quantity: 4,
+            unitPrice: 450.00,
+            total: 1800.00,
+          },
+          {
+            productId: products[2].id,
+            quantity: 2,
+            unitPrice: 650.00,
+            total: 1300.00,
+          },
+        ],
+      },
+    },
+  });
 
-  console.log('🎉 Seed concluído com sucesso!');
-  console.log('');
-  console.log('📋 Credenciais de teste:');
-  console.log('  Admin: admin@orion.com / admin123');
-  console.log('  User:  joao@example.com / user123');
+  console.log(`✅ 5 pedidos de venda criados`);
+
+  // Criar transações financeiras
+  console.log("💰 Criando transações financeiras...");
+
+  const transactions = await Promise.all([
+    // Recebíveis
+    prisma.financialTransaction.create({
+      data: {
+        type: "RECEIVABLE",
+        category: "Venda de Produtos",
+        description: "Recebimento ref. Pedido PED-2024-001",
+        amount: 7000.00,
+        dueDate: new Date("2024-01-30"),
+        paidAt: new Date("2024-01-28"),
+        status: "PAID",
+        customerId: customers[0].id,
+        orderId: order1.id,
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "RECEIVABLE",
+        category: "Venda de Produtos",
+        description: "Recebimento ref. Pedido PED-2024-002",
+        amount: 2130.00,
+        dueDate: new Date("2024-02-05"),
+        status: "PENDING",
+        customerId: customers[1].id,
+        orderId: order2.id,
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "RECEIVABLE",
+        category: "Venda de Produtos",
+        description: "Recebimento ref. Pedido PED-2024-003",
+        amount: 5500.00,
+        dueDate: new Date("2024-02-10"),
+        status: "PENDING",
+        customerId: customers[2].id,
+        orderId: order3.id,
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "RECEIVABLE",
+        category: "Venda de Produtos",
+        description: "Recebimento ref. Pedido PED-2024-005",
+        amount: 3000.00,
+        dueDate: new Date("2024-01-25"),
+        paidAt: new Date("2024-01-24"),
+        status: "PAID",
+        customerId: customers[4].id,
+        orderId: order5.id,
+        userId: user.id,
+      },
+    }),
+
+    // Pagáveis
+    prisma.financialTransaction.create({
+      data: {
+        type: "PAYABLE",
+        category: "Fornecedores",
+        description: "Pagamento fornecedor - Reposição estoque notebooks",
+        amount: 28000.00,
+        dueDate: new Date("2024-02-15"),
+        status: "PENDING",
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "PAYABLE",
+        category: "Aluguel",
+        description: "Aluguel do escritório - Janeiro/2024",
+        amount: 3500.00,
+        dueDate: new Date("2024-01-10"),
+        paidAt: new Date("2024-01-08"),
+        status: "PAID",
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "PAYABLE",
+        category: "Salários",
+        description: "Folha de pagamento - Janeiro/2024",
+        amount: 15000.00,
+        dueDate: new Date("2024-02-05"),
+        status: "PENDING",
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "PAYABLE",
+        category: "Fornecedores",
+        description: "Fornecedor periféricos - Lote dezembro",
+        amount: 5600.00,
+        dueDate: new Date("2024-01-20"),
+        paidAt: new Date("2024-01-19"),
+        status: "PAID",
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "PAYABLE",
+        category: "Utilidades",
+        description: "Conta de energia - Janeiro/2024",
+        amount: 850.00,
+        dueDate: new Date("2024-02-10"),
+        status: "PENDING",
+        userId: user.id,
+      },
+    }),
+    prisma.financialTransaction.create({
+      data: {
+        type: "RECEIVABLE",
+        category: "Serviços",
+        description: "Consultoria técnica - Cliente Externo",
+        amount: 2500.00,
+        dueDate: new Date("2024-01-05"),
+        status: "OVERDUE",
+        userId: user.id,
+      },
+    }),
+  ]);
+
+  console.log(`✅ ${transactions.length} transações financeiras criadas`);
+
+  console.log("\n🎉 Seed do ERP concluído com sucesso!");
+  console.log("\n📊 Resumo dos dados criados:");
+  console.log(`   👤 1 usuário (admin@teste.com / 123456)`);
+  console.log(`   👥 ${customers.length} clientes`);
+  console.log(`   📦 ${products.length} produtos`);
+  console.log(`   🛒 5 pedidos de venda`);
+  console.log(`   💰 ${transactions.length} transações financeiras`);
+  console.log("\n✅ Você já pode fazer login e testar o sistema!");
+  console.log("\n🔑 Credenciais:");
+  console.log("   Email: admin@teste.com");
+  console.log("   Senha: 123456");
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Erro no seed:', e);
+    console.error("❌ Erro ao executar seed:", e);
     process.exit(1);
   })
   .finally(async () => {
