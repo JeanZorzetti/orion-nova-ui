@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationsDropdown } from "@/components/notifications-dropdown";
 import { CalendarDropdown } from "@/components/calendar-dropdown";
+import { AIAssistant } from "@/components/ai-assistant";
 import { Calendar, User } from "lucide-react";
 import Link from "next/link";
 import {
@@ -113,6 +114,9 @@ export default async function DashboardLayout({
           {children}
         </div>
       </main>
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
