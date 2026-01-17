@@ -22,14 +22,15 @@ GROQ_API_KEY="gsk_sua-chave-aqui"
 
 ### 3. Modelo Utilizado
 
-Modelo padrão: llama-3.1-70b-versatile
+Modelo padrão: llama-3.3-70b-versatile (mais recente)
 
 Outros modelos disponíveis:
+- llama-3.1-70b-versatile (versão anterior)
 - llama-3.1-8b-instant (mais rápido)
 - mixtral-8x7b-32768 (contexto longo)
 - gemma2-9b-it (eficiente)
 
-Para trocar, edite src/app/api/ai/chat/route.ts
+Para trocar, edite src/app/api/ai/chat/route.ts (linha 285)
 
 ## Vantagens do Groq
 

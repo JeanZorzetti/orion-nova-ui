@@ -66,21 +66,27 @@ export function AIAssistant() {
         }
       );
 
+      const payload = {
+        messages: conversationMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+      };
+
+      console.log("Enviando para API:", payload);
+
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          messages: conversationMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao comunicar com a IA");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Erro da API:", response.status, errorData);
+        throw new Error(errorData.error || "Erro ao comunicar com a IA");
       }
 
       const data = await response.json();

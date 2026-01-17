@@ -230,11 +230,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { messages, temperature = 0.7 } = await request.json();
+    const body = await request.json();
+    console.log("Recebido no backend:", JSON.stringify(body, null, 2));
+
+    const { messages, temperature = 0.7 } = body;
 
     if (!messages || !Array.isArray(messages)) {
+      console.error("Validação falhou:", { messages, isArray: Array.isArray(messages) });
       return NextResponse.json(
-        { error: "Mensagens inválidas" },
+        { error: "Mensagens inválidas - esperado array de mensagens" },
+        { status: 400 }
+      );
+    }
+
+    if (messages.length === 0) {
+      console.error("Array de mensagens vazio");
+      return NextResponse.json(
+        { error: "Array de mensagens não pode estar vazio" },
+        { status: 400 }
+      );
+    }
+
+    // Valida estrutura das mensagens
+    const invalidMessage = messages.find((m: any) =>
+      !m.role || !m.content ||
+      !["user", "assistant", "system"].includes(m.role)
+    );
+
+    if (invalidMessage) {
+      console.error("Mensagem com estrutura inválida:", invalidMessage);
+      return NextResponse.json(
+        { error: "Estrutura de mensagem inválida - cada mensagem precisa de 'role' (user/assistant/system) e 'content'" },
         { status: 400 }
       );
     }
@@ -256,11 +282,13 @@ export async function POST(request: NextRequest) {
         Authorization: `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "llama-3.1-70b-versatile",
+        model: "llama-3.3-70b-versatile",
         messages: fullMessages,
-        temperature,
-        max_tokens: 2000,
+        temperature: temperature,
+        max_completion_tokens: 2000,
+        top_p: 1,
         stream: false,
+        stop: null,
       }),
     });
 
