@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { SampleDataManager } from "@/components/sample-data-manager";
+import { OnboardingControl } from "@/components/onboarding-control";
 
 export default function ConfiguracoesPage() {
   const { data: session, update } = useSession();
@@ -301,6 +302,9 @@ export default function ConfiguracoesPage() {
               </div>
             </div>
           </div>
+
+          {/* Tutorial */}
+          <OnboardingControl />
 
           {/* Dados de Exemplo */}
           <SampleDataManager />
