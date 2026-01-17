@@ -28,6 +28,10 @@ model User {
   orders        Order[]
   tickets       SupportTicket[]
   posts         Post[]        @relation("PostAuthor")
+  customers     Customer[]
+  products      Product[]
+  salesOrders   SalesOrder[]
+  financialTransactions FinancialTransaction[]
 
   @@map("users")
 }
@@ -341,4 +345,194 @@ enum DiscountType {
   PERCENTAGE
   FIXED_AMOUNT
   FREE_TRIAL
+}
+
+// ===== MÓDULOS ERP =====
+
+// Clientes
+model Customer {
+  id            String   @id @default(cuid())
+  name          String
+  email         String?  @unique
+  phone         String?
+  cpfCnpj       String?  @unique
+  type          CustomerType @default(PESSOA_FISICA)
+
+  // Endereço
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+
+  // Metadata
+  notes         String?  @db.Text
+  isActive      Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relações
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  salesOrders   SalesOrder[]
+  financialTransactions FinancialTransaction[]
+
+  @@map("customers")
+}
+
+enum CustomerType {
+  PESSOA_FISICA
+  PESSOA_JURIDICA
+}
+
+// Produtos
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  sku           String?  @unique
+  description   String?  @db.Text
+
+  type          ProductType @default(PRODUCT)
+  category      String?
+
+  // Preços
+  price         Decimal  @db.Decimal(10, 2)
+  cost          Decimal? @db.Decimal(10, 2)
+
+  // Estoque
+  stockQuantity Int      @default(0)
+  minStock      Int      @default(0)
+  unit          String   @default("UN")
+
+  // Metadata
+  isActive      Boolean  @default(true)
+  image         String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relações
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  orderItems    OrderItem[]
+
+  @@map("products")
+}
+
+enum ProductType {
+  PRODUCT
+  SERVICE
+}
+
+// Pedidos de Venda
+model SalesOrder {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique
+
+  // Cliente
+  customerId      String
+  customer        Customer      @relation(fields: [customerId], references: [id])
+
+  // Valores
+  subtotal        Decimal       @db.Decimal(10, 2)
+  discount        Decimal       @default(0) @db.Decimal(10, 2)
+  total           Decimal       @db.Decimal(10, 2)
+
+  // Status
+  status          SalesOrderStatus   @default(DRAFT)
+  paymentStatus   PaymentStatus @default(PENDING)
+
+  // Datas
+  orderDate       DateTime      @default(now())
+  dueDate         DateTime?
+  paidAt          DateTime?
+
+  // Observações
+  notes           String?       @db.Text
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relações
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  financialTransactions FinancialTransaction[]
+
+  @@map("sales_orders")
+}
+
+model OrderItem {
+  id          String      @id @default(cuid())
+
+  orderId     String
+  order       SalesOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id])
+
+  quantity    Int
+  unitPrice   Decimal     @db.Decimal(10, 2)
+  total       Decimal     @db.Decimal(10, 2)
+
+  @@map("order_items")
+}
+
+enum SalesOrderStatus {
+  DRAFT
+  CONFIRMED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+// Financeiro
+model FinancialTransaction {
+  id              String              @id @default(cuid())
+
+  type            TransactionType
+  category        String
+  description     String
+
+  amount          Decimal             @db.Decimal(10, 2)
+
+  // Relacionamentos
+  customerId      String?
+  customer        Customer?           @relation(fields: [customerId], references: [id])
+
+  orderId         String?
+  order           SalesOrder?         @relation(fields: [orderId], references: [id])
+
+  // Datas
+  dueDate         DateTime
+  paidAt          DateTime?
+
+  status          FinancialStatus     @default(PENDING)
+
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+
+  @@map("financial_transactions")
+}
+
+enum TransactionType {
+  RECEIVABLE
+  PAYABLE
+}
+
+enum FinancialStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
 }

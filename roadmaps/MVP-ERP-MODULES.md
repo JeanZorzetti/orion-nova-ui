@@ -23,14 +23,16 @@ Plano de implementação dos módulos funcionais do ERP em 14 dias.
 
 ### Semana 1: Fundação e Módulos Core
 
-#### Dia 1-2: Layout e Navegação do Dashboard
+#### ✅ Dia 1-2: Layout e Navegação do Dashboard (CONCLUÍDO)
 **Objetivo:** Estrutura base do ERP
 
+**Status:** ✅ COMPLETO
+
 **Tarefas:**
-- [ ] Criar layout com sidebar navegável
-- [ ] Criar header com perfil do usuário
-- [ ] Implementar navegação entre módulos
-- [ ] Criar página inicial (overview/dashboard)
+- [x] Criar layout com sidebar navegável
+- [x] Criar header com perfil do usuário
+- [x] Implementar navegação entre módulos
+- [x] Criar página inicial (overview/dashboard)
 - [ ] Adicionar breadcrumbs
 - [ ] Implementar tema claro/escuro
 
@@ -49,8 +51,10 @@ src/app/dashboard/
 
 ---
 
-#### Dia 3-4: Módulo de Clientes
+#### ✅ Dia 3-4: Módulo de Clientes (CONCLUÍDO)
 **Objetivo:** CRUD completo de clientes
+
+**Status:** ✅ COMPLETO
 
 **Schema Prisma:**
 ```prisma
@@ -90,12 +94,12 @@ enum CustomerType {
 ```
 
 **Tarefas:**
-- [ ] Criar schema Customer
-- [ ] Criar API routes (CRUD)
-- [ ] Criar página de listagem com tabela
-- [ ] Criar formulário de cadastro/edição
-- [ ] Implementar busca e filtros
-- [ ] Adicionar paginação
+- [x] Criar schema Customer
+- [x] Criar API routes (CRUD)
+- [x] Criar página de listagem com tabela
+- [x] Criar formulário de cadastro/edição
+- [x] Implementar busca e filtros
+- [x] Adicionar paginação
 
 **Arquivos:**
 ```

@@ -9,22 +9,27 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import OrionLogo from "./OrionLogo";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", active: true },
-  { icon: ShoppingCart, label: "Vendas", active: false },
-  { icon: Wallet, label: "Financeiro", active: false },
-  { icon: Package, label: "Estoque", active: false },
-  { icon: Users, label: "CRM", active: false },
-  { icon: Settings, label: "Configurações", active: false },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: Users, label: "Clientes", href: "/dashboard/clientes" },
+  { icon: Package, label: "Produtos", href: "/dashboard/produtos" },
+  { icon: ShoppingCart, label: "Vendas", href: "/dashboard/vendas" },
+  { icon: Wallet, label: "Financeiro", href: "/dashboard/financeiro" },
+  { icon: FileText, label: "Relatórios", href: "/dashboard/relatorios" },
+  { icon: Settings, label: "Configurações", href: "/dashboard/configuracoes" },
 ];
 
 const DashboardSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
 
   return (
     <aside
@@ -51,29 +56,32 @@ const DashboardSidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
-          {menuItems.map((item) => (
-            <li key={item.label}>
-              <a
-                href="#"
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
-                  item.active
-                    ? "gradient-primary text-primary-foreground glow-effect"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground"
-                )}
-              >
-                <item.icon
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            return (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
                   className={cn(
-                    "w-5 h-5 flex-shrink-0",
-                    item.active ? "" : "group-hover:text-primary"
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+                    isActive
+                      ? "gradient-primary text-primary-foreground glow-effect"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground"
                   )}
-                />
-                {!collapsed && (
-                  <span className="text-sm font-medium">{item.label}</span>
-                )}
-              </a>
-            </li>
-          ))}
+                >
+                  <item.icon
+                    className={cn(
+                      "w-5 h-5 flex-shrink-0",
+                      isActive ? "" : "group-hover:text-primary"
+                    )}
+                  />
+                  {!collapsed && (
+                    <span className="text-sm font-medium">{item.label}</span>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
