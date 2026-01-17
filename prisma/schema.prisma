@@ -18,6 +18,10 @@ model User {
   password      String?   // Apenas para credenciais locais
   role          UserRole  @default(USER)
 
+  // Trial e Subscription
+  subscriptionStatus SubscriptionUserStatus @default(TRIAL)
+  trialEndsAt        DateTime?              // Data de expiração do trial (30 dias após registro)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -40,6 +44,13 @@ enum UserRole {
   USER
   ADMIN
   SUPER_ADMIN
+}
+
+enum SubscriptionUserStatus {
+  TRIAL       // Trial de 30 dias (acesso completo)
+  ACTIVE      // Assinatura ativa (paga)
+  EXPIRED     // Trial ou assinatura expirada
+  CANCELLED   // Assinatura cancelada
 }
 
 model Account {
