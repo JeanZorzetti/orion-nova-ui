@@ -18,6 +18,10 @@ model User {
   password      String?   // Apenas para credenciais locais
   role          UserRole  @default(USER)
 
+  // Password Reset
+  resetToken       String?
+  resetTokenExpiry DateTime?
+
   // Trial e Subscription
   subscriptionStatus SubscriptionUserStatus @default(TRIAL)
   trialEndsAt        DateTime?              // Data de expiração do trial (30 dias após registro)
