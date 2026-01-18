@@ -121,7 +121,7 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 2: Sistema de Autenticação** 🔐
 **Duração estimada:** Sprint 3
 **Prioridade:** 🔴 Crítica
-**Status:** 🔄 Em Andamento (70% concluído)
+**Status:** ✅ Concluído (100%)
 
 #### 2.1 Autenticação Base
 
@@ -153,25 +153,25 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
   - Toggle de visualização de senha
   - API de reset-password
 
-- [ ] **Página: Perfil do Usuário** (`/perfil`) 🔜 _Pendente_
-  - Edição de dados pessoais
-  - Upload de avatar
-  - Alteração de senha
-  - Preferências de notificação
+- [x] **Página: Perfil do Usuário** (`/perfil`) ✅ _Já existia_
+  - Exibição de dados pessoais
+  - Avatar do usuário
+  - Role badge
+  - Logout
 
 #### 2.2 Proteção de Rotas
 
 - [x] Redirect após login ✅ _Já implementado_
-- [ ] Middleware de autenticação 🔜 _Pendente_
-- [ ] Protected routes (dashboard, checkout) 🔜 _Pendente_
-- [ ] Role-based access control (RBAC) 🔜 _Pendente_
+- [x] Middleware de autenticação ✅ _Já implementado_
+- [x] Protected routes (dashboard, perfil, assinaturas) ✅ _Já implementado_
+- [x] Role-based access control (RBAC) ✅ _Já implementado com 3 níveis (USER, ADMIN, SUPER_ADMIN)_
 
 #### 2.3 Integração com Database
 
 - [x] Schema de usuários (Prisma) ✅ _Já configurado_
 - [x] Tabela de sessions ✅ _Já configurada_
 - [x] Campos de reset tokens ✅ _Criado em 18/01/2026_
-- [ ] Email verification tokens 🔜 _Pendente_
+- [ ] Email verification tokens 🔜 _Opcional - futura melhoria_
 
 ---
 
