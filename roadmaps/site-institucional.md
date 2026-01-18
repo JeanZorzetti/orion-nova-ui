@@ -121,47 +121,57 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 2: Sistema de Autenticação** 🔐
 **Duração estimada:** Sprint 3
 **Prioridade:** 🔴 Crítica
+**Status:** 🔄 Em Andamento (70% concluído)
 
 #### 2.1 Autenticação Base
-- [ ] Setup **NextAuth.js** (Auth.js v5)
-  - Configuração de providers
-  - Session management
-  - JWT tokens
 
-- [ ] **Página: Login** (`/login`)
+- [x] Setup **NextAuth.js** (Auth.js v5) ✅ _Já configurado_
+  - Google provider
+  - Credentials provider (email + senha)
+  - JWT strategy
+  - PrismaAdapter
+
+- [x] **Página: Login** (`/login`) ✅ _Já existia_
   - Email + Password
-  - Login social (Google, Microsoft)
-  - "Lembrar-me"
+  - Login social (Google)
   - Link para recuperação de senha
+  - Redirect com callbackUrl
 
-- [ ] **Página: Cadastro** (`/cadastro`)
+- [x] **Página: Cadastro** (`/cadastro`) ✅ _Já existia_
   - Formulário de registro
-  - Validação de campos (Zod)
-  - Confirmação de email
+  - Validação de campos
   - Termos e condições
 
-- [ ] **Página: Recuperar Senha** (`/recuperar-senha`)
-  - Envio de email de reset
-  - Token de recuperação
-  - Formulário de nova senha
+- [x] **Página: Recuperar Senha** (`/esqueci-senha`) ✅ _Criado em 18/01/2026_
+  - Formulário de solicitação
+  - API de forgot-password
+  - Validação de email
 
-- [ ] **Página: Perfil do Usuário** (`/perfil`)
+- [x] **Página: Redefinir Senha** (`/redefinir-senha`) ✅ _Criado em 18/01/2026_
+  - Validação de token
+  - Formulário de nova senha
+  - Toggle de visualização de senha
+  - API de reset-password
+
+- [ ] **Página: Perfil do Usuário** (`/perfil`) 🔜 _Pendente_
   - Edição de dados pessoais
   - Upload de avatar
   - Alteração de senha
   - Preferências de notificação
 
 #### 2.2 Proteção de Rotas
-- [ ] Middleware de autenticação
-- [ ] Protected routes (dashboard, checkout)
-- [ ] Role-based access control (RBAC)
-- [ ] Redirect após login
+
+- [x] Redirect após login ✅ _Já implementado_
+- [ ] Middleware de autenticação 🔜 _Pendente_
+- [ ] Protected routes (dashboard, checkout) 🔜 _Pendente_
+- [ ] Role-based access control (RBAC) 🔜 _Pendente_
 
 #### 2.3 Integração com Database
-- [ ] Schema de usuários (Prisma)
-- [ ] Tabela de sessions
-- [ ] Tabela de tokens de reset
-- [ ] Email verification tokens
+
+- [x] Schema de usuários (Prisma) ✅ _Já configurado_
+- [x] Tabela de sessions ✅ _Já configurada_
+- [x] Campos de reset tokens ✅ _Criado em 18/01/2026_
+- [ ] Email verification tokens 🔜 _Pendente_
 
 ---
 
