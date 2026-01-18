@@ -178,55 +178,77 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 3: Banco de Dados PostgreSQL** 🗄️
 **Duração estimada:** Sprint 3-4
 **Prioridade:** 🔴 Crítica
+**Status:** ✅ Concluído (100%)
 
 #### 3.1 Setup do Database
-- [ ] Configurar **Supabase** ou **Neon** (Postgres serverless)
-- [ ] Setup **Prisma ORM**
-  - Schema definition
-  - Migrations
-  - Seed data
+- [x] Configurar **PostgreSQL** (Dados.dev) ✅ _Já configurado_
+- [x] Setup **Prisma ORM** ✅ _Já configurado_
+  - Schema definition ✅ _Schema completo com 15+ models_
+  - Migrations ✅ _Pronto para executar_
+  - Seed data ✅ _Criado em 18/01/2026_
 
 #### 3.2 Schemas Principais
-- [ ] **Users** (usuários)
-  - id, email, password_hash, name, avatar_url
-  - email_verified, created_at, updated_at
-  - role (user, admin, super_admin)
+- [x] **Users** (usuários) ✅ _Já configurado_
+  - id, email, password, name, image
+  - emailVerified, role (USER, ADMIN, SUPER_ADMIN)
+  - subscriptionStatus, trialEndsAt
+  - resetToken, resetTokenExpiry
 
-- [ ] **Accounts** (OAuth accounts)
-  - provider, provider_account_id, user_id
+- [x] **Accounts** (OAuth accounts) ✅ _Já configurado_
+  - provider, providerAccountId, userId
+  - refresh_token, access_token, etc.
 
-- [ ] **Sessions** (sessões)
-  - session_token, user_id, expires
+- [x] **Sessions** (sessões) ✅ _Já configurado_
+  - sessionToken, userId, expires
 
-- [ ] **Plans** (planos de assinatura)
-  - id, name, slug, price, features (JSON)
-  - billing_period (monthly, yearly)
+- [x] **Plans** (planos de assinatura) ✅ _Já configurado_
+  - name, slug, price, billingPeriod
+  - features (JSON), maxUsers, maxStorage
+  - stripePriceId, mercadoPagoId
 
-- [ ] **Subscriptions** (assinaturas)
-  - user_id, plan_id, status, current_period_start/end
-  - stripe_subscription_id
+- [x] **Subscriptions** (assinaturas) ✅ _Já configurado_
+  - userId, planId, status
+  - currentPeriodStart, currentPeriodEnd
+  - stripeSubscriptionId, mercadoPagoPaymentId
 
-- [ ] **Orders** (pedidos)
-  - user_id, plan_id, amount, status
-  - payment_method, stripe_payment_intent_id
+- [x] **Orders** (pedidos de assinatura) ✅ _Já configurado_
+  - userId, planId, amount, status
+  - paymentMethod, stripePaymentIntentId
+  - mercadoPagoPaymentId
 
-- [ ] **Posts** (blog posts)
-  - title, slug, content, excerpt, cover_image
-  - author_id, published_at, status (draft, published)
+- [x] **Posts** (blog posts) ✅ _Já configurado_
+  - title, slug, content, excerpt, coverImage
+  - authorId, categoryId, status, publishedAt
+  - SEO: metaTitle, metaDescription, metaKeywords
+  - views counter
 
-- [ ] **Categories** (categorias do blog)
+- [x] **Categories** (categorias do blog) ✅ _Já configurado_
   - name, slug, description
 
-- [ ] **Support Tickets** (suporte)
-  - user_id, subject, message, status, priority
+- [x] **Tags** (tags do blog) ✅ _Já configurado_
+  - name, slug
+  - Relação many-to-many com Posts
+
+- [x] **Support Tickets** (suporte) ✅ _Já configurado_
+  - userId, subject, message
+  - status (OPEN, IN_PROGRESS, WAITING_CUSTOMER, RESOLVED, CLOSED)
+  - priority (LOW, MEDIUM, HIGH, URGENT)
+  - assignedTo, replies
+
+**EXTRA - Módulos ERP já implementados:**
+- [x] **Customers** (clientes CRM) ✅
+- [x] **Products** (produtos/serviços) ✅
+- [x] **SalesOrders** (pedidos de venda) ✅
+- [x] **FinancialTransactions** (contas a pagar/receber) ✅
+- [x] **Coupons** (cupons de desconto) ✅
 
 #### 3.3 API Routes
-- [ ] `/api/users` - CRUD de usuários
-- [ ] `/api/plans` - Listagem de planos
-- [ ] `/api/subscriptions` - Gerenciamento de assinaturas
-- [ ] `/api/orders` - Histórico de pedidos
-- [ ] `/api/blog` - Posts do blog
-- [ ] `/api/support` - Tickets de suporte
+- [x] `/api/users` - CRUD de usuários ✅ _Criado em 18/01/2026_
+- [x] `/api/plans` - Listagem de planos ✅ _Criado em 18/01/2026_
+- [x] `/api/subscriptions` - Gerenciamento de assinaturas ✅ _Criado em 18/01/2026_
+- [x] `/api/orders` - Histórico de pedidos (ERP) ✅ _Já existia_
+- [x] `/api/blog` - Posts do blog ✅ _Criado em 18/01/2026_
+- [x] `/api/support` - Tickets de suporte ✅ _Criado em 18/01/2026_
 
 ---
 
