@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -14,36 +14,53 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Loader2, ArrowLeft, Star } from "lucide-react";
-import { PLANS, PlanId } from "@/lib/mercadopago";
+
+interface Plan {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  features: any;
+  popular?: boolean;
+}
 
 export default function PrecosPage() {
   const router = useRouter();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSubscribe = async (planId: PlanId) => {
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await fetch("/api/plans");
+        const data = await response.json();
+
+        if (response.ok) {
+          // Marcar o plano Professional como popular
+          const plansWithPopular = data.plans.map((p: Plan) => ({
+            ...p,
+            popular: p.slug === "professional",
+          }));
+          setPlans(plansWithPopular);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar planos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
+
+  const handleSubscribe = async (planId: string) => {
     setLoadingPlan(planId);
 
     try {
-      const response = await fetch("/api/mercadopago/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ planId }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || "Erro ao iniciar checkout");
-        setLoadingPlan(null);
-        return;
-      }
-
-      // Redirecionar para o checkout do Mercado Pago
-      // Em produção, use initPoint. Em desenvolvimento/sandbox, use sandboxInitPoint
-      const checkoutUrl = data.sandboxInitPoint || data.initPoint;
-      window.location.href = checkoutUrl;
+      // Redirecionar para a página de checkout
+      router.push(`/checkout?planId=${planId}`);
     } catch (error) {
       console.error("Erro:", error);
       alert("Erro ao processar. Tente novamente.");
@@ -84,72 +101,118 @@ export default function PrecosPage() {
 
         {/* Pricing Cards */}
         <div className="grid gap-8 md:grid-cols-3">
-          {(Object.entries(PLANS) as [PlanId, (typeof PLANS)[PlanId]][]).map(
-            ([id, plan]) => (
-              <Card
-                key={id}
-                className={`relative flex flex-col ${
-                  "popular" in plan && plan.popular
-                    ? "border-primary shadow-lg shadow-primary/20 scale-105"
-                    : "border-border/50"
-                }`}
-              >
-                {"popular" in plan && plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground">
-                      <Star className="w-3 h-3 mr-1" />
-                      Mais Popular
-                    </Badge>
-                  </div>
-                )}
+          {isLoading ? (
+            <div className="col-span-3 flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            plans.map((plan) => {
+              const features = plan.features;
+              const featuresList = Array.isArray(features)
+                ? features
+                : features?.modules || [];
 
-                <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                </CardHeader>
+              return (
+                <Card
+                  key={plan.id}
+                  className={`relative flex flex-col ${
+                    plan.popular
+                      ? "border-primary shadow-lg shadow-primary/20 scale-105"
+                      : "border-border/50"
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-primary text-primary-foreground">
+                        <Star className="w-3 h-3 mr-1" />
+                        Mais Popular
+                      </Badge>
+                    </div>
+                  )}
 
-                <CardContent className="flex-1">
-                  {/* Price */}
-                  <div className="text-center mb-6">
-                    <span className="text-4xl font-bold">
-                      {formatPrice(plan.price)}
-                    </span>
-                    <span className="text-muted-foreground">/mês</span>
-                  </div>
+                  <CardHeader className="text-center pb-2">
+                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <CardDescription>{plan.description}</CardDescription>
+                  </CardHeader>
 
-                  {/* Features */}
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
+                  <CardContent className="flex-1">
+                    {/* Price */}
+                    <div className="text-center mb-6">
+                      <span className="text-4xl font-bold">
+                        {formatPrice(plan.price)}
+                      </span>
+                      <span className="text-muted-foreground">/mês</span>
+                    </div>
 
-                <CardFooter>
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    variant={
-                      "popular" in plan && plan.popular ? "default" : "outline"
-                    }
-                    onClick={() => handleSubscribe(id)}
-                    disabled={loadingPlan !== null}
-                  >
-                    {loadingPlan === id ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processando...
-                      </>
-                    ) : (
-                      "Assinar agora"
-                    )}
-                  </Button>
-                </CardFooter>
-              </Card>
-            )
+                    {/* Features */}
+                    <ul className="space-y-3">
+                      {features.users && (
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm">
+                            {features.users === -1
+                              ? "Usuários ilimitados"
+                              : `${features.users} usuário${
+                                  features.users > 1 ? "s" : ""
+                                }`}
+                          </span>
+                        </li>
+                      )}
+                      {features.storage && (
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm">
+                            {features.storage} GB de armazenamento
+                          </span>
+                        </li>
+                      )}
+                      {features.modules &&
+                        features.modules.map((module: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                            <span className="text-sm">{module}</span>
+                          </li>
+                        ))}
+                      {features.support && (
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm">Suporte: {features.support}</span>
+                        </li>
+                      )}
+                      {features.integrations && (
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm">
+                            {features.integrations === -1
+                              ? "Integrações ilimitadas"
+                              : `${features.integrations} integrações`}
+                          </span>
+                        </li>
+                      )}
+                    </ul>
+                  </CardContent>
+
+                  <CardFooter>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      variant={plan.popular ? "default" : "outline"}
+                      onClick={() => handleSubscribe(plan.id)}
+                      disabled={loadingPlan !== null}
+                    >
+                      {loadingPlan === plan.id ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processando...
+                        </>
+                      ) : (
+                        "Assinar agora"
+                      )}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })
           )}
         </div>
 

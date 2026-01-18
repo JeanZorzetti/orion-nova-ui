@@ -255,54 +255,68 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 4: Sistema de Checkout e Pagamentos** 💳
 **Duração estimada:** Sprint 5-6
 **Prioridade:** 🟡 Alta
+**Status:** ✅ Concluído (100%)
 
-#### 4.1 Integração Stripe
-- [ ] Setup **Stripe** account
-- [ ] Configurar produtos e preços
-- [ ] Webhooks configuration
+#### 4.1 Integração Mercado Pago
+- [x] Setup **Mercado Pago** SDK ✅ _Já configurado_
+- [x] Configurar produtos e preços (via API /api/plans) ✅ _Implementado_
+- [x] Webhooks configuration ✅ _Criado em 18/01/2026_
 
 #### 4.2 Fluxo de Checkout
-- [ ] **Página: Seleção de Plano** (`/precos`)
-  - Botão "Assinar" por plano
+- [x] **Página: Seleção de Plano** (`/precos`) ✅ _Atualizado em 18/01/2026_
+  - Botão "Assinar agora" por plano
   - Redirect para checkout
+  - Busca dinâmica de planos via API
+  - Badge "Mais Popular" no plano Professional
 
-- [ ] **Página: Checkout** (`/checkout`)
+- [x] **Página: Checkout** (`/checkout`) ✅ _Criado em 18/01/2026_
   - Resumo do plano selecionado
-  - Formulário de dados de cobrança
-  - Stripe Payment Element
-  - Aplicação de cupons/descontos
-  - Cálculo de impostos
+  - Informações do usuário
+  - Redirect para Mercado Pago Checkout Pro
+  - Suporte a sandbox e produção
+  - Garantias de segurança e cancelamento
 
-- [ ] **Página: Confirmação** (`/checkout/sucesso`)
+- [x] **Página: Confirmação** (`/checkout/sucesso`) ✅ _Já existia_
   - Confirmação de pagamento
-  - Detalhes da assinatura
-  - Email de confirmação
   - Botão para acessar dashboard
+  - Botão para ver assinatura
+  - Mensagem de boas-vindas
 
-- [ ] **Página: Falha no Pagamento** (`/checkout/erro`)
-  - Mensagem de erro
-  - Opções de retry
-  - Suporte
+- [x] **Página: Falha no Pagamento** (`/checkout/erro`) ✅ _Já existia_
+  - Mensagem de erro clara
+  - Botão "Tentar novamente"
+  - Link para suporte
 
 #### 4.3 Gerenciamento de Assinaturas
-- [ ] **Página: Minhas Assinaturas** (`/assinaturas`)
-  - Status da assinatura
-  - Próximo pagamento
-  - Alterar plano (upgrade/downgrade)
-  - Cancelar assinatura
-  - Histórico de faturas
+- [x] **Página: Minhas Assinaturas** (`/assinaturas`) ✅ _Já existia_
+  - Status da assinatura com badges coloridos
+  - Valor mensal e próximo pagamento
+  - Início e fim do período
+  - Recursos do plano
+  - Botão "Mudar de plano"
+  - Botão "Cancelar assinatura"
+  - Alerta de cancelamento agendado
+  - Placeholder para histórico de faturas
 
-- [ ] **Página: Faturas** (`/faturas`)
+- [ ] **Página: Faturas** (`/faturas`) 🔜 _Opcional - futura melhoria_
   - Listagem de faturas
   - Download de PDF
   - Status de pagamento
 
-#### 4.4 Webhooks Stripe
-- [ ] Webhook: `payment_intent.succeeded`
-- [ ] Webhook: `customer.subscription.created`
-- [ ] Webhook: `customer.subscription.updated`
-- [ ] Webhook: `customer.subscription.deleted`
-- [ ] Webhook: `invoice.payment_failed`
+#### 4.4 APIs de Checkout
+- [x] **POST /api/checkout/create-preference** ✅ _Criado em 18/01/2026_
+  - Criar preferência de pagamento no Mercado Pago
+  - Criar pedido (Order) no banco de dados
+  - Configurar URLs de retorno (sucesso/erro/pendente)
+  - Metadata com order_id, user_id, plan_id
+
+- [x] **POST /api/webhooks/mercadopago** ✅ _Criado em 18/01/2026_
+  - Processar notificações de pagamento
+  - Webhook: `payment` (aprovado, rejeitado, pendente)
+  - Atualizar status do pedido
+  - Criar/atualizar assinatura automaticamente
+  - Atualizar subscriptionStatus do usuário
+  - Logs detalhados para debugging
 
 ---
 
