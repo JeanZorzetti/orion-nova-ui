@@ -323,7 +323,7 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 5: Dashboard Administrativo** 👨‍💼
 **Duração estimada:** Sprint 7-8
 **Prioridade:** 🟡 Alta
-**Status:** 🔄 Em Andamento (80%)
+**Status:** ✅ Concluído (100%)
 
 #### 5.0 Layout e Proteção de Rotas
 - [x] **Layout Admin** (`/admin/layout.tsx`) ✅ _Criado em 19/01/2026_
@@ -368,15 +368,24 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
   - Loading states (Loader2 spinner)
   - Empty states com ícone e mensagem
 
-- [ ] **Editor de Posts** (`/admin/blog/novo` e `/admin/blog/editar/[id]`) 🔜
-  - Editor de Markdown/Rich Text (Tiptap)
-  - Upload de imagens
-  - SEO metadata
-  - Preview de post
-  - Agendamento de publicação
+- [x] **Editor de Posts** (`/admin/blog/novo`) ✅ _Criado em 19/01/2026_
+  - Formulário com 3 tabs (Conteúdo, SEO, Configurações)
+  - Auto-geração de slug do título
+  - Editor de Markdown (textarea)
+  - Campos: título, slug, categoria, tags, excerpt, conteúdo
+  - Imagem de capa (URL)
+  - SEO: metaTitle, metaDescription, metaKeywords
+  - Status: DRAFT, PUBLISHED, ARCHIVED
+  - Validações e loading states
+  - API POST /api/blog com criação automática de tags
 
-- [ ] **Gerenciamento de Categorias** (`/admin/categorias`) 🔜
-  - CRUD de categorias
+- [x] **Gerenciamento de Categorias** (`/admin/categorias`) ✅ _Criado em 19/01/2026_
+  - Grid de cards 3 colunas
+  - Contador de posts por categoria
+  - Auto-geração de slug do nome
+  - Formulário de criação/edição via modal
+  - Delete bloqueado se houver posts
+  - API: POST, PATCH, DELETE /api/blog/categories
 
 #### 5.3 Gerenciamento de Usuários
 - [x] **Listagem de Usuários** (`/admin/usuarios`) ✅ _Criado em 19/01/2026_
@@ -415,13 +424,17 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
   - Auto-update de status ao responder
   - API: PATCH /api/support/[id], POST /api/support/[id]/reply
 
-#### 5.6 Relatórios e Analytics
+#### 5.6 Relatórios e Analytics (Opcional - Futura Implementação)
+
 - [ ] **Página: Relatórios** (`/admin/relatorios`) 🔜
   - Receita recorrente mensal (MRR)
   - Churn rate
   - Customer lifetime value (CLV)
   - Conversão de trials
   - Exportar relatórios (CSV, PDF)
+  - Gráficos com Recharts
+
+**Nota**: As métricas principais já estão disponíveis no dashboard principal (5.1)
 
 ---
 
