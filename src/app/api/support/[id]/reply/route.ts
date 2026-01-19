@@ -53,9 +53,10 @@ export async function POST(
     }
 
     // Criar resposta
-    await prisma.supportTicketReply.create({
+    await prisma.ticketReply.create({
       data: {
         ticketId: id,
+        userId: session.user.id,
         message: message.trim(),
         isStaff: isAdmin, // Se for admin, marca como resposta da equipe
       },
