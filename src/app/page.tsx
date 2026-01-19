@@ -9,7 +9,8 @@ import AIPreview from "@/components/landing/AIPreview";
 import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
 import { pageMetadata } from "@/lib/metadata";
-import { JsonLd, softwareSchema } from "@/lib/schema";
+import { softwareSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = pageMetadata.home;
 

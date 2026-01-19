@@ -18,7 +18,8 @@ import {
   Link2,
 } from "lucide-react";
 import { generateBlogPostMetadata } from "@/lib/metadata";
-import { JsonLd, generateArticleSchema, generateBreadcrumbSchema } from "@/lib/schema";
+import { generateArticleSchema, generateBreadcrumbSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 // Placeholder posts data - will be replaced with database
 const postsData: Record<string, {

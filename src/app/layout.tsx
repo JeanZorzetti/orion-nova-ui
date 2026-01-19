@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { defaultMetadata } from "@/lib/metadata";
-import { JsonLd, organizationSchema, websiteSchema } from "@/lib/schema";
+import { organizationSchema, websiteSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import GoogleTagManager from "@/components/analytics/GoogleTagManager";
 
