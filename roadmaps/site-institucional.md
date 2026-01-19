@@ -485,41 +485,55 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 
 ---
 
-### **FASE 7: Funcionalidades Avançadas** ⚡
+### **FASE 7: Funcionalidades Avançadas** ⚡ (Parcial)
 **Duração estimada:** Sprint 10-11
 **Prioridade:** 🟢 Média/Baixa
+**Status:** 🟡 60% Concluído
 
-#### 7.1 Busca
-- [ ] Busca global no site
-- [ ] Algolia ou Typesense integration
-- [ ] Autocomplete
-- [ ] Filtros avançados
+#### 7.1 Busca ✅
+- [x] Busca global no site - API `/api/search` + componente `GlobalSearch`
+- [ ] Algolia ou Typesense integration - Aguardando decisão
+- [x] Autocomplete - Implementado com debounce (300ms)
+- [x] Filtros avançados - Por tipo (posts, categories, pages)
 
-#### 7.2 Notificações
-- [ ] Sistema de notificações in-app
-- [ ] Email notifications (Resend ou SendGrid)
-  - Confirmação de cadastro
-  - Recuperação de senha
-  - Confirmação de pagamento
-  - Lembretes de renovação
-  - Newsletter
+#### 7.2 Notificações ✅
+- [ ] Sistema de notificações in-app - Aguardando implementação
+- [x] Email notifications (Resend) - Biblioteca completa em `@/lib/email.ts`
+  - [x] Confirmação de cadastro - `sendWelcomeEmail()`
+  - [x] Recuperação de senha - `sendPasswordResetEmail()`
+  - [x] Confirmação de pagamento - `sendPaymentConfirmationEmail()`
+  - [x] Lembretes de renovação - `sendRenewalReminderEmail()`
+  - [x] Newsletter - `sendNewsletterEmail()`
 
-#### 7.3 Internacionalização (i18n)
+#### 7.3 Internacionalização (i18n) ⏸️
 - [ ] Setup next-intl ou next-i18next
 - [ ] Português (pt-BR) - padrão
 - [ ] Inglês (en-US)
 - [ ] Espanhol (es-ES) - _opcional_
 
-#### 7.4 Chat/Intercom
+#### 7.4 Chat/Intercom ⏸️
 - [ ] Widget de chat ao vivo
 - [ ] Chatbot com IA (opcional)
 - [ ] Integration com CRM
 
-#### 7.5 Sistema de Cupons/Descontos
-- [ ] CRUD de cupons no admin
-- [ ] Validação de cupons no checkout
-- [ ] Tipos de desconto (%, valor fixo, trial gratuito)
-- [ ] Limites de uso
+#### 7.5 Sistema de Cupons/Descontos ✅
+- [x] CRUD de cupons no admin - Página `/admin/cupons` completa
+- [x] Validação de cupons no checkout - API `/api/coupons/validate`
+- [x] Tipos de desconto (%, valor fixo, trial gratuito) - Enum `DiscountType`
+- [x] Limites de uso - `maxUses` e `usedCount` implementados
+
+**Arquivos Criados:**
+- `src/lib/email.ts` - Sistema de email com 5 templates (Resend)
+- `src/app/api/search/route.ts` - API de busca global
+- `src/components/search/GlobalSearch.tsx` - Componente de busca
+- `src/app/api/coupons/route.ts` - CRUD de cupons (GET, POST)
+- `src/app/api/coupons/[id]/route.ts` - CRUD de cupons (PATCH, DELETE)
+- `src/app/api/coupons/validate/route.ts` - Validação e aplicação de cupons
+- `src/app/admin/cupons/page.tsx` - Página de gerenciamento de cupons
+
+**Variáveis de Ambiente Adicionadas:**
+- `RESEND_API_KEY` - Chave da API Resend para emails
+- `EMAIL_FROM` - Email remetente padrão
 
 ---
 
