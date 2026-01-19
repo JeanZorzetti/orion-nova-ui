@@ -20,18 +20,9 @@ import {
   Clock,
   DollarSign,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Soluções por Segmento - Orion ERP | ERP para Varejo, Serviços e Indústria",
-  description:
-    "Soluções ERP especializadas para varejo, prestadores de serviço, indústria, alimentação, saúde e mais. Descubra como o Orion ERP se adapta ao seu negócio.",
-  openGraph: {
-    title: "Soluções por Segmento - Orion ERP",
-    description:
-      "Soluções ERP especializadas para varejo, serviços, indústria e mais.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.solucoes;
 
 const segments = [
   {

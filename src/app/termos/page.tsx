@@ -4,17 +4,9 @@ import Footer from "@/components/landing/Footer";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { FileText, Calendar } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Termos de Uso - Orion ERP | Condi\u00e7\u00f5es de Servi\u00e7o",
-  description:
-    "Termos de Uso do Orion ERP. Conhe\u00e7a as condi\u00e7\u00f5es para utiliza\u00e7\u00e3o do nosso sistema de gest\u00e3o empresarial.",
-  openGraph: {
-    title: "Termos de Uso - Orion ERP",
-    description: "Conhe\u00e7a os termos e condi\u00e7\u00f5es de uso do Orion ERP.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.termos;
 
 export default function TermosPage() {
   return (

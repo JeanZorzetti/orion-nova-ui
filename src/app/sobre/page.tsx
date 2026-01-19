@@ -20,17 +20,9 @@ import {
   Calendar,
   Building2,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Sobre Nós - Orion ERP | Conheça Nossa História e Missão",
-  description:
-    "Conheça a ROI Labs, a empresa por trás do Orion ERP. Nossa missão é democratizar a tecnologia de gestão empresarial para PMEs brasileiras.",
-  openGraph: {
-    title: "Sobre Nós - Orion ERP",
-    description: "Conheça a história e missão da ROI Labs.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.sobre;
 
 const values = [
   {

@@ -21,18 +21,9 @@ import {
   RefreshCw,
   Smartphone,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Produto - Orion ERP | Sistema de Gestão Empresarial Completo",
-  description:
-    "Conheça o Orion ERP: sistema completo de gestão empresarial com IA integrada. Gerencie clientes, produtos, vendas e financeiro em uma única plataforma.",
-  openGraph: {
-    title: "Produto - Orion ERP | Sistema de Gestão Empresarial Completo",
-    description:
-      "Conheça o Orion ERP: sistema completo de gestão empresarial com IA integrada.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.produto;
 
 const modules = [
   {

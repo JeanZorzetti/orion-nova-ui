@@ -34,18 +34,9 @@ import {
   Lock,
   RefreshCw,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Funcionalidades - Orion ERP | Recursos Completos para sua Empresa",
-  description:
-    "Conheça todas as funcionalidades do Orion ERP: gestão de clientes, estoque, vendas, financeiro, relatórios, IA integrada e muito mais.",
-  openGraph: {
-    title: "Funcionalidades - Orion ERP",
-    description:
-      "Conheça todas as funcionalidades do Orion ERP para sua empresa.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.features;
 
 const mainModules = [
   {

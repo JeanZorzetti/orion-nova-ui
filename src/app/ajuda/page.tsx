@@ -26,17 +26,9 @@ import {
   Clock,
   ExternalLink,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Central de Ajuda - Orion ERP | Suporte e Tutoriais",
-  description:
-    "Encontre respostas para suas dúvidas, tutoriais em vídeo e artigos da base de conhecimento do Orion ERP.",
-  openGraph: {
-    title: "Central de Ajuda - Orion ERP",
-    description: "Suporte, tutoriais e documentação do Orion ERP.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.ajuda;
 
 const categories = [
   {

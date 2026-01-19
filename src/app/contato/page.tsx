@@ -30,6 +30,7 @@ import {
   FileQuestion,
   Users,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
 const contactReasons = [
   { value: "comercial", label: "Falar com Comercial" },

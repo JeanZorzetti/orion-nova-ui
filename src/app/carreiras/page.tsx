@@ -22,17 +22,9 @@ import {
   ExternalLink,
   Sparkles,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Carreiras - Orion ERP | Trabalhe Conosco",
-  description:
-    "Faça parte do time que está transformando a gestão empresarial no Brasil. Conheça nossas vagas e cultura.",
-  openGraph: {
-    title: "Carreiras - Orion ERP",
-    description: "Trabalhe conosco e ajude a transformar a gestão empresarial.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.carreiras;
 
 const openPositions = [
   {

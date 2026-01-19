@@ -4,17 +4,9 @@ import Footer from "@/components/landing/Footer";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Shield, Calendar } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Pol\u00edtica de Privacidade - Orion ERP | LGPD Compliant",
-  description:
-    "Pol\u00edtica de Privacidade do Orion ERP. Saiba como coletamos, usamos e protegemos seus dados pessoais em conformidade com a LGPD.",
-  openGraph: {
-    title: "Pol\u00edtica de Privacidade - Orion ERP",
-    description: "Conhe\u00e7a nossa pol\u00edtica de privacidade e prote\u00e7\u00e3o de dados.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.privacidade;
 
 export default function PrivacidadePage() {
   return (

@@ -18,17 +18,9 @@ import {
   Shield,
   Zap,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Blog - Orion ERP | Dicas de Gestão e Novidades",
-  description:
-    "Artigos, tutoriais e novidades sobre gestão empresarial, ERP, tecnologia e dicas para fazer seu negócio crescer.",
-  openGraph: {
-    title: "Blog - Orion ERP",
-    description: "Artigos e dicas sobre gestão empresarial e tecnologia.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = pageMetadata.blog;
 
 // Placeholder blog posts - will be replaced with database content
 const featuredPost = {

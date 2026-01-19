@@ -17,6 +17,8 @@ import {
   Facebook,
   Link2,
 } from "lucide-react";
+import { generateBlogPostMetadata } from "@/lib/metadata";
+import { JsonLd, generateArticleSchema, generateBreadcrumbSchema } from "@/lib/schema";
 
 // Placeholder posts data - will be replaced with database
 const postsData: Record<string, {
@@ -169,24 +171,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = postsData[slug] || defaultPost;
 
-  return {
-    title: `${post.title} - Blog Orion ERP`,
-    description: post.excerpt,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      type: "article",
-    },
-  };
+  return generateBlogPostMetadata({
+    title: post.title,
+    excerpt: post.excerpt,
+    slug,
+    author: { name: post.author },
+    publishedAt: new Date(post.date),
+  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = postsData[slug] || defaultPost;
 
+  const articleSchema = generateArticleSchema({
+    title: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    author: { name: post.author },
+    slug,
+  });
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br" },
+    { name: "Blog", url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br"}/blog` },
+    { name: post.title, url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br"}/blog/${slug}` },
+  ]);
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
+      <JsonLd data={articleSchema} />
+      <JsonLd data={breadcrumbSchema} />
+      <div className="min-h-screen bg-background">
+        <Header />
 
       <main>
         {/* Breadcrumb */}
@@ -334,7 +351,8 @@ export default async function BlogPostPage({ params }: Props) {
         </section>
       </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 }

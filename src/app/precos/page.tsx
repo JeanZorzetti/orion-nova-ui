@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Loader2, ArrowLeft, Star } from "lucide-react";
+import { pageMetadata } from "@/lib/metadata";
 
 interface Plan {
   id: string;
