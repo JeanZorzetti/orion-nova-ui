@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 // GET /api/plans - Listar todos os planos ativos
 export async function GET(request: NextRequest) {
@@ -9,6 +10,13 @@ export async function GET(request: NextRequest) {
 
     const plans = await prisma.plan.findMany({
       where: includeInactive ? {} : { isActive: true },
+      include: {
+        _count: {
+          select: {
+            subscriptions: true,
+          },
+        },
+      },
       orderBy: {
         price: "asc",
       },
@@ -30,6 +38,16 @@ export async function GET(request: NextRequest) {
 // POST /api/plans - Criar novo plano (Admin only)
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    // Apenas ADMIN e SUPER_ADMIN podem criar planos
+    if (
+      !session?.user ||
+      (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")
+    ) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    }
+
     const body = await request.json();
 
     const {
@@ -41,12 +59,13 @@ export async function POST(request: NextRequest) {
       features,
       maxUsers,
       maxStorage,
+      isActive,
       stripePriceId,
       mercadoPagoId,
     } = body;
 
     // Validações básicas
-    if (!name || !slug || !price) {
+    if (!name || !slug || price === undefined) {
       return NextResponse.json(
         { error: "Nome, slug e preço são obrigatórios" },
         { status: 400 }
@@ -75,9 +94,9 @@ export async function POST(request: NextRequest) {
         features: features || {},
         maxUsers,
         maxStorage,
+        isActive: isActive !== undefined ? isActive : true,
         stripePriceId,
         mercadoPagoId,
-        isActive: true,
       },
     });
 
