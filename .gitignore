@@ -30,6 +30,10 @@ lerna-debug.log*
 # Testing
 coverage
 .nyc_output
+lighthouse-reports
+.lighthouseci
+playwright-report
+test-results
 
 # Editor
 .vscode/*
