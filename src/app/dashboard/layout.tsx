@@ -97,19 +97,18 @@ export default async function DashboardLayout({
                   </DropdownMenuItem>
                 </ReopenOnboarding>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await signOut({ redirectTo: "/" });
-                    }}
-                    className="w-full"
-                  >
-                    <button type="submit" className="w-full text-left text-sm">
+                <form
+                  action={async () => {
+                    "use server";
+                    await signOut({ redirectTo: "/" });
+                  }}
+                >
+                  <DropdownMenuItem asChild>
+                    <button type="submit" className="w-full cursor-pointer">
                       Sair
                     </button>
-                  </form>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

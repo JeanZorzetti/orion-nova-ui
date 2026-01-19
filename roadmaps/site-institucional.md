@@ -323,47 +323,84 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 5: Dashboard Administrativo** 👨‍💼
 **Duração estimada:** Sprint 7-8
 **Prioridade:** 🟡 Alta
+**Status:** 🔄 Em Andamento (40%)
+
+#### 5.0 Layout e Proteção de Rotas
+- [x] **Layout Admin** (`/admin/layout.tsx`) ✅ _Criado em 19/01/2026_
+  - Sidebar de navegação com 5 seções
+  - Proteção por role (apenas ADMIN e SUPER_ADMIN)
+  - Ícones lucide-react
+  - Navegação: Dashboard, Blog, Usuários, Planos, Suporte
 
 #### 5.1 Painel Admin
-- [ ] **Página: Admin Dashboard** (`/admin`)
-  - Métricas gerais (usuários, receita, conversão)
-  - Gráficos de performance
-  - Atividade recente
+- [x] **Página: Admin Dashboard** (`/admin`) ✅ _Criado em 19/01/2026_
+  - 6 cards de métricas principais:
+    - Total de usuários cadastrados
+    - Assinaturas ativas
+    - Receita total (R$)
+    - Tickets abertos (suporte)
+    - Posts publicados
+    - Planos ativos
+  - 4 KPIs calculados:
+    - Taxa de conversão (%)
+    - Ticket médio (MRR)
+    - Pedidos totais
+    - Receita por usuário
+  - Seção "Usuários Recentes" (últimos 5)
+  - Seção "Tickets Recentes" (últimos 5)
+  - Queries otimizadas com Promise.all
 
 #### 5.2 Gerenciamento de Conteúdo
-- [ ] **CRUD de Blog Posts** (`/admin/blog`)
+- [x] **CRUD de Blog Posts** (`/admin/blog`) ✅ _Criado em 19/01/2026_
+  - Listagem de posts com paginação (limite: 50)
+  - Busca por título (client-side filtering)
+  - Filtro por status (PUBLISHED, DRAFT, ARCHIVED)
+  - Exibição de informações:
+    - Título, autor, data de publicação
+    - Status com badges coloridos
+    - Categoria, número de tags
+    - Contador de visualizações
+  - Ações por post:
+    - Visualizar (abre em nova aba)
+    - Editar (placeholder - link para /admin/blog/editar/[id])
+    - Deletar (com confirmação via AlertDialog)
+  - Delete funcional via API DELETE /api/blog?id=xxx
+  - Loading states (Loader2 spinner)
+  - Empty states com ícone e mensagem
+
+- [ ] **Editor de Posts** (`/admin/blog/novo` e `/admin/blog/editar/[id]`) 🔜
   - Editor de Markdown/Rich Text (Tiptap)
   - Upload de imagens
   - SEO metadata
   - Preview de post
   - Agendamento de publicação
 
-- [ ] **Gerenciamento de Categorias** (`/admin/categorias`)
+- [ ] **Gerenciamento de Categorias** (`/admin/categorias`) 🔜
   - CRUD de categorias
 
 #### 5.3 Gerenciamento de Usuários
-- [ ] **Listagem de Usuários** (`/admin/usuarios`)
+- [ ] **Listagem de Usuários** (`/admin/usuarios`) 🔜 _Placeholder criado em 19/01/2026_
   - Busca e filtros
   - Edição de perfis
   - Alteração de roles
   - Suspensão/ativação de contas
 
 #### 5.4 Gerenciamento de Planos
-- [ ] **CRUD de Planos** (`/admin/planos`)
+- [ ] **CRUD de Planos** (`/admin/planos`) 🔜 _Placeholder criado em 19/01/2026_
   - Criar/editar planos
   - Definir features
   - Ajustar preços
   - Ativar/desativar planos
 
 #### 5.5 Suporte e Tickets
-- [ ] **Gestão de Tickets** (`/admin/suporte`)
+- [ ] **Gestão de Tickets** (`/admin/suporte`) 🔜 _Placeholder criado em 19/01/2026_
   - Lista de tickets
   - Responder tickets
   - Alterar status e prioridade
   - Atribuir a agentes
 
 #### 5.6 Relatórios e Analytics
-- [ ] **Página: Relatórios** (`/admin/relatorios`)
+- [ ] **Página: Relatórios** (`/admin/relatorios`) 🔜
   - Receita recorrente mensal (MRR)
   - Churn rate
   - Customer lifetime value (CLV)
