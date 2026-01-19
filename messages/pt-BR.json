@@ -1,0 +1,168 @@
+{
+  "common": {
+    "home": "Início",
+    "about": "Sobre",
+    "contact": "Contato",
+    "login": "Entrar",
+    "logout": "Sair",
+    "signup": "Cadastrar",
+    "dashboard": "Dashboard",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Deletar",
+    "edit": "Editar",
+    "create": "Criar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "confirm": "Confirmar",
+    "close": "Fechar"
+  },
+  "navigation": {
+    "product": "Produto",
+    "solutions": "Soluções",
+    "features": "Funcionalidades",
+    "pricing": "Preços",
+    "blog": "Blog",
+    "help": "Ajuda",
+    "careers": "Carreiras"
+  },
+  "hero": {
+    "title": "Sistema Completo de Gestão Empresarial",
+    "subtitle": "Transforme sua empresa com a plataforma completa de gestão empresarial. ERP, CRM, Gestão Financeira e muito mais em uma única solução.",
+    "cta": "Começar Gratuitamente",
+    "trial": "14 dias grátis • Sem cartão de crédito"
+  },
+  "auth": {
+    "email": "E-mail",
+    "password": "Senha",
+    "name": "Nome",
+    "forgotPassword": "Esqueci minha senha",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "createAccount": "Criar conta",
+    "loginTitle": "Entre na sua conta",
+    "signupTitle": "Crie sua conta",
+    "loginSuccess": "Login realizado com sucesso!",
+    "signupSuccess": "Conta criada com sucesso!",
+    "invalidCredentials": "E-mail ou senha inválidos",
+    "emailRequired": "E-mail é obrigatório",
+    "passwordRequired": "Senha é obrigatória",
+    "nameRequired": "Nome é obrigatório"
+  },
+  "dashboard": {
+    "welcome": "Bem-vindo de volta",
+    "overview": "Visão Geral",
+    "revenue": "Receita",
+    "customers": "Clientes",
+    "orders": "Pedidos",
+    "products": "Produtos",
+    "analytics": "Análises",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "subscription": "Assinatura",
+    "support": "Suporte"
+  },
+  "pricing": {
+    "title": "Planos e Preços",
+    "subtitle": "Escolha o plano ideal para sua empresa",
+    "monthly": "Mensal",
+    "yearly": "Anual",
+    "save": "Economize",
+    "perMonth": "/mês",
+    "perYear": "/ano",
+    "startTrial": "Começar Teste Grátis",
+    "subscribe": "Assinar Agora",
+    "currentPlan": "Plano Atual",
+    "features": "Funcionalidades incluídas",
+    "allFeatures": "Todas as funcionalidades",
+    "freeTrial": "14 dias grátis"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Artigos, dicas e novidades",
+    "readMore": "Ler mais",
+    "readingTime": "min de leitura",
+    "categories": "Categorias",
+    "tags": "Tags",
+    "author": "Autor",
+    "publishedAt": "Publicado em",
+    "relatedPosts": "Artigos Relacionados",
+    "share": "Compartilhar",
+    "noResults": "Nenhum artigo encontrado"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "markAllAsRead": "Marcar todas como lidas",
+    "markAsRead": "Marcar como lida",
+    "delete": "Deletar",
+    "empty": "Nenhuma notificação",
+    "timeAgo": {
+      "now": "Agora",
+      "minutesAgo": "{count}min atrás",
+      "hoursAgo": "{count}h atrás",
+      "daysAgo": "{count}d atrás"
+    }
+  },
+  "search": {
+    "placeholder": "Buscar no site...",
+    "noResults": "Nenhum resultado encontrado para \"{query}\"",
+    "typeToSearch": "Digite pelo menos 2 caracteres para buscar",
+    "results": "{count} resultado | {count} resultados",
+    "posts": "Artigos do Blog",
+    "categories": "Categorias",
+    "pages": "Páginas"
+  },
+  "coupons": {
+    "title": "Cupons de Desconto",
+    "subtitle": "Criar e gerenciar cupons promocionais",
+    "newCoupon": "Novo Cupom",
+    "editCoupon": "Editar Cupom",
+    "code": "Código",
+    "description": "Descrição",
+    "discountType": "Tipo de Desconto",
+    "discountValue": "Valor do Desconto",
+    "maxUses": "Limite de Usos",
+    "validFrom": "Válido A Partir De",
+    "validUntil": "Válido Até",
+    "isActive": "Cupom ativo",
+    "types": {
+      "percentage": "Percentual (%)",
+      "fixedAmount": "Valor Fixo (R$)",
+      "freeTrial": "Trial Gratuito (dias)"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "expired": "Expirado"
+    },
+    "usageCount": "Usos: {used} / {max}",
+    "unlimitedUses": "Usos ilimitados",
+    "deleteConfirm": "Tem certeza que deseja deletar este cupom?",
+    "applySuccess": "Cupom aplicado com sucesso!",
+    "invalidCoupon": "Cupom inválido ou expirado"
+  },
+  "footer": {
+    "product": "Produto",
+    "company": "Empresa",
+    "resources": "Recursos",
+    "legal": "Legal",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso",
+    "copyright": "© {year} Orion Nova. Todos os direitos reservados.",
+    "madeWith": "Feito com",
+    "in": "em"
+  },
+  "errors": {
+    "generic": "Algo deu errado. Tente novamente.",
+    "notFound": "Página não encontrada",
+    "unauthorized": "Não autorizado",
+    "serverError": "Erro no servidor",
+    "networkError": "Erro de conexão. Verifique sua internet.",
+    "validationError": "Erro de validação. Verifique os campos."
+  }
+}

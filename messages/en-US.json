@@ -1,0 +1,168 @@
+{
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Log In",
+    "logout": "Log Out",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "next": "Next",
+    "previous": "Previous",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
+  "navigation": {
+    "product": "Product",
+    "solutions": "Solutions",
+    "features": "Features",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "help": "Help",
+    "careers": "Careers"
+  },
+  "hero": {
+    "title": "Complete Business Management System",
+    "subtitle": "Transform your business with the complete business management platform. ERP, CRM, Financial Management and much more in a single solution.",
+    "cta": "Get Started Free",
+    "trial": "14 days free • No credit card required"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "createAccount": "Create account",
+    "loginTitle": "Sign in to your account",
+    "signupTitle": "Create your account",
+    "loginSuccess": "Successfully logged in!",
+    "signupSuccess": "Account created successfully!",
+    "invalidCredentials": "Invalid email or password",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "nameRequired": "Name is required"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "revenue": "Revenue",
+    "customers": "Customers",
+    "orders": "Orders",
+    "products": "Products",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "profile": "Profile",
+    "subscription": "Subscription",
+    "support": "Support"
+  },
+  "pricing": {
+    "title": "Pricing Plans",
+    "subtitle": "Choose the ideal plan for your business",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "startTrial": "Start Free Trial",
+    "subscribe": "Subscribe Now",
+    "currentPlan": "Current Plan",
+    "features": "Included features",
+    "allFeatures": "All features",
+    "freeTrial": "14 days free"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles, tips and news",
+    "readMore": "Read more",
+    "readingTime": "min read",
+    "categories": "Categories",
+    "tags": "Tags",
+    "author": "Author",
+    "publishedAt": "Published on",
+    "relatedPosts": "Related Posts",
+    "share": "Share",
+    "noResults": "No articles found"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "delete": "Delete",
+    "empty": "No notifications",
+    "timeAgo": {
+      "now": "Now",
+      "minutesAgo": "{count}min ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    }
+  },
+  "search": {
+    "placeholder": "Search on site...",
+    "noResults": "No results found for \"{query}\"",
+    "typeToSearch": "Type at least 2 characters to search",
+    "results": "{count} result | {count} results",
+    "posts": "Blog Posts",
+    "categories": "Categories",
+    "pages": "Pages"
+  },
+  "coupons": {
+    "title": "Discount Coupons",
+    "subtitle": "Create and manage promotional coupons",
+    "newCoupon": "New Coupon",
+    "editCoupon": "Edit Coupon",
+    "code": "Code",
+    "description": "Description",
+    "discountType": "Discount Type",
+    "discountValue": "Discount Value",
+    "maxUses": "Usage Limit",
+    "validFrom": "Valid From",
+    "validUntil": "Valid Until",
+    "isActive": "Active coupon",
+    "types": {
+      "percentage": "Percentage (%)",
+      "fixedAmount": "Fixed Amount ($)",
+      "freeTrial": "Free Trial (days)"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "expired": "Expired"
+    },
+    "usageCount": "Uses: {used} / {max}",
+    "unlimitedUses": "Unlimited uses",
+    "deleteConfirm": "Are you sure you want to delete this coupon?",
+    "applySuccess": "Coupon applied successfully!",
+    "invalidCoupon": "Invalid or expired coupon"
+  },
+  "footer": {
+    "product": "Product",
+    "company": "Company",
+    "resources": "Resources",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "copyright": "© {year} Orion Nova. All rights reserved.",
+    "madeWith": "Made with",
+    "in": "in"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Page not found",
+    "unauthorized": "Unauthorized",
+    "serverError": "Server error",
+    "networkError": "Connection error. Check your internet.",
+    "validationError": "Validation error. Check the fields."
+  }
+}

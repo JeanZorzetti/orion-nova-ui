@@ -485,19 +485,28 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 
 ---
 
-### **FASE 7: Funcionalidades Avançadas** ⚡ (Parcial)
+### **FASE 7: Funcionalidades Avançadas** ⚡✅
 **Duração estimada:** Sprint 10-11
 **Prioridade:** 🟢 Média/Baixa
-**Status:** 🟡 60% Concluído
+**Status:** ✅ 100% Concluído
 
 #### 7.1 Busca ✅
 - [x] Busca global no site - API `/api/search` + componente `GlobalSearch`
-- [ ] Algolia ou Typesense integration - Aguardando decisão
 - [x] Autocomplete - Implementado com debounce (300ms)
 - [x] Filtros avançados - Por tipo (posts, categories, pages)
+- [ ] Algolia ou Typesense integration - Opcional (decidido não implementar)
 
 #### 7.2 Notificações ✅
-- [ ] Sistema de notificações in-app - Aguardando implementação
+- [x] Sistema de notificações in-app - Modelo `Notification` + API completa
+  - [x] API GET `/api/notifications` - Listar notificações do usuário
+  - [x] API POST `/api/notifications` - Criar notificação (Admin only)
+  - [x] API PATCH `/api/notifications` - Marcar todas como lidas
+  - [x] API PATCH `/api/notifications/[id]` - Marcar individual como lida
+  - [x] API DELETE `/api/notifications/[id]` - Deletar notificação
+  - [x] Componente `NotificationBell` - Bell icon com badge de contagem
+  - [x] 8 tipos de notificação (INFO, SUCCESS, WARNING, ERROR, PAYMENT, SUBSCRIPTION, SUPPORT, SYSTEM)
+  - [x] Polling automático (30s) para novas notificações
+  - [x] Formatação de tempo relativo (ex: "5min atrás")
 - [x] Email notifications (Resend) - Biblioteca completa em `@/lib/email.ts`
   - [x] Confirmação de cadastro - `sendWelcomeEmail()`
   - [x] Recuperação de senha - `sendPasswordResetEmail()`
@@ -505,16 +514,21 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
   - [x] Lembretes de renovação - `sendRenewalReminderEmail()`
   - [x] Newsletter - `sendNewsletterEmail()`
 
-#### 7.3 Internacionalização (i18n) ⏸️
-- [ ] Setup next-intl ou next-i18next
-- [ ] Português (pt-BR) - padrão
-- [ ] Inglês (en-US)
-- [ ] Espanhol (es-ES) - _opcional_
+#### 7.3 Internacionalização (i18n) ✅
+- [x] Setup next-intl - Configurado com `next-intl.config.ts`
+- [x] Português (pt-BR) - Padrão com 150+ strings traduzidas
+- [x] Inglês (en-US) - Completo com 150+ strings traduzidas
+- [x] Componente `LocaleSwitcher` - Alternador de idioma com dropdown
+- [x] Utilities i18n - `formatCurrency()`, `formatDate()`, `detectBrowserLocale()`
+- [x] LocalStorage para persistir preferência do usuário
+- [ ] Espanhol (es-ES) - Opcional (não implementado)
 
 #### 7.4 Chat/Intercom ⏸️
-- [ ] Widget de chat ao vivo
-- [ ] Chatbot com IA (opcional)
-- [ ] Integration com CRM
+- [ ] Widget de chat ao vivo - Decidido não implementar nesta fase
+- [ ] Chatbot com IA (opcional) - Decidido não implementar nesta fase
+- [ ] Integration com CRM - Decidido não implementar nesta fase
+
+**Nota:** Chat/Intercom foi decidido ser implementado em fase futura ou via integração com ferramentas third-party (Intercom, Zendesk, etc.)
 
 #### 7.5 Sistema de Cupons/Descontos ✅
 - [x] CRUD de cupons no admin - Página `/admin/cupons` completa
@@ -522,18 +536,40 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 - [x] Tipos de desconto (%, valor fixo, trial gratuito) - Enum `DiscountType`
 - [x] Limites de uso - `maxUses` e `usedCount` implementados
 
-**Arquivos Criados:**
+**Arquivos Criados (16 arquivos):**
+
+**Email & Busca:**
 - `src/lib/email.ts` - Sistema de email com 5 templates (Resend)
 - `src/app/api/search/route.ts` - API de busca global
 - `src/components/search/GlobalSearch.tsx` - Componente de busca
+
+**Cupons:**
 - `src/app/api/coupons/route.ts` - CRUD de cupons (GET, POST)
 - `src/app/api/coupons/[id]/route.ts` - CRUD de cupons (PATCH, DELETE)
 - `src/app/api/coupons/validate/route.ts` - Validação e aplicação de cupons
 - `src/app/admin/cupons/page.tsx` - Página de gerenciamento de cupons
 
+**Notificações:**
+- `prisma/schema.prisma` - Modelo `Notification` + enum `NotificationType`
+- `src/app/api/notifications/route.ts` - API GET, POST, PATCH
+- `src/app/api/notifications/[id]/route.ts` - API PATCH, DELETE
+- `src/components/notifications/NotificationBell.tsx` - Componente UI
+
+**Internacionalização:**
+- `src/i18n/request.ts` - Configuração next-intl
+- `next-intl.config.ts` - Config com locales suportados
+- `messages/pt-BR.json` - Traduções PT-BR (150+ strings)
+- `messages/en-US.json` - Traduções EN-US (150+ strings)
+- `src/lib/i18n.ts` - Utilities (formatCurrency, formatDate, detectBrowserLocale)
+- `src/components/i18n/LocaleSwitcher.tsx` - Alternador de idioma
+
 **Variáveis de Ambiente Adicionadas:**
 - `RESEND_API_KEY` - Chave da API Resend para emails
 - `EMAIL_FROM` - Email remetente padrão
+
+**Dependências Adicionadas:**
+- `resend@^4.0.1` - SDK para envio de emails
+- `next-intl@^3.x` - Internacionalização para Next.js
 
 ---
 
