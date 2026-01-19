@@ -323,7 +323,7 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
 ### **FASE 5: Dashboard Administrativo** 👨‍💼
 **Duração estimada:** Sprint 7-8
 **Prioridade:** 🟡 Alta
-**Status:** 🔄 Em Andamento (40%)
+**Status:** 🔄 Em Andamento (80%)
 
 #### 5.0 Layout e Proteção de Rotas
 - [x] **Layout Admin** (`/admin/layout.tsx`) ✅ _Criado em 19/01/2026_
@@ -379,25 +379,41 @@ Transformar a atual landing page da Orion em um **site institucional completo** 
   - CRUD de categorias
 
 #### 5.3 Gerenciamento de Usuários
-- [ ] **Listagem de Usuários** (`/admin/usuarios`) 🔜 _Placeholder criado em 19/01/2026_
-  - Busca e filtros
-  - Edição de perfis
-  - Alteração de roles
-  - Suspensão/ativação de contas
+- [x] **Listagem de Usuários** (`/admin/usuarios`) ✅ _Criado em 19/01/2026_
+  - Tabela responsiva com 8 colunas
+  - Busca por nome ou email (client-side)
+  - Filtros: role (USER, ADMIN, SUPER_ADMIN) e status (TRIAL, ACTIVE, EXPIRED, CANCELLED)
+  - Edição de role via modal (Dialog)
+  - Toggle de status (ativar/desativar conta)
+  - Badges com ícones por role
+  - Contadores: pedidos e tickets por usuário
+  - Delete bloqueado (apenas SUPER_ADMIN)
+  - API: PATCH e DELETE /api/users/[id]
 
 #### 5.4 Gerenciamento de Planos
-- [ ] **CRUD de Planos** (`/admin/planos`) 🔜 _Placeholder criado em 19/01/2026_
-  - Criar/editar planos
-  - Definir features
-  - Ajustar preços
-  - Ativar/desativar planos
+- [x] **CRUD de Planos** (`/admin/planos`) ✅ _Criado em 19/01/2026_
+  - Grid de cards 3 colunas (responsivo)
+  - Formulário completo de criação/edição via modal
+  - Campos: nome, slug, descrição, preço, período de cobrança
+  - Máx. usuários, storage (GB)
+  - Toggle ativo/inativo por plano
+  - Delete bloqueado se houver assinaturas ativas
+  - Contador de assinaturas por plano
+  - Formatação de preço (R$ pt-BR)
+  - API: POST /api/plans, PATCH/DELETE /api/plans/[id]
 
 #### 5.5 Suporte e Tickets
-- [ ] **Gestão de Tickets** (`/admin/suporte`) 🔜 _Placeholder criado em 19/01/2026_
-  - Lista de tickets
-  - Responder tickets
-  - Alterar status e prioridade
-  - Atribuir a agentes
+- [x] **Gestão de Tickets** (`/admin/suporte`) ✅ _Criado em 19/01/2026_
+  - 5 cards de estatísticas (por status)
+  - Listagem de tickets com busca
+  - Filtros: status (5 opções) e prioridade (4 níveis)
+  - Modal de visualização detalhada do ticket
+  - Histórico de respostas (equipe vs cliente)
+  - Adicionar nova resposta (textarea)
+  - Atualizar status e prioridade via selects
+  - Badges coloridos por status e prioridade
+  - Auto-update de status ao responder
+  - API: PATCH /api/support/[id], POST /api/support/[id]/reply
 
 #### 5.6 Relatórios e Analytics
 - [ ] **Página: Relatórios** (`/admin/relatorios`) 🔜
@@ -617,5 +633,5 @@ Ao finalizar o projeto, garantir que:
 
 ---
 
-**Última atualização:** 18/01/2026
+**Última atualização:** 19/01/2026
 **Mantido por:** Equipe de Desenvolvimento Orion Nova UI
