@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 // PATCH /api/users/[id] - Atualizar usuário
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -18,7 +18,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { role, subscriptionStatus } = body;
 
@@ -73,7 +73,7 @@ export async function PATCH(
 // DELETE /api/users/[id] - Deletar usuário
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -83,7 +83,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Não permitir que usuário delete a si mesmo
     if (id === session.user.id) {

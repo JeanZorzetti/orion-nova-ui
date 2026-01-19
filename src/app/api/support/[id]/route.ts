@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 // PATCH /api/support/[id] - Atualizar ticket
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -18,7 +18,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { status, priority, assignedTo } = body;
 
@@ -71,7 +71,7 @@ export async function PATCH(
 // DELETE /api/support/[id] - Deletar ticket
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -81,7 +81,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validar se o ticket existe
     const existingTicket = await prisma.supportTicket.findUnique({
