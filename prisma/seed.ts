@@ -187,10 +187,11 @@ async function main() {
 
   console.log(`✅ ${tags.length} tags criadas`);
 
-  // ========== USUÁRIO ADMIN (OPCIONAL) ==========
-  console.log("👤 Criando usuário administrador...");
+  // ========== USUÁRIOS ADMIN ==========
+  console.log("👤 Criando usuários administradores...");
 
-  const hashedPassword = await bcrypt.hash("admin123", 10);
+  const hashedPassword1 = await bcrypt.hash("admin123", 10);
+  const hashedPassword2 = await bcrypt.hash("PAzo18**", 10);
 
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@orion.com" },
@@ -198,7 +199,7 @@ async function main() {
     create: {
       name: "Administrador Orion",
       email: "admin@orion.com",
-      password: hashedPassword,
+      password: hashedPassword1,
       role: "SUPER_ADMIN",
       emailVerified: new Date(),
       subscriptionStatus: "ACTIVE",
@@ -206,7 +207,23 @@ async function main() {
     },
   });
 
-  console.log("✅ Usuário admin criado:", adminUser.email);
+  const superAdminUser = await prisma.user.upsert({
+    where: { email: "jeanzorzetti@gmail.com" },
+    update: {},
+    create: {
+      name: "Jean Zorzetti",
+      email: "jeanzorzetti@gmail.com",
+      password: hashedPassword2,
+      role: "SUPER_ADMIN",
+      emailVerified: new Date(),
+      subscriptionStatus: "ACTIVE",
+      trialEndsAt: null,
+    },
+  });
+
+  console.log("✅ Usuários admin criados:");
+  console.log("  -", adminUser.email);
+  console.log("  -", superAdminUser.email);
 
   // ========== POSTS DE EXEMPLO ==========
   console.log("✍️ Criando posts de exemplo...");
@@ -414,10 +431,12 @@ Um CRM não é apenas um software, é uma mudança de mindset. Coloque o cliente
   console.log("  - 3 Planos");
   console.log("  - 5 Categorias");
   console.log("  - 6 Tags");
-  console.log("  - 1 Usuário Admin (admin@orion.com / admin123)");
+  console.log("  - 2 Usuários Admin:");
+  console.log("    • admin@orion.com / admin123");
+  console.log("    • jeanzorzetti@gmail.com / PAzo18**");
   console.log("  - 3 Posts de Blog");
   console.log("  - 1 Cupom de Desconto (BEMVINDO2026)");
-  console.log("\n⚠️  IMPORTANTE: Altere a senha do admin após o primeiro login!");
+  console.log("\n⚠️  IMPORTANTE: Altere as senhas após o primeiro login!");
 }
 
 main()
