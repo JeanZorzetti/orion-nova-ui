@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       metaTitle,
       metaDescription,
       metaKeywords,
-      tagIds,
+      tags,
     } = body;
 
     // Validações básicas
@@ -152,6 +152,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Processar tags (criar se não existirem)
+    const tagConnections = [];
+    if (tags && tags.length > 0) {
+      for (const tagName of tags) {
+        if (!tagName.trim()) continue;
+
+        const tagSlug = tagName
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+        // Buscar ou criar tag
+        const tag = await prisma.tag.upsert({
+          where: { slug: tagSlug },
+          update: {},
+          create: {
+            name: tagName.trim(),
+            slug: tagSlug,
+          },
+        });
+
+        tagConnections.push({
+          tag: {
+            connect: { id: tag.id },
+          },
+        });
+      }
+    }
+
     // Criar post
     const post = await prisma.post.create({
       data: {
@@ -167,12 +198,8 @@ export async function POST(request: NextRequest) {
         metaTitle,
         metaDescription,
         metaKeywords,
-        tags: tagIds && tagIds.length > 0 ? {
-          create: tagIds.map((tagId: string) => ({
-            tag: {
-              connect: { id: tagId },
-            },
-          })),
+        tags: tagConnections.length > 0 ? {
+          create: tagConnections,
         } : undefined,
       },
       include: {
