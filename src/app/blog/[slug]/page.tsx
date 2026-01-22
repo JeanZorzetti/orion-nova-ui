@@ -194,9 +194,9 @@ export default async function BlogPostPage({ params }: Props) {
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: "Home", url: process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br" },
-    { name: "Blog", url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br"}/blog` },
-    { name: post.title, url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br"}/blog/${slug}` },
+    { name: "Home", url: process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br" },
+    { name: "Blog", url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br"}/blog` },
+    { name: post.title, url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br"}/blog/${slug}` },
   ]);
 
   return (

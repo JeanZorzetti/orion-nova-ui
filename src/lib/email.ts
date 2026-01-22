@@ -2,8 +2,8 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "Orion Nova <noreply@orionnova.com.br>";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br";
+const FROM_EMAIL = process.env.EMAIL_FROM || "Orion ERP <noreply@orion.roilabs.com.br>";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br";
 
 interface SendEmailOptions {
   to: string | string[];
@@ -88,7 +88,7 @@ export async function sendWelcomeEmail({
     </div>
     <div class="footer">
       <p>© ${new Date().getFullYear()} Orion Nova. Todos os direitos reservados.</p>
-      <p>Você está recebendo este email porque criou uma conta em orionnova.com.br</p>
+      <p>Você está recebendo este email porque criou uma conta em orion.roilabs.com.br</p>
     </div>
   </div>
 </body>

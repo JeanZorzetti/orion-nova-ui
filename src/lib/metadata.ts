@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 // Base URL do site
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://orionnova.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br";
 
 // Metadata padrão do site
 export const defaultMetadata: Metadata = {
