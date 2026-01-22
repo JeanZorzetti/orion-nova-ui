@@ -1,29 +1,28 @@
+import Link from "next/link";
 import OrionLogo from "../OrionLogo";
 import { Github, Linkedin, Twitter } from "lucide-react";
 
 const footerLinks = {
   produto: [
-    { label: "Features", href: "#features" },
-    { label: "Preços", href: "#precos" },
-    { label: "Integrações", href: "#" },
-    { label: "Changelog", href: "#" },
+    { label: "Produto", href: "/produto" },
+    { label: "Features", href: "/features" },
+    { label: "Soluções", href: "/solucoes" },
+    { label: "Preços", href: "/precos" },
   ],
   empresa: [
-    { label: "Sobre", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Carreiras", href: "#" },
-    { label: "Contato", href: "#" },
+    { label: "Sobre", href: "/sobre" },
+    { label: "Blog", href: "/blog" },
+    { label: "Carreiras", href: "/carreiras" },
+    { label: "Contato", href: "/contato" },
   ],
   recursos: [
-    { label: "Documentação", href: "#" },
-    { label: "API", href: "#" },
-    { label: "Status", href: "#" },
-    { label: "Segurança", href: "#" },
+    { label: "Central de Ajuda", href: "/ajuda" },
+    { label: "Documentação", href: "/ajuda" },
+    { label: "Status", href: "/ajuda" },
   ],
   legal: [
-    { label: "Privacidade", href: "#" },
-    { label: "Termos", href: "#" },
-    { label: "LGPD", href: "#" },
+    { label: "Privacidade", href: "/privacidade" },
+    { label: "Termos de Uso", href: "/termos" },
   ],
 };
 
@@ -69,12 +68,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.produto.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -85,12 +84,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.empresa.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -101,12 +100,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.recursos.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -117,12 +116,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -132,7 +131,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2025 Orion ERP. Todos os direitos reservados.
+            © 2026 Orion ERP. Todos os direitos reservados.
           </p>
           <p className="text-sm text-muted-foreground">
             Feito com <span className="gradient-text">♥</span> no Brasil

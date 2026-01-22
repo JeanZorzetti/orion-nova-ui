@@ -7,10 +7,11 @@ import Link from "next/link";
 import OrionLogo from "../OrionLogo";
 
 const navLinks = [
-  { label: "Produto", href: "#produto" },
-  { label: "Soluções", href: "#solucoes" },
-  { label: "Features", href: "#features" },
-  { label: "Preços", href: "#precos" },
+  { label: "Produto", href: "/produto" },
+  { label: "Soluções", href: "/solucoes" },
+  { label: "Features", href: "/features" },
+  { label: "Preços", href: "/precos" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const Header = () => {
@@ -42,14 +43,14 @@ const Header = () => {
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors relative group"
               >
                 {link.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -84,14 +85,14 @@ const Header = () => {
           >
             <nav className="flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
                 <Link
