@@ -229,3 +229,67 @@ export const trackSelectItem = ({
     });
   }
 };
+
+// Product page specific tracking (Phase 5)
+export const trackProductPageView = () => {
+  trackEvent({
+    action: "product_page_view",
+    category: "engagement",
+  });
+};
+
+export const trackDemoInteraction = (stepId: string) => {
+  trackEvent({
+    action: "demo_interaction",
+    category: "engagement",
+    label: stepId,
+  });
+};
+
+export const trackComparisonSliderUsed = () => {
+  trackEvent({
+    action: "comparison_slider_used",
+    category: "engagement",
+  });
+};
+
+export const trackModuleCardClick = (moduleName: string) => {
+  trackEvent({
+    action: "module_card_clicked",
+    category: "engagement",
+    label: moduleName,
+  });
+};
+
+export const trackTestimonialViewed = (authorName: string, index: number) => {
+  trackEvent({
+    action: "testimonial_viewed",
+    category: "engagement",
+    label: `${authorName} - Position ${index}`,
+    value: index,
+  });
+};
+
+export const trackCTAClick = (location: "hero" | "bottom" | "testimonials") => {
+  trackEvent({
+    action: "cta_clicked",
+    category: "conversion",
+    label: location,
+  });
+};
+
+export const trackScrollDepth = (percentage: 25 | 50 | 75 | 100) => {
+  trackEvent({
+    action: "scroll_depth",
+    category: "engagement",
+    value: percentage,
+  });
+};
+
+export const trackTimeOnPage = (seconds: 30 | 60 | 120 | 180) => {
+  trackEvent({
+    action: "time_on_page_milestone",
+    category: "engagement",
+    value: seconds,
+  });
+};
