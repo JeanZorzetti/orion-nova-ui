@@ -245,7 +245,7 @@ export default function ProdutoPage() {
             </ScrollReveal>
 
             <BeforeAfterComparison
-              beforeImage="/images/dash.webp"
+              beforeImage="/images/planilha.webp"
               afterImage="/images/dash.webp"
               beforeLabel="Planilhas Excel"
               afterLabel="Orion ERP"
