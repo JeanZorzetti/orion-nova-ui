@@ -196,18 +196,34 @@ Você terá:
 
 ## 📋 Próximos Passos (Semana 2)
 
-### Dias 8-10: Páginas Institucionais
-- [ ] Página Sobre Nós
-- [ ] Página Contato
-- [ ] Página de Suporte
-- [ ] Termos de Uso
-- [ ] Política de Privacidade
+### ✅ Dias 8-10: Páginas Institucionais (CONCLUÍDO)
 
-### Dias 11-14: Blog
-- [ ] Sistema de posts
-- [ ] Categorias e tags
-- [ ] Editor de conteúdo
-- [ ] Página de artigo
+- [x] Página Sobre Nós (`/sobre`)
+- [x] Página Contato (`/contato`)
+- [x] Página de Suporte (`/ajuda`)
+- [x] Termos de Uso (`/termos`)
+- [x] Política de Privacidade (`/privacidade`)
+
+**Também criadas:**
+
+- [x] Página Produto (`/produto`)
+- [x] Página Soluções (`/solucoes`)
+- [x] Página Features (`/features`)
+- [x] Página Carreiras (`/carreiras`)
+
+### ✅ Dias 11-14: Blog (CONCLUÍDO)
+
+- [x] Sistema de posts (`/blog`)
+- [x] Categorias e tags
+- [x] Página de artigo (`/blog/[slug]`)
+- [ ] Editor de conteúdo (Admin - Fase futura)
+
+**Componentes criados:**
+
+- [x] NewsletterForm (3 variantes)
+- [x] ShareButtons (compartilhamento social)
+- [x] RelatedContent
+- [x] TestimonialsCarousel
 
 ---
 
@@ -334,4 +350,4 @@ Se chegou até aqui, você tem um MVP funcional de um **SaaS completo** com:
 
 ---
 
-**Última atualização:** 16/01/2026
+**Última atualização:** 22/01/2026
