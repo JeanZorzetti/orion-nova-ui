@@ -1,8 +1,6 @@
 import { DemoConfig } from "@/types/demo";
 
-// Mock data for Interactive Demo
-// TODO: Replace with real screenshots when available
-
+// Interactive Demo configuration with real screenshots
 export const orionDemoConfig: DemoConfig = {
   steps: [
     {
@@ -11,7 +9,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Todos os KPIs do seu negócio em uma única tela. Vendas, clientes, estoque e financeiro.",
       highlight: "Atualizações em tempo real",
-      screenshot: "/images/image.png", // TODO: Replace with dashboard-overview.png
+      screenshot: "/images/dash.png",
       hotspots: [
         {
           id: "dashboard-kpis",
@@ -29,7 +27,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Cadastro completo, histórico de compras e interações. Segmentação inteligente para campanhas direcionadas.",
       highlight: "Importação em massa de dados",
-      screenshot: "/images/image.png", // TODO: Replace with modulo-clientes.png
+      screenshot: "/images/clientes.png",
       hotspots: [
         {
           id: "clientes-list",
@@ -47,7 +45,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Acompanhe cada oportunidade desde o primeiro contato até o fechamento. Gestão completa do ciclo de vendas.",
       highlight: "Orçamentos e comissões automáticas",
-      screenshot: "/images/image.png", // TODO: Replace with modulo-vendas.png
+      screenshot: "/images/vendas.png",
       hotspots: [
         {
           id: "vendas-funil",
@@ -65,7 +63,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Contas a pagar e receber, fluxo de caixa projetado e DRE automático. Conciliação bancária integrada.",
       highlight: "Dashboards financeiros em tempo real",
-      screenshot: "/images/image.png", // TODO: Replace with modulo-financeiro.png
+      screenshot: "/images/financeiro.png",
       hotspots: [
         {
           id: "financeiro-dashboard",
