@@ -178,7 +178,7 @@ export default function ProdutoPage() {
               <div className="bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-2xl border border-border p-4 md:p-8">
                 <div className="aspect-video bg-muted rounded-xl overflow-hidden relative">
                   <Image
-                    src="/images/dashboard-placeholder.svg"
+                    src="/images/image.png"
                     alt="Dashboard do Orion ERP - Interface moderna com gráficos, KPIs e módulos de gestão"
                     fill
                     className="object-cover object-top"
