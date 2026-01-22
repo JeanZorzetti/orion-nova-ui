@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { InteractiveDemo } from "@/components/demos";
 import { orionDemoConfig } from "@/lib/demo-data";
+import { ScrollReveal, CounterAnimation, ParallaxContainer } from "@/components/animations";
 import {
   Sparkles,
   Users,
@@ -176,9 +177,54 @@ export default function ProdutoPage() {
             {/* Interactive Demo */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
-              <div className="bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-2xl border border-border p-4 md:p-8">
-                <InteractiveDemo config={orionDemoConfig} />
-              </div>
+              <ParallaxContainer speed={0.3}>
+                <div className="bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-2xl border border-border p-4 md:p-8">
+                  <InteractiveDemo config={orionDemoConfig} />
+                </div>
+              </ParallaxContainer>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="py-16 border-y border-border">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <ScrollReveal delay={0} direction="up" duration={0.5}>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+                    <CounterAnimation end={1234} suffix="+" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Empresas Ativas</p>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.1} direction="up" duration={0.5}>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+                    <CounterAnimation end={98} suffix="%" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Satisfação</p>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.2} direction="up" duration={0.5}>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+                    <CounterAnimation end={24} suffix="/7" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Suporte</p>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.3} direction="up" duration={0.5}>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+                    <CounterAnimation end={99.9} decimals={1} suffix="%" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Uptime</p>
+                </div>
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -197,24 +243,28 @@ export default function ProdutoPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {modules.map((module, index) => (
-                <div
+                <ScrollReveal
                   key={index}
-                  className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-shadow"
+                  delay={index * 0.1}
+                  direction="up"
+                  duration={0.5}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <module.icon className="w-6 h-6 text-primary" />
+                  <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg hover:scale-105 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                      <module.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{module.title}</h3>
+                    <p className="text-muted-foreground mb-4">{module.description}</p>
+                    <ul className="space-y-2">
+                      {module.features.map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-green-500" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{module.title}</h3>
-                  <p className="text-muted-foreground mb-4">{module.description}</p>
-                  <ul className="space-y-2">
-                    {module.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -234,15 +284,22 @@ export default function ProdutoPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <benefit.icon className="w-5 h-5 text-primary" />
+                <ScrollReveal
+                  key={index}
+                  delay={index * 0.08}
+                  direction="up"
+                  duration={0.4}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <benefit.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-1">{benefit.title}</h3>
+                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">{benefit.title}</h3>
-                    <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                  </div>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
