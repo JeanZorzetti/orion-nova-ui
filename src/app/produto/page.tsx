@@ -4,7 +4,8 @@ import Footer from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import Image from "next/image";
+import { InteractiveDemo } from "@/components/demos";
+import { orionDemoConfig } from "@/lib/demo-data";
 import {
   Sparkles,
   Users,
@@ -172,19 +173,11 @@ export default function ProdutoPage() {
               </div>
             </div>
 
-            {/* Product Screenshot */}
+            {/* Interactive Demo */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
               <div className="bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-2xl border border-border p-4 md:p-8">
-                <div className="aspect-video bg-muted rounded-xl overflow-hidden relative">
-                  <Image
-                    src="/images/image.png"
-                    alt="Dashboard do Orion ERP - Interface moderna com gráficos, KPIs e módulos de gestão"
-                    fill
-                    className="object-cover object-top"
-                    priority
-                  />
-                </div>
+                <InteractiveDemo config={orionDemoConfig} />
               </div>
             </div>
           </div>
