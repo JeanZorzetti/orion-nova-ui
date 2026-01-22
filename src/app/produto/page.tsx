@@ -8,6 +8,9 @@ import { InteractiveDemo } from "@/components/demos";
 import { orionDemoConfig } from "@/lib/demo-data";
 import { ScrollReveal, CounterAnimation, ParallaxContainer } from "@/components/animations";
 import { BeforeAfterComparison } from "@/components/comparison";
+import { AnimatedCard, AnimatedIcon, AnimatedCheckmark } from "@/components/micro-interactions";
+import { TestimonialCarousel, TrustBadges } from "@/components/social-proof";
+import { testimonials } from "@/lib/social-proof-data";
 import {
   Sparkles,
   Users,
@@ -299,21 +302,21 @@ export default function ProdutoPage() {
                   direction="up"
                   duration={0.5}
                 >
-                  <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <AnimatedCard className="bg-card border border-border rounded-2xl p-6">
+                    <AnimatedIcon delay={index * 0.1 + 0.2} className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                       <module.icon className="w-6 h-6 text-primary" />
-                    </div>
+                    </AnimatedIcon>
                     <h3 className="text-xl font-semibold mb-2">{module.title}</h3>
                     <p className="text-muted-foreground mb-4">{module.description}</p>
                     <ul className="space-y-2">
                       {module.features.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm">
+                        <AnimatedCheckmark key={i} delay={index * 0.1 + 0.3 + i * 0.05} className="flex items-center gap-2 text-sm">
                           <CheckCircle2 className="w-4 h-4 text-green-500" />
                           {feature}
-                        </li>
+                        </AnimatedCheckmark>
                       ))}
                     </ul>
-                  </div>
+                  </AnimatedCard>
                 </ScrollReveal>
               ))}
             </div>
@@ -341,9 +344,9 @@ export default function ProdutoPage() {
                   duration={0.4}
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <AnimatedIcon delay={index * 0.08 + 0.2} className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                       <benefit.icon className="w-5 h-5 text-primary" />
-                    </div>
+                    </AnimatedIcon>
                     <div>
                       <h3 className="font-semibold mb-1">{benefit.title}</h3>
                       <p className="text-sm text-muted-foreground">{benefit.description}</p>
@@ -352,6 +355,44 @@ export default function ProdutoPage() {
                 </ScrollReveal>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <ScrollReveal direction="up" duration={0.6}>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  O Que Nossos Clientes Dizem
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Empresas reais que transformaram sua gestão com o Orion ERP.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <TestimonialCarousel testimonials={testimonials} />
+          </div>
+        </section>
+
+        {/* Trust Badges Section */}
+        <section className="py-16 bg-muted/20">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <ScrollReveal direction="up" duration={0.5}>
+              <div className="text-center mb-8">
+                <h3 className="text-xl font-semibold mb-2">
+                  Segurança e Conformidade
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Certificações e garantias que protegem seus dados
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" duration={0.6} delay={0.2}>
+              <TrustBadges />
+            </ScrollReveal>
           </div>
         </section>
 
