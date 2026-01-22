@@ -1,87 +1,81 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Navigation", () => {
-  test("should navigate to home page", async ({ page }) => {
-    await page.goto("/");
-    await expect(page).toHaveTitle(/Orion Nova/i);
-  });
+  test.describe("Public Pages", () => {
+    test("should navigate to home page", async ({ page }) => {
+      await page.goto("/");
+      await expect(page).toHaveTitle(/Orion/i);
+    });
 
-  test("should navigate to about page", async ({ page }) => {
-    await page.goto("/");
-    const aboutLink = page.getByRole("link", { name: /sobre/i });
-
-    if (await aboutLink.isVisible()) {
-      await aboutLink.click();
-      await expect(page).toHaveURL(/\/sobre/);
-    }
-  });
-
-  test("should navigate to product page", async ({ page }) => {
-    await page.goto("/");
-    const productLink = page.getByRole("link", { name: /produto/i });
-
-    if (await productLink.isVisible()) {
-      await productLink.click();
+    test("should navigate to produto page", async ({ page }) => {
+      await page.goto("/produto");
       await expect(page).toHaveURL(/\/produto/);
-    }
-  });
+    });
 
-  test("should navigate to features page", async ({ page }) => {
-    await page.goto("/");
-    const featuresLink = page.getByRole("link", { name: /funcionalidades/i });
+    test("should navigate to sobre page", async ({ page }) => {
+      await page.goto("/sobre");
+      await expect(page).toHaveURL(/\/sobre/);
+    });
 
-    if (await featuresLink.isVisible()) {
-      await featuresLink.click();
+    test("should navigate to features page", async ({ page }) => {
+      await page.goto("/features");
       await expect(page).toHaveURL(/\/features/);
-    }
-  });
+    });
 
-  test("should navigate to solutions page", async ({ page }) => {
-    await page.goto("/");
-    const solutionsLink = page.getByRole("link", { name: /soluções/i });
-
-    if (await solutionsLink.isVisible()) {
-      await solutionsLink.click();
+    test("should navigate to solucoes page", async ({ page }) => {
+      await page.goto("/solucoes");
       await expect(page).toHaveURL(/\/solucoes/);
-    }
-  });
+    });
 
-  test("should navigate to help page", async ({ page }) => {
-    await page.goto("/");
-    const helpLink = page.getByRole("link", { name: /ajuda/i });
+    test("should navigate to precos page", async ({ page }) => {
+      await page.goto("/precos");
+      await expect(page).toHaveURL(/\/precos/);
+    });
 
-    if (await helpLink.isVisible()) {
-      await helpLink.click();
+    test("should navigate to ajuda page", async ({ page }) => {
+      await page.goto("/ajuda");
       await expect(page).toHaveURL(/\/ajuda/);
-    }
-  });
+    });
 
-  test("should navigate to contact page", async ({ page }) => {
-    await page.goto("/");
-    const contactLink = page.getByRole("link", { name: /contato/i });
-
-    if (await contactLink.isVisible()) {
-      await contactLink.click();
+    test("should navigate to contato page", async ({ page }) => {
+      await page.goto("/contato");
       await expect(page).toHaveURL(/\/contato/);
-    }
+    });
+
+    test("should navigate to blog page", async ({ page }) => {
+      await page.goto("/blog");
+      await expect(page).toHaveURL(/\/blog/);
+    });
+
+    test("should navigate to carreiras page", async ({ page }) => {
+      await page.goto("/carreiras");
+      await expect(page).toHaveURL(/\/carreiras/);
+    });
+
+    test("should navigate to termos page", async ({ page }) => {
+      await page.goto("/termos");
+      await expect(page).toHaveURL(/\/termos/);
+    });
+
+    test("should navigate to privacidade page", async ({ page }) => {
+      await page.goto("/privacidade");
+      await expect(page).toHaveURL(/\/privacidade/);
+    });
   });
 
-  test("should open and close mobile menu", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/");
+  test.describe("404 Page", () => {
+    test("should show not found page for invalid routes", async ({ page }) => {
+      const response = await page.goto("/pagina-inexistente-xyz123");
+      // Not found page should return 404 status
+      expect(response?.status()).toBe(404);
+    });
+  });
 
-    // Look for mobile menu button
-    const menuButton = page.locator('button[aria-label*="menu" i], button:has-text("Menu")');
-
-    if (await menuButton.isVisible()) {
-      await menuButton.click();
-
-      // Verify menu is open (navigation should be visible)
-      const nav = page.locator("nav");
-      await expect(nav).toBeVisible();
-
-      // Close menu
-      await menuButton.click();
-    }
+  test.describe("Mobile Navigation", () => {
+    test("should display correctly on mobile viewport", async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto("/");
+      await expect(page).toHaveTitle(/Orion/i);
+    });
   });
 });

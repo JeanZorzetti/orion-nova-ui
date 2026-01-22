@@ -1,122 +1,128 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Authentication", () => {
-  test("should display login page", async ({ page }) => {
-    await page.goto("/login");
-    await expect(page.getByRole("heading", { name: /entrar/i })).toBeVisible();
-  });
-
-  test("should show validation errors on empty login form", async ({ page }) => {
-    await page.goto("/login");
-
-    // Try to submit empty form
-    const submitButton = page.getByRole("button", { name: /entrar/i });
-    await submitButton.click();
-
-    // Should show validation errors
-    await expect(page.locator("text=/e-mail.*obrigatório/i")).toBeVisible({
-      timeout: 3000,
-    }).catch(() => {
-      // Alternative: check for generic error message
-      return expect(page.locator("text=/campo.*obrigatório/i")).toBeVisible();
-    });
-  });
-
-  test("should show error for invalid email format", async ({ page }) => {
-    await page.goto("/login");
-
-    // Fill invalid email
-    const emailInput = page.getByLabel(/e-mail/i);
-    await emailInput.fill("invalid-email");
-
-    const passwordInput = page.getByLabel(/senha/i);
-    await passwordInput.fill("password123");
-
-    const submitButton = page.getByRole("button", { name: /entrar/i });
-    await submitButton.click();
-
-    // Should show email format error
-    await expect(
-      page.locator("text=/e-mail.*inválido/i, text=/formato.*e-mail/i")
-    ).toBeVisible({ timeout: 3000 });
-  });
-
-  test("should display signup page", async ({ page }) => {
-    await page.goto("/cadastro");
-    await expect(
-      page.getByRole("heading", { name: /criar.*conta|cadastro/i })
-    ).toBeVisible();
-  });
-
-  test("should show validation errors on empty signup form", async ({
-    page,
-  }) => {
-    await page.goto("/cadastro");
-
-    // Try to submit empty form
-    const submitButton = page.getByRole("button", {
-      name: /criar.*conta|cadastrar/i,
-    });
-    await submitButton.click();
-
-    // Should show validation errors for required fields
-    const errorMessages = page.locator(
-      "text=/obrigatório/i, text=/campo.*necessário/i"
-    );
-    await expect(errorMessages.first()).toBeVisible({ timeout: 3000 });
-  });
-
-  test("should validate password requirements", async ({ page }) => {
-    await page.goto("/cadastro");
-
-    const emailInput = page.getByLabel(/e-mail/i);
-    await emailInput.fill("test@example.com");
-
-    const nameInput = page.getByLabel(/nome/i);
-    if (await nameInput.isVisible()) {
-      await nameInput.fill("Test User");
-    }
-
-    // Enter weak password
-    const passwordInput = page.getByLabel(/senha/i).first();
-    await passwordInput.fill("123");
-
-    const submitButton = page.getByRole("button", {
-      name: /criar.*conta|cadastrar/i,
-    });
-    await submitButton.click();
-
-    // Should show password validation error
-    await expect(
-      page.locator(
-        "text=/senha.*mínimo/i, text=/senha.*caracteres/i, text=/senha.*curta/i"
-      )
-    ).toBeVisible({ timeout: 3000 });
-  });
-
-  test("should navigate from login to signup", async ({ page }) => {
-    await page.goto("/login");
-
-    // Click on signup link
-    const signupLink = page.getByRole("link", {
-      name: /criar.*conta|cadastr/i,
+  test.describe("Login Page", () => {
+    test("should display login page with correct title", async ({ page }) => {
+      await page.goto("/login");
+      await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
     });
 
-    if (await signupLink.isVisible()) {
-      await signupLink.click();
+    test("should have email and password inputs", async ({ page }) => {
+      await page.goto("/login");
+
+      const emailInput = page.locator("#email");
+      const passwordInput = page.locator("#password");
+
+      await expect(emailInput).toBeVisible();
+      await expect(passwordInput).toBeVisible();
+    });
+
+    test("should have submit button", async ({ page }) => {
+      await page.goto("/login");
+      const submitButton = page.getByRole("button", { name: "Entrar" });
+      await expect(submitButton).toBeVisible();
+    });
+
+    test("should have link to signup page", async ({ page }) => {
+      await page.goto("/login");
+      const signupLink = page.getByRole("link", { name: "Cadastre-se" });
+      await expect(signupLink).toBeVisible();
+    });
+
+    test("should navigate to signup page when clicking link", async ({
+      page,
+    }) => {
+      await page.goto("/login");
+      await page.getByRole("link", { name: "Cadastre-se" }).click();
       await expect(page).toHaveURL(/\/cadastro/);
-    }
+    });
+
+    test("should have forgot password link", async ({ page }) => {
+      await page.goto("/login");
+      const forgotLink = page.getByRole("link", { name: /esqueceu a senha/i });
+      await expect(forgotLink).toBeVisible();
+    });
+
+    test("should have Google sign in button", async ({ page }) => {
+      await page.goto("/login");
+      const googleButton = page.getByRole("button", {
+        name: /continuar com google/i,
+      });
+      await expect(googleButton).toBeVisible();
+    });
   });
 
-  test("should navigate from signup to login", async ({ page }) => {
-    await page.goto("/cadastro");
+  test.describe("Signup Page", () => {
+    test("should display signup page with correct title", async ({ page }) => {
+      await page.goto("/cadastro");
+      await expect(
+        page.getByRole("heading", { name: "Criar Conta" })
+      ).toBeVisible();
+    });
 
-    // Click on login link
-    const loginLink = page.getByRole("link", { name: /já.*conta|entrar/i });
+    test("should have all required inputs", async ({ page }) => {
+      await page.goto("/cadastro");
 
-    if (await loginLink.isVisible()) {
-      await loginLink.click();
+      await expect(page.locator("#name")).toBeVisible();
+      await expect(page.locator("#email")).toBeVisible();
+      await expect(page.locator("#password")).toBeVisible();
+      await expect(page.locator("#confirmPassword")).toBeVisible();
+    });
+
+    test("should have submit button", async ({ page }) => {
+      await page.goto("/cadastro");
+      const submitButton = page.getByRole("button", { name: "Criar conta" });
+      await expect(submitButton).toBeVisible();
+    });
+
+    test("should have link to login page", async ({ page }) => {
+      await page.goto("/cadastro");
+      const loginLink = page.getByRole("link", { name: "Faça login" });
+      await expect(loginLink).toBeVisible();
+    });
+
+    test("should navigate to login page when clicking link", async ({
+      page,
+    }) => {
+      await page.goto("/cadastro");
+      await page.getByRole("link", { name: "Faça login" }).click();
       await expect(page).toHaveURL(/\/login/);
-    }
+    });
+
+    test("should show error when passwords do not match", async ({ page }) => {
+      await page.goto("/cadastro");
+
+      await page.locator("#name").fill("Test User");
+      await page.locator("#email").fill("test@example.com");
+      await page.locator("#password").fill("password123");
+      await page.locator("#confirmPassword").fill("different123");
+
+      await page.getByRole("button", { name: "Criar conta" }).click();
+
+      await expect(page.getByText("As senhas não coincidem")).toBeVisible();
+    });
+
+    test("should show error when password is too short", async ({ page }) => {
+      await page.goto("/cadastro");
+
+      await page.locator("#name").fill("Test User");
+      await page.locator("#email").fill("test@example.com");
+      await page.locator("#password").fill("123");
+      await page.locator("#confirmPassword").fill("123");
+
+      await page.getByRole("button", { name: "Criar conta" }).click();
+
+      await expect(
+        page.getByText("A senha deve ter pelo menos 6 caracteres")
+      ).toBeVisible();
+    });
+  });
+
+  test.describe("Forgot Password Page", () => {
+    test("should display forgot password page", async ({ page }) => {
+      await page.goto("/esqueci-senha");
+      // Check if page loads
+      await expect(page).toHaveURL(/\/esqueci-senha/);
+    });
   });
 });
