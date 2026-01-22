@@ -4,6 +4,7 @@ import Footer from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Sparkles,
   Users,
@@ -14,7 +15,6 @@ import {
   Shield,
   Zap,
   CheckCircle2,
-  Play,
   ArrowRight,
   Cloud,
   Lock,
@@ -159,15 +159,14 @@ export default function ProdutoPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
-                  <Link href="/register">
+                  <Link href="/cadastro">
                     Começar Grátis
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link href="#demo">
-                    <Play className="w-4 h-4 mr-2" />
-                    Ver Demonstração
+                  <Link href="/precos">
+                    Ver Planos e Preços
                   </Link>
                 </Button>
               </div>
@@ -177,11 +176,14 @@ export default function ProdutoPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
               <div className="bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-2xl border border-border p-4 md:p-8">
-                <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart3 className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                    <p className="text-muted-foreground">Dashboard do Orion ERP</p>
-                  </div>
+                <div className="aspect-video bg-muted rounded-xl overflow-hidden relative">
+                  <Image
+                    src="/images/dashboard-placeholder.svg"
+                    alt="Dashboard do Orion ERP - Interface moderna com gráficos, KPIs e módulos de gestão"
+                    fill
+                    className="object-cover object-top"
+                    priority
+                  />
                 </div>
               </div>
             </div>
@@ -221,30 +223,6 @@ export default function ProdutoPage() {
                   </ul>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Video Demo Section */}
-        <section id="demo" className="py-20">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Veja o Orion ERP em Ação
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                Assista uma demonstração completa do sistema e descubra como ele pode
-                transformar a gestão do seu negócio.
-              </p>
-            </div>
-
-            <div className="bg-muted rounded-2xl aspect-video flex items-center justify-center border border-border">
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-primary/20 transition-colors">
-                  <Play className="w-8 h-8 text-primary ml-1" />
-                </div>
-                <p className="text-muted-foreground">Clique para assistir a demonstração</p>
-              </div>
             </div>
           </div>
         </section>
@@ -289,7 +267,7 @@ export default function ProdutoPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href="/register">
+                  <Link href="/cadastro">
                     Criar Conta Grátis
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
