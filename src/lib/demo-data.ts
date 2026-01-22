@@ -9,7 +9,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Todos os KPIs do seu negócio em uma única tela. Vendas, clientes, estoque e financeiro.",
       highlight: "Atualizações em tempo real",
-      screenshot: "/images/dash.png",
+      screenshot: "/images/dash.webp",
       hotspots: [
         {
           id: "dashboard-kpis",
@@ -27,7 +27,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Cadastro completo, histórico de compras e interações. Segmentação inteligente para campanhas direcionadas.",
       highlight: "Importação em massa de dados",
-      screenshot: "/images/clientes.png",
+      screenshot: "/images/clientes.webp",
       hotspots: [
         {
           id: "clientes-list",
@@ -45,7 +45,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Acompanhe cada oportunidade desde o primeiro contato até o fechamento. Gestão completa do ciclo de vendas.",
       highlight: "Orçamentos e comissões automáticas",
-      screenshot: "/images/vendas.png",
+      screenshot: "/images/vendas.webp",
       hotspots: [
         {
           id: "vendas-funil",
@@ -63,7 +63,7 @@ export const orionDemoConfig: DemoConfig = {
       description:
         "Contas a pagar e receber, fluxo de caixa projetado e DRE automático. Conciliação bancária integrada.",
       highlight: "Dashboards financeiros em tempo real",
-      screenshot: "/images/financeiro.png",
+      screenshot: "/images/financeiro.webp",
       hotspots: [
         {
           id: "financeiro-dashboard",
