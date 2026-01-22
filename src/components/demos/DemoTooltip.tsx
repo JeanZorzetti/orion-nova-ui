@@ -41,14 +41,14 @@ export default function DemoTooltip({
           }}
         >
           {/* Glass card */}
-          <div className="relative bg-charcoal/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl">
+          <div className="relative bg-pure-black/98 backdrop-blur-xl border border-white/20 rounded-xl p-4 shadow-2xl">
             {/* Arrow pointer */}
             <div
               className={`absolute ${
                 position === "bottom"
-                  ? "bottom-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-charcoal/95"
+                  ? "bottom-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-pure-black/98"
                   : position === "top"
-                    ? "top-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-charcoal/95"
+                    ? "top-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-pure-black/98"
                     : ""
               }`}
             />
@@ -56,14 +56,14 @@ export default function DemoTooltip({
             {/* Content */}
             <div className="space-y-2">
               <h4 className="font-semibold text-pure-white">{title}</h4>
-              <p className="text-sm text-secondary leading-relaxed">
+              <p className="text-sm text-gray-200 leading-relaxed">
                 {description}
               </p>
 
               {/* Highlight */}
-              <div className={`flex items-start gap-2 pt-2 border-t border-white/10`}>
-                <Sparkles className={`w-4 h-4 ${accentColor} mt-0.5 flex-shrink-0`} />
-                <p className={`text-sm ${accentColor} font-medium`}>
+              <div className={`flex items-start gap-2 pt-2 border-t border-white/20`}>
+                <Sparkles className={`w-4 h-4 text-green-300 mt-0.5 flex-shrink-0`} />
+                <p className={`text-sm text-green-300 font-medium`}>
                   {highlight}
                 </p>
               </div>
@@ -71,7 +71,7 @@ export default function DemoTooltip({
 
             {/* Glow effect */}
             <div
-              className={`absolute -inset-0.5 bg-gradient-to-r from-green-400/20 to-green-600/20 rounded-xl blur-xl -z-10`}
+              className={`absolute -inset-0.5 bg-gradient-to-r from-green-500/15 to-green-600/15 rounded-xl blur-xl -z-10`}
             />
           </div>
         </motion.div>
