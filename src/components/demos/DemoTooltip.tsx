@@ -40,30 +40,30 @@ export default function DemoTooltip({
             ease: [0.25, 0.1, 0.25, 1], // The ROI Flow
           }}
         >
-          {/* Glass card */}
-          <div className="relative bg-pure-black/98 backdrop-blur-xl border border-white/20 rounded-xl p-4 shadow-2xl">
+          {/* Solid card - high contrast */}
+          <div className="relative bg-slate-900 border-2 border-green-400/30 rounded-xl p-4 shadow-2xl">
             {/* Arrow pointer */}
             <div
               className={`absolute ${
                 position === "bottom"
-                  ? "bottom-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-pure-black/98"
+                  ? "bottom-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-slate-900"
                   : position === "top"
-                    ? "top-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-pure-black/98"
+                    ? "top-full left-1/2 -translate-x-1/2 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-slate-900"
                     : ""
               }`}
             />
 
             {/* Content */}
-            <div className="space-y-2">
-              <h4 className="font-semibold text-pure-white">{title}</h4>
-              <p className="text-sm text-gray-200 leading-relaxed">
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-base">{title}</h4>
+              <p className="text-sm text-gray-100 leading-relaxed">
                 {description}
               </p>
 
               {/* Highlight */}
-              <div className={`flex items-start gap-2 pt-2 border-t border-white/20`}>
-                <Sparkles className={`w-4 h-4 text-green-300 mt-0.5 flex-shrink-0`} />
-                <p className={`text-sm text-green-300 font-medium`}>
+              <div className={`flex items-start gap-2 pt-3 border-t-2 border-green-400/30`}>
+                <Sparkles className={`w-4 h-4 text-green-400 mt-0.5 flex-shrink-0`} />
+                <p className={`text-sm text-green-400 font-semibold`}>
                   {highlight}
                 </p>
               </div>
@@ -71,7 +71,7 @@ export default function DemoTooltip({
 
             {/* Glow effect */}
             <div
-              className={`absolute -inset-0.5 bg-gradient-to-r from-green-500/15 to-green-600/15 rounded-xl blur-xl -z-10`}
+              className={`absolute -inset-[1px] bg-gradient-to-r from-green-500/20 to-green-400/20 rounded-xl blur-lg -z-10 opacity-75`}
             />
           </div>
         </motion.div>
