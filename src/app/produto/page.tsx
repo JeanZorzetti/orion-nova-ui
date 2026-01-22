@@ -7,6 +7,7 @@ import Link from "next/link";
 import { InteractiveDemo } from "@/components/demos";
 import { orionDemoConfig } from "@/lib/demo-data";
 import { ScrollReveal, CounterAnimation, ParallaxContainer } from "@/components/animations";
+import { BeforeAfterComparison } from "@/components/comparison";
 import {
   Sparkles,
   Users,
@@ -226,6 +227,55 @@ export default function ProdutoPage() {
                 </div>
               </ScrollReveal>
             </div>
+          </div>
+        </section>
+
+        {/* Before/After Comparison Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <ScrollReveal direction="up" duration={0.6}>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Veja a Transformação
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Compare a gestão tradicional com planilhas versus a experiência integrada do Orion ERP.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <BeforeAfterComparison
+              beforeImage="/images/dash.webp"
+              afterImage="/images/dash.webp"
+              beforeLabel="Planilhas Excel"
+              afterLabel="Orion ERP"
+              stats={[
+                {
+                  metric: "Tempo em Relatórios",
+                  before: "40h/mês",
+                  after: "5h/mês",
+                  improvement: "-87%",
+                },
+                {
+                  metric: "Erros de Lançamento",
+                  before: "23%",
+                  after: "0.8%",
+                  improvement: "-96%",
+                },
+                {
+                  metric: "Visibilidade de Dados",
+                  before: "Limitada",
+                  after: "Total",
+                  improvement: "+100%",
+                },
+                {
+                  metric: "Decisões Data-Driven",
+                  before: "Raras",
+                  after: "Diárias",
+                  improvement: "+500%",
+                },
+              ]}
+            />
           </div>
         </section>
 
