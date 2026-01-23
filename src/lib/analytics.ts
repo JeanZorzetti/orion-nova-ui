@@ -293,3 +293,68 @@ export const trackTimeOnPage = (seconds: 30 | 60 | 120 | 180) => {
     value: seconds,
   });
 };
+
+// Pricing page specific tracking
+export const trackPlanView = (planSlug: string) => {
+  trackEvent({
+    action: "plan_viewed",
+    category: "conversion",
+    label: planSlug,
+  });
+};
+
+export const trackPlanSelected = (planSlug: string, price: number) => {
+  trackEvent({
+    action: "plan_selected",
+    category: "conversion",
+    label: planSlug,
+    value: price,
+  });
+};
+
+export const trackCheckoutStarted = (planSlug: string, price: number) => {
+  trackEvent({
+    action: "checkout_started",
+    category: "conversion",
+    label: planSlug,
+    value: price,
+  });
+};
+
+export const trackROICalculated = (roi: number, paybackMonths: number) => {
+  trackEvent({
+    action: "roi_calculated",
+    category: "engagement",
+    label: `ROI: ${roi}%, Payback: ${paybackMonths}mo`,
+    value: Math.round(roi),
+  });
+};
+
+export const trackEarlyAdopterBannerClick = () => {
+  trackEvent({
+    action: "early_adopter_banner_clicked",
+    category: "conversion",
+  });
+};
+
+export const trackEarlyAdopterBannerDismissed = () => {
+  trackEvent({
+    action: "early_adopter_banner_dismissed",
+    category: "engagement",
+  });
+};
+
+export const trackComparisonTableViewed = () => {
+  trackEvent({
+    action: "pricing_comparison_viewed",
+    category: "engagement",
+  });
+};
+
+export const trackTrialStarted = (planSlug: string) => {
+  trackEvent({
+    action: "trial_started",
+    category: "conversion",
+    label: planSlug,
+  });
+};

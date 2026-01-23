@@ -16,6 +16,9 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Loader2, ArrowLeft, Star, Sparkles } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
 import { PricingComparison } from "@/components/pricing";
+import { ROICalculator } from "@/components/roi";
+import { EarlyAdopterBanner } from "@/components/campaigns";
+import { trackPlanView, trackPlanSelected, trackCheckoutStarted } from "@/lib/analytics";
 
 interface Plan {
   id: string;
@@ -46,6 +49,9 @@ export default function PrecosPage() {
             popular: p.slug === "professional",
           }));
           setPlans(plansWithPopular);
+
+          // Track plan views
+          plansWithPopular.forEach((p: Plan) => trackPlanView(p.slug));
         }
       } catch (error) {
         console.error("Erro ao carregar planos:", error);
@@ -61,6 +67,13 @@ export default function PrecosPage() {
     setLoadingPlan(planId);
 
     try {
+      // Find plan for tracking
+      const plan = plans.find(p => p.id === planId);
+      if (plan) {
+        trackPlanSelected(plan.slug, Number(plan.price));
+        trackCheckoutStarted(plan.slug, Number(plan.price));
+      }
+
       // Redirecionar para a página de checkout
       router.push(`/checkout?planId=${planId}`);
     } catch (error) {
@@ -78,8 +91,12 @@ export default function PrecosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Early Adopter Banner */}
+      <EarlyAdopterBanner currentCustomers={127} maxCustomers={500} />
+
+      <div className="pt-24 pb-12 px-4">
+        <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/">
@@ -218,6 +235,23 @@ export default function PrecosPage() {
           )}
         </div>
 
+        {/* ROI Calculator */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <Badge variant="secondary" className="mb-4">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Calculadora de ROI
+            </Badge>
+            <h2 className="text-3xl font-bold mb-2">
+              Quanto Você Pode Economizar?
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Descubra o retorno do investimento do Orion ERP para sua empresa
+            </p>
+          </div>
+          <ROICalculator />
+        </div>
+
         {/* Comparison Table */}
         <div className="mt-16">
           <PricingComparison />
@@ -266,6 +300,7 @@ export default function PrecosPage() {
             <span>•</span>
             <span>Boleto</span>
           </div>
+        </div>
         </div>
       </div>
     </div>
