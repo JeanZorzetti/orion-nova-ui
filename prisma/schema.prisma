@@ -43,6 +43,7 @@ model User {
   notifications Notification[]
   onboarding    UserOnboarding?
   dataMigrations DataMigration[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -678,4 +679,22 @@ enum MigrationStatus {
   COMPLETED     // Concluído com sucesso
   FAILED        // Falhou
   PARTIAL       // Concluído com erros parciais
+}
+
+// ===== WEB PUSH NOTIFICATIONS =====
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  endpoint  String   @unique
+  p256dh    String   // Chave pública para criptografia
+  auth      String   // Chave de autenticação
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }

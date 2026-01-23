@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  createOnboardingStepCompletedNotification,
+  createOnboardingCompletedNotification,
+} from "@/lib/notifications";
 
 // GET /api/user/onboarding - Buscar progresso do onboarding
 export async function GET(req: NextRequest) {
@@ -86,7 +90,8 @@ export async function POST(req: NextRequest) {
     // Ações disponíveis: complete, skip, reset
     if (action === "complete") {
       // Adicionar step aos completados se ainda não estiver
-      if (!completedSteps.includes(stepId)) {
+      const wasNewlyCompleted = !completedSteps.includes(stepId);
+      if (wasNewlyCompleted) {
         completedSteps.push(stepId);
       }
 
@@ -102,6 +107,17 @@ export async function POST(req: NextRequest) {
         "integrations",
       ];
 
+      const stepNames: Record<string, string> = {
+        welcome: "Boas-vindas",
+        company_setup: "Configuração da Empresa",
+        fiscal_setup: "Configuração Fiscal",
+        first_product: "Primeiro Produto",
+        first_customer: "Primeiro Cliente",
+        first_sale: "Primeira Venda",
+        migration: "Migração de Dados",
+        integrations: "Integrações",
+      };
+
       const currentIndex = steps.indexOf(stepId);
       const nextStep = steps[currentIndex + 1] || null;
 
@@ -114,6 +130,7 @@ export async function POST(req: NextRequest) {
         "first_customer",
         "first_sale",
       ];
+      const wasAlreadyCompleted = onboarding.isCompleted;
       const allRequiredCompleted = requiredSteps.every((s) =>
         completedSteps.includes(s)
       );
@@ -128,6 +145,36 @@ export async function POST(req: NextRequest) {
           completedAt: allRequiredCompleted ? new Date() : null,
         },
       });
+
+      // Criar notificação para step completado (apenas se foi recém-completado)
+      if (wasNewlyCompleted) {
+        try {
+          await createOnboardingStepCompletedNotification(
+            session.user.id,
+            stepId,
+            stepNames[stepId] || stepId
+          );
+        } catch (notifError) {
+          console.error(
+            "Erro ao criar notificação de step completado:",
+            notifError
+          );
+          // Não bloqueia o fluxo
+        }
+      }
+
+      // Criar notificação de onboarding completo (apenas na primeira vez)
+      if (allRequiredCompleted && !wasAlreadyCompleted) {
+        try {
+          await createOnboardingCompletedNotification(session.user.id);
+        } catch (notifError) {
+          console.error(
+            "Erro ao criar notificação de onboarding completo:",
+            notifError
+          );
+          // Não bloqueia o fluxo
+        }
+      }
     } else if (action === "skip") {
       // Marcar como skipado (apenas para steps opcionais)
       const optionalSteps = ["migration", "integrations"];

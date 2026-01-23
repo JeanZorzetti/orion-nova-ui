@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { createSalePaidNotification } from "@/lib/notifications";
 
 // Schema de validação para registro de pagamento
 const registerPaymentSchema = z.object({
@@ -55,6 +56,25 @@ export async function PATCH(
         },
       },
     });
+
+    // Criar notificação se pagamento foi marcado como PAID
+    if (
+      validatedData.paymentStatus === "PAID" &&
+      existingOrder.paymentStatus !== "PAID"
+    ) {
+      try {
+        await createSalePaidNotification(
+          session.user.id,
+          order.id,
+          order.orderNumber,
+          Number(order.total),
+          order.customer.name
+        );
+      } catch (notifError) {
+        console.error("Erro ao criar notificação de venda paga:", notifError);
+        // Não bloqueia o fluxo - pagamento já foi registrado
+      }
+    }
 
     return NextResponse.json(order);
   } catch (error) {
