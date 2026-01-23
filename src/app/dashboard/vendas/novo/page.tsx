@@ -96,7 +96,12 @@ export default function NovoVendaPage() {
       const response = await fetch("/api/products?limit=1000&isActive=true");
       const data = await response.json();
       if (response.ok) {
-        setProducts(data.products);
+        // Garantir que price seja número
+        const productsWithNumberPrice = data.products.map((p: any) => ({
+          ...p,
+          price: typeof p.price === 'number' ? p.price : parseFloat(p.price) || 0,
+        }));
+        setProducts(productsWithNumberPrice);
       }
     } catch (error) {
       console.error("Erro ao carregar produtos:", error);
@@ -120,8 +125,8 @@ export default function NovoVendaPage() {
       productId: product.id,
       productName: product.name,
       quantity: 1,
-      unitPrice: product.price,
-      total: product.price,
+      unitPrice: Number(product.price),
+      total: Number(product.price),
     };
 
     setItems([...items, newItem]);
@@ -333,7 +338,7 @@ export default function NovoVendaPage() {
                         <div className="flex-1">
                           <div className="font-medium">{product.name}</div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2">
-                            <span>R$ {product.price.toFixed(2)}</span>
+                            <span>R$ {Number(product.price).toFixed(2)}</span>
                             {product.sku && <span>• SKU: {product.sku}</span>}
                             <span>• Estoque: {product.stockQuantity}</span>
                           </div>
