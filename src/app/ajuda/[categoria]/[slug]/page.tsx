@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { getArticle, helpArticles } from "@/data/help-articles";
 
+// Gera páginas estáticas para todos os artigos no build
 export async function generateStaticParams() {
   return helpArticles.map((article) => ({
     categoria: article.categorySlug,
@@ -24,12 +25,16 @@ export async function generateStaticParams() {
   }));
 }
 
+// Força geração estática e retorna 404 para rotas não geradas
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {
-  params: { categoria: string; slug: string };
+  params: Promise<{ categoria: string; slug: string }>;
 }): Promise<Metadata> {
-  const article = getArticle(params.categoria, params.slug);
+  const { categoria, slug } = await params;
+  const article = getArticle(categoria, slug);
 
   if (!article) {
     return {
@@ -43,12 +48,13 @@ export async function generateMetadata({
   };
 }
 
-export default function ArticlePage({
+export default async function ArticlePage({
   params,
 }: {
-  params: { categoria: string; slug: string };
+  params: Promise<{ categoria: string; slug: string }>;
 }) {
-  const article = getArticle(params.categoria, params.slug);
+  const { categoria, slug } = await params;
+  const article = getArticle(categoria, slug);
 
   if (!article) {
     notFound();
