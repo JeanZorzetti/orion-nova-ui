@@ -2,212 +2,234 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/dashboard/stats - Estatísticas do dashboard
-export async function GET(request: NextRequest) {
+// GET /api/dashboard/stats - Buscar estatísticas do dashboard
+export async function GET(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+
+    if (!session?.user) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
     const userId = session.user.id;
 
-    // Data de 30 dias atrás
+    // Buscar estatísticas em paralelo para melhor performance
+    const [customersCount, productsCount, salesCount, salesOrdersData] =
+      await Promise.all([
+        // Total de clientes
+        prisma.customer.count({
+          where: {
+            userId,
+            isActive: true,
+          },
+        }),
+
+        // Total de produtos
+        prisma.product.count({
+          where: {
+            userId,
+            isActive: true,
+          },
+        }),
+
+        // Total de vendas (pedidos completados)
+        prisma.salesOrder.count({
+          where: {
+            userId,
+            status: "COMPLETED",
+          },
+        }),
+
+        // Faturamento total (soma de pedidos completados)
+        prisma.salesOrder.findMany({
+          where: {
+            userId,
+            status: "COMPLETED",
+          },
+          select: {
+            total: true,
+          },
+        }),
+      ]);
+
+    // Calcular faturamento total
+    const revenue = salesOrdersData.reduce((sum, order) => {
+      return sum + Number(order.total);
+    }, 0);
+
+    // Buscar estatísticas adicionais
+    const [pendingSalesCount, overdueSalesCount, topProducts, recentSales] =
+      await Promise.all([
+        // Vendas pendentes
+        prisma.salesOrder.count({
+          where: {
+            userId,
+            status: { in: ["DRAFT", "CONFIRMED", "PROCESSING"] },
+          },
+        }),
+
+        // Vendas atrasadas (paymentStatus = OVERDUE)
+        prisma.salesOrder.count({
+          where: {
+            userId,
+            paymentStatus: "OVERDUE",
+          },
+        }),
+
+        // Top 5 produtos mais vendidos
+        prisma.orderItem.groupBy({
+          by: ["productId"],
+          where: {
+            order: {
+              userId,
+              status: "COMPLETED",
+            },
+          },
+          _sum: {
+            quantity: true,
+          },
+          orderBy: {
+            _sum: {
+              quantity: "desc",
+            },
+          },
+          take: 5,
+        }),
+
+        // Últimas 5 vendas
+        prisma.salesOrder.findMany({
+          where: {
+            userId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 5,
+          select: {
+            id: true,
+            orderNumber: true,
+            total: true,
+            status: true,
+            createdAt: true,
+            customer: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+    // Buscar detalhes dos top produtos
+    const topProductsDetails = await Promise.all(
+      topProducts.map(async (item) => {
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId },
+          select: {
+            name: true,
+            sku: true,
+            price: true,
+          },
+        });
+        return {
+          ...product,
+          totalSold: item._sum.quantity || 0,
+        };
+      })
+    );
+
+    // Estatísticas mensais (últimos 30 dias)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // Data de hoje no início do dia
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Data de início do mês
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-    // Buscar estatísticas em paralelo
     const [
-      totalCustomers,
-      totalProducts,
-      totalOrders,
-      totalOrdersThisMonth,
-      revenueThisMonth,
-      recentOrders,
-      lowStockProducts,
-      salesLast30Days,
-      topCustomers,
+      monthlySalesCount,
+      monthlyRevenue,
+      newCustomersCount,
+      newProductsCount,
     ] = await Promise.all([
-      // Total de clientes
-      prisma.customer.count({
-        where: { userId, isActive: true },
-      }),
-
-      // Total de produtos
-      prisma.product.count({
-        where: { userId, isActive: true },
-      }),
-
-      // Total de pedidos
-      prisma.salesOrder.count({
-        where: { userId },
-      }),
-
-      // Total de pedidos este mês
       prisma.salesOrder.count({
         where: {
           userId,
-          orderDate: {
-            gte: startOfMonth,
-          },
+          status: "COMPLETED",
+          createdAt: { gte: thirtyDaysAgo },
         },
       }),
 
-      // Receita este mês
-      prisma.salesOrder.aggregate({
-        where: {
-          userId,
-          orderDate: {
-            gte: startOfMonth,
-          },
-          status: {
-            in: ["CONFIRMED", "PROCESSING", "COMPLETED"],
-          },
-        },
-        _sum: {
-          total: true,
-        },
-      }),
-
-      // Pedidos recentes (últimos 5)
       prisma.salesOrder.findMany({
-        where: { userId },
-        include: {
-          customer: {
-            select: {
-              name: true,
-            },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      }),
-
-      // Produtos com estoque baixo - buscar todos e filtrar
-      prisma.product.findMany({
         where: {
           userId,
-          type: "PRODUCT",
-          isActive: true,
+          status: "COMPLETED",
+          createdAt: { gte: thirtyDaysAgo },
         },
-        orderBy: {
-          stockQuantity: "asc",
-        },
-        take: 100, // Buscar mais para filtrar depois
-      }),
-
-      // Vendas dos últimos 30 dias (agrupadas por dia)
-      prisma.salesOrder.groupBy({
-        by: ["orderDate"],
-        where: {
-          userId,
-          orderDate: {
-            gte: thirtyDaysAgo,
-          },
-          status: {
-            in: ["CONFIRMED", "PROCESSING", "COMPLETED"],
-          },
-        },
-        _sum: {
+        select: {
           total: true,
         },
-        _count: {
-          id: true,
-        },
-        orderBy: {
-          orderDate: "asc",
+      }),
+
+      prisma.customer.count({
+        where: {
+          userId,
+          createdAt: { gte: thirtyDaysAgo },
         },
       }),
 
-      // Top 5 clientes (por valor de pedidos)
-      prisma.salesOrder.groupBy({
-        by: ["customerId"],
+      prisma.product.count({
         where: {
           userId,
-          status: {
-            in: ["CONFIRMED", "PROCESSING", "COMPLETED"],
-          },
+          createdAt: { gte: thirtyDaysAgo },
         },
-        _sum: {
-          total: true,
-        },
-        _count: {
-          id: true,
-        },
-        orderBy: {
-          _sum: {
-            total: "desc",
-          },
-        },
-        take: 5,
       }),
     ]);
 
-    // Buscar nomes dos top clientes
-    const topCustomerIds = topCustomers.map((tc) => tc.customerId);
-    const customersData = await prisma.customer.findMany({
-      where: {
-        id: {
-          in: topCustomerIds,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-
-    // Mapear top clientes com nomes
-    const topCustomersWithNames = topCustomers.map((tc) => ({
-      customer: customersData.find((c) => c.id === tc.customerId),
-      totalSpent: tc._sum.total || 0,
-      orderCount: tc._count.id,
-    }));
-
-    // Formatar dados de vendas dos últimos 30 dias
-    const salesChartData = salesLast30Days.map((sale) => ({
-      date: sale.orderDate.toISOString().split("T")[0],
-      total: Number(sale._sum.total || 0),
-      count: sale._count.id,
-    }));
-
-    // Filtrar produtos com estoque baixo
-    const filteredLowStock = lowStockProducts
-      .filter((product) => product.stockQuantity <= product.minStock)
-      .slice(0, 5);
+    const monthlyRevenueTotal = monthlyRevenue.reduce((sum, order) => {
+      return sum + Number(order.total);
+    }, 0);
 
     return NextResponse.json({
-      summary: {
-        totalCustomers,
-        totalProducts,
-        totalOrders,
-        totalOrdersThisMonth,
-        revenueThisMonth: Number(revenueThisMonth._sum.total || 0),
-      },
-      recentOrders: recentOrders.map((order) => ({
-        id: order.id,
-        orderNumber: order.orderNumber,
-        customer: order.customer.name,
-        total: Number(order.total),
-        status: order.status,
-        paymentStatus: order.paymentStatus,
-        orderDate: order.orderDate,
+      // Estatísticas principais (para os cards)
+      customers: customersCount,
+      products: productsCount,
+      sales: salesCount,
+      revenue: revenue,
+
+      // Estatísticas adicionais
+      pendingSales: pendingSalesCount,
+      overdueSales: overdueSalesCount,
+
+      // Top produtos
+      topProducts: topProductsDetails,
+
+      // Vendas recentes
+      recentSales: recentSales.map((sale) => ({
+        id: sale.id,
+        orderNumber: sale.orderNumber,
+        customerName: sale.customer.name,
+        total: Number(sale.total),
+        status: sale.status,
+        date: sale.createdAt,
       })),
-      lowStockProducts: filteredLowStock,
-      salesChart: salesChartData,
-      topCustomers: topCustomersWithNames,
+
+      // Estatísticas mensais (últimos 30 dias)
+      monthly: {
+        sales: monthlySalesCount,
+        revenue: monthlyRevenueTotal,
+        newCustomers: newCustomersCount,
+        newProducts: newProductsCount,
+      },
+
+      // Crescimento comparado com período anterior
+      growth: {
+        // TODO: Implementar cálculo de crescimento comparando com 30-60 dias atrás
+        salesGrowth: 0,
+        revenueGrowth: 0,
+        customersGrowth: 0,
+      },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao buscar estatísticas:", error);
     return NextResponse.json(
-      { error: "Erro ao buscar estatísticas" },
+      { error: error.message || "Erro ao buscar estatísticas" },
       { status: 500 }
     );
   }
