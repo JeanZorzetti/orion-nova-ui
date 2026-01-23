@@ -283,31 +283,6 @@ export default function AjudaPage() {
           </div>
         </section>
 
-        {/* Categories */}
-        <section className="py-12 px-4">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-2xl font-bold mb-6">Explorar por Categoria</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {categories.map((category, index) => (
-                <Link key={index} href={`/ajuda/${category.slug}`}>
-                  <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-colors h-full">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                      <category.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h3 className="font-semibold mb-1">{category.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {category.description}
-                    </p>
-                    <span className="text-xs text-primary">
-                      {category.articles} artigos
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Popular Articles */}
         <section className="py-12 px-4 bg-muted/30">
           <div className="container mx-auto max-w-6xl">
