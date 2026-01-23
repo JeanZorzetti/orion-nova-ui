@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-// PATCH /api/notifications/[id] - Marcar notificação como lida
+// PATCH /api/notifications/[id] - Marcar notificação individual como lida
 export async function PATCH(
-  request: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -29,9 +29,13 @@ export async function PATCH(
     }
 
     if (notification.userId !== session.user.id) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Não autorizado a modificar esta notificação" },
+        { status: 403 }
+      );
     }
 
+    // Marcar como lida
     const updatedNotification = await prisma.notification.update({
       where: { id },
       data: {
@@ -41,10 +45,10 @@ export async function PATCH(
     });
 
     return NextResponse.json(updatedNotification);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao marcar notificação como lida:", error);
     return NextResponse.json(
-      { error: "Erro ao marcar notificação como lida" },
+      { error: error.message || "Erro ao marcar notificação como lida" },
       { status: 500 }
     );
   }
@@ -52,7 +56,7 @@ export async function PATCH(
 
 // DELETE /api/notifications/[id] - Deletar notificação
 export async function DELETE(
-  request: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -77,18 +81,22 @@ export async function DELETE(
     }
 
     if (notification.userId !== session.user.id) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Não autorizado a deletar esta notificação" },
+        { status: 403 }
+      );
     }
 
+    // Deletar notificação
     await prisma.notification.delete({
       where: { id },
     });
 
     return NextResponse.json({ message: "Notificação deletada com sucesso" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao deletar notificação:", error);
     return NextResponse.json(
-      { error: "Erro ao deletar notificação" },
+      { error: error.message || "Erro ao deletar notificação" },
       { status: 500 }
     );
   }
