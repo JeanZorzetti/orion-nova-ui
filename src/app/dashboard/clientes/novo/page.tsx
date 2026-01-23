@@ -53,6 +53,21 @@ export default function NovoClientePage() {
       });
 
       if (response.ok) {
+        // Marcar step de onboarding como completo
+        try {
+          await fetch("/api/user/onboarding", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              stepId: "first_customer",
+              action: "complete",
+            }),
+          });
+        } catch (onboardingError) {
+          console.error("Erro ao atualizar onboarding:", onboardingError);
+          // Não bloqueia o fluxo
+        }
+
         router.push("/dashboard/clientes");
         router.refresh();
       } else {
