@@ -154,31 +154,37 @@ const popularArticles = [
   {
     title: "Como cadastrar meu primeiro cliente",
     category: "Clientes",
+    categorySlug: "clientes",
     slug: "cadastrar-cliente",
   },
   {
     title: "Configurando alertas de estoque baixo",
     category: "Estoque",
+    categorySlug: "estoque",
     slug: "alertas-estoque",
   },
   {
     title: "Como emitir uma NF-e",
     category: "Fiscal",
+    categorySlug: "fiscal",
     slug: "emitir-nfe",
   },
   {
     title: "Criando seu primeiro orçamento",
     category: "Vendas",
+    categorySlug: "vendas",
     slug: "criar-orcamento",
   },
   {
     title: "Entendendo o fluxo de caixa",
     category: "Financeiro",
+    categorySlug: "financeiro",
     slug: "fluxo-caixa",
   },
   {
     title: "Conversando com a Orion AI",
     category: "IA",
+    categorySlug: "ia",
     slug: "usar-orion-ai",
   },
 ];
@@ -288,16 +294,10 @@ export default function AjudaPage() {
           <div className="container mx-auto max-w-6xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Artigos Populares</h2>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/ajuda/artigos">
-                  Ver todos
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {popularArticles.map((article, index) => (
-                <Link key={index} href={`/ajuda/artigos/${article.slug}`}>
+                <Link key={index} href={`/ajuda/${article.categorySlug}/${article.slug}`}>
                   <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/50 transition-colors">
                     <BookOpen className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                     <div className="min-w-0">
@@ -341,7 +341,7 @@ export default function AjudaPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      {categoryArticles.slice(0, 5).map((article, artIndex) => (
+                      {categoryArticles.map((article, artIndex) => (
                         <Link
                           key={artIndex}
                           href={`/ajuda/${category.slug}/${article.slug}`}
@@ -355,17 +355,6 @@ export default function AjudaPage() {
                         </Link>
                       ))}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full mt-4"
-                      asChild
-                    >
-                      <Link href={`/ajuda/${category.slug}`}>
-                        Ver todos os artigos
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
-                    </Button>
                   </div>
                 );
               })}
