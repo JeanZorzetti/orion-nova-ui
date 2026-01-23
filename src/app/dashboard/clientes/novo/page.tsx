@@ -76,7 +76,7 @@ export default function NovoClientePage() {
 
         // Redirecionar para próxima etapa do onboarding ou para listagem
         if (shouldContinueOnboarding) {
-          router.push("/dashboard/vendas/nova");
+          router.push("/dashboard/vendas/novo");
         } else {
           router.push("/dashboard/clientes");
         }
