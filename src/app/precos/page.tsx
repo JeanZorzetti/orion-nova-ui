@@ -13,8 +13,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Loader2, ArrowLeft, Star } from "lucide-react";
+import { Check, Loader2, ArrowLeft, Star, Sparkles } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
+import { PricingComparison } from "@/components/pricing";
 
 interface Plan {
   id: string;
@@ -215,6 +216,42 @@ export default function PrecosPage() {
               );
             })
           )}
+        </div>
+
+        {/* Comparison Table */}
+        <div className="mt-16">
+          <PricingComparison />
+        </div>
+
+        {/* Value Proposition */}
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          <div className="text-center p-6 bg-card border border-border rounded-xl">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Sparkles className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="font-semibold mb-2">IA Nativa</h3>
+            <p className="text-sm text-muted-foreground">
+              Único ERP brasileiro com inteligência artificial real em todos os planos
+            </p>
+          </div>
+          <div className="text-center p-6 bg-card border border-border rounded-xl">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="font-semibold mb-2">Preço Justo</h3>
+            <p className="text-sm text-muted-foreground">
+              25% mais barato que Omie, 60% mais barato que SAP/TOTVS
+            </p>
+          </div>
+          <div className="text-center p-6 bg-card border border-border rounded-xl">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Star className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="font-semibold mb-2">30 Dias Grátis</h3>
+            <p className="text-sm text-muted-foreground">
+              Teste sem compromisso. Sem cartão de crédito no Starter
+            </p>
+          </div>
         </div>
 
         {/* Footer */}
