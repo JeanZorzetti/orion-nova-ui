@@ -61,9 +61,10 @@ export default function NovoProdutoPage() {
       });
 
       if (response.ok) {
-        // Marcar step de onboarding como completo
+        // Marcar step de onboarding como completo e verificar se deve continuar
+        let shouldContinueOnboarding = false;
         try {
-          await fetch("/api/user/onboarding", {
+          const onboardingResponse = await fetch("/api/user/onboarding", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -71,12 +72,22 @@ export default function NovoProdutoPage() {
               action: "complete",
             }),
           });
+
+          if (onboardingResponse.ok) {
+            const data = await onboardingResponse.json();
+            // Se ainda não completou o onboarding, continuar para próxima etapa
+            shouldContinueOnboarding = !data.isCompleted;
+          }
         } catch (onboardingError) {
           console.error("Erro ao atualizar onboarding:", onboardingError);
-          // Não bloqueia o fluxo
         }
 
-        router.push("/dashboard/produtos");
+        // Redirecionar para próxima etapa do onboarding ou para listagem
+        if (shouldContinueOnboarding) {
+          router.push("/dashboard/clientes/novo");
+        } else {
+          router.push("/dashboard/produtos");
+        }
         router.refresh();
       } else {
         const data = await response.json();

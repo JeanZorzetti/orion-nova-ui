@@ -86,7 +86,7 @@ export default function OnboardingChecklist({
       description: "Crie sua primeira venda ou orçamento",
       icon: <ShoppingCart className="h-5 w-5" />,
       completed: completedSteps.includes("first_sale"),
-      link: "/dashboard/vendas/nova",
+      link: "/dashboard/vendas/novo",
     },
     {
       id: "migration",
