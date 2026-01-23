@@ -10,7 +10,6 @@ import {
   Search,
   BookOpen,
   MessageSquare,
-  Video,
   FileText,
   Users,
   Package,
@@ -22,7 +21,6 @@ import {
   ArrowRight,
   ChevronRight,
   Mail,
-  Phone,
   Clock,
   ExternalLink,
 } from "lucide-react";
@@ -89,6 +87,69 @@ const categories = [
   },
 ];
 
+const articlesByCategory = {
+  clientes: [
+    { title: "Como cadastrar meu primeiro cliente", slug: "cadastrar-cliente" },
+    { title: "Importando clientes via planilha", slug: "importar-clientes" },
+    { title: "Segmentando clientes por categoria", slug: "segmentar-clientes" },
+    { title: "Histórico de interações com clientes", slug: "historico-clientes" },
+    { title: "Gerenciando contatos e responsáveis", slug: "contatos-clientes" },
+  ],
+  estoque: [
+    { title: "Cadastrando produtos e serviços", slug: "cadastrar-produtos" },
+    { title: "Configurando alertas de estoque baixo", slug: "alertas-estoque" },
+    { title: "Controlando entrada e saída de produtos", slug: "movimentacao-estoque" },
+    { title: "Realizando inventário", slug: "inventario" },
+    { title: "Gerenciando múltiplos depósitos", slug: "multiplos-depositos" },
+  ],
+  vendas: [
+    { title: "Criando seu primeiro orçamento", slug: "criar-orcamento" },
+    { title: "Convertendo orçamento em pedido", slug: "converter-orcamento" },
+    { title: "Gerenciando funil de vendas", slug: "funil-vendas" },
+    { title: "Configurando comissões de vendedores", slug: "comissoes" },
+    { title: "Emitindo pedidos de venda", slug: "pedidos-venda" },
+    { title: "Acompanhando métricas de vendas", slug: "metricas-vendas" },
+  ],
+  financeiro: [
+    { title: "Entendendo o fluxo de caixa", slug: "fluxo-caixa" },
+    { title: "Contas a pagar: cadastro e controle", slug: "contas-pagar" },
+    { title: "Contas a receber: gestão de cobranças", slug: "contas-receber" },
+    { title: "Conciliação bancária automática", slug: "conciliacao-bancaria" },
+    { title: "Gerenciando formas de pagamento", slug: "formas-pagamento" },
+    { title: "Relatório DRE (Demonstrativo de Resultados)", slug: "relatorio-dre" },
+  ],
+  relatorios: [
+    { title: "Dashboard: principais indicadores", slug: "dashboard" },
+    { title: "Relatório de vendas por período", slug: "relatorio-vendas" },
+    { title: "Análise de produtos mais vendidos", slug: "produtos-mais-vendidos" },
+    { title: "Exportando relatórios em Excel/PDF", slug: "exportar-relatorios" },
+    { title: "Personalizando dashboards", slug: "personalizar-dashboards" },
+  ],
+  ia: [
+    { title: "Conversando com a Orion AI", slug: "usar-orion-ai" },
+    { title: "Comandos de voz para cadastros rápidos", slug: "comandos-voz" },
+    { title: "Previsão de demanda com IA", slug: "previsao-demanda" },
+    { title: "Análise inteligente de dados", slug: "analise-inteligente" },
+    { title: "Sugestões automáticas de precificação", slug: "precificacao-ia" },
+  ],
+  configuracoes: [
+    { title: "Configuração inicial do sistema", slug: "configuracao-inicial" },
+    { title: "Gerenciando usuários e permissões", slug: "usuarios-permissoes" },
+    { title: "Personalizando aparência e tema", slug: "personalizar-tema" },
+    { title: "Integrações com e-commerce", slug: "integracoes-ecommerce" },
+    { title: "Backup automático de dados", slug: "backup-dados" },
+    { title: "Configurando notificações", slug: "configurar-notificacoes" },
+  ],
+  fiscal: [
+    { title: "Como emitir uma NF-e", slug: "emitir-nfe" },
+    { title: "Configurando certificado digital", slug: "certificado-digital" },
+    { title: "Impostos: ICMS, PIS, COFINS", slug: "impostos" },
+    { title: "Carta de Correção Eletrônica (CC-e)", slug: "carta-correcao" },
+    { title: "Cancelamento de notas fiscais", slug: "cancelar-nfe" },
+    { title: "SPED Fiscal e obrigações acessórias", slug: "sped-fiscal" },
+  ],
+};
+
 const popularArticles = [
   {
     title: "Como cadastrar meu primeiro cliente",
@@ -150,29 +211,6 @@ const faqs = [
   },
 ];
 
-const videoTutorials = [
-  {
-    title: "Primeiros Passos no Orion ERP",
-    duration: "5:30",
-    slug: "primeiros-passos",
-  },
-  {
-    title: "Cadastrando Produtos e Serviços",
-    duration: "8:15",
-    slug: "cadastro-produtos",
-  },
-  {
-    title: "Gerenciando seu Fluxo de Caixa",
-    duration: "12:00",
-    slug: "fluxo-caixa",
-  },
-  {
-    title: "Usando a Orion AI",
-    duration: "6:45",
-    slug: "orion-ai",
-  },
-];
-
 export default function AjudaPage() {
   return (
     <div className="min-h-screen bg-background">
@@ -213,21 +251,7 @@ export default function AjudaPage() {
         {/* Quick Links */}
         <section className="py-8 px-4">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link href="#tutoriais">
-                <div className="flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/50 transition-colors">
-                  <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                    <Video className="w-6 h-6 text-blue-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Tutoriais em Vídeo</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Aprenda assistindo
-                    </p>
-                  </div>
-                </div>
-              </Link>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
               <Link href="#faq">
                 <div className="flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/50 transition-colors">
                   <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
@@ -316,37 +340,60 @@ export default function AjudaPage() {
           </div>
         </section>
 
-        {/* Video Tutorials */}
-        <section id="tutoriais" className="py-12 px-4">
+        {/* Articles by Category */}
+        <section className="py-12 px-4">
           <div className="container mx-auto max-w-6xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Tutoriais em Vídeo</h2>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/ajuda/videos">
-                  Ver todos
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {videoTutorials.map((video, index) => (
-                <Link key={index} href={`/ajuda/videos/${video.slug}`}>
-                  <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-colors">
-                    <div className="aspect-video bg-muted flex items-center justify-center relative">
-                      <Video className="w-12 h-12 text-muted-foreground/30" />
-                      <Badge
-                        variant="secondary"
-                        className="absolute bottom-2 right-2"
-                      >
-                        {video.duration}
-                      </Badge>
+            <h2 className="text-2xl font-bold mb-8 text-center">
+              Guias Completos por Categoria
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {categories.map((category, catIndex) => {
+                const categoryArticles = articlesByCategory[category.slug as keyof typeof articlesByCategory] || [];
+                return (
+                  <div
+                    key={catIndex}
+                    className="bg-card border border-border rounded-xl p-6"
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <category.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{category.title}</h3>
+                        <p className="text-xs text-muted-foreground">
+                          {categoryArticles.length} artigos disponíveis
+                        </p>
+                      </div>
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-medium text-sm">{video.title}</h3>
+                    <div className="space-y-2">
+                      {categoryArticles.slice(0, 5).map((article, artIndex) => (
+                        <Link
+                          key={artIndex}
+                          href={`/ajuda/${category.slug}/${article.slug}`}
+                        >
+                          <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                            <span className="text-sm group-hover:text-primary transition-colors">
+                              {article.title}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-4"
+                      asChild
+                    >
+                      <Link href={`/ajuda/${category.slug}`}>
+                        Ver todos os artigos
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
                   </div>
-                </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
