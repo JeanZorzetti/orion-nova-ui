@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Loader2, ArrowLeft, Star, Sparkles } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Check, Loader2, ArrowLeft, Star, Sparkles, AlertTriangle, Clock } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
 import { PricingComparison } from "@/components/pricing";
 import { ROICalculator } from "@/components/roi";
@@ -30,11 +31,21 @@ interface Plan {
   popular?: boolean;
 }
 
-export default function PrecosPage() {
+function PrecosPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showTrialExpiredAlert, setShowTrialExpiredAlert] = useState(false);
+
+  // Verificar se foi redirecionado por trial expirado
+  useEffect(() => {
+    const trialParam = searchParams.get("trial");
+    if (trialParam === "expired") {
+      setShowTrialExpiredAlert(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -106,6 +117,20 @@ export default function PrecosPage() {
             </Button>
           </Link>
         </div>
+
+        {/* Trial Expired Alert */}
+        {showTrialExpiredAlert && (
+          <Alert variant="destructive" className="mb-8">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Seu Trial Expirou
+            </AlertTitle>
+            <AlertDescription>
+              Seu período de teste de 30 dias chegou ao fim. Escolha um plano abaixo para continuar usando o Orion ERP sem interrupções.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Title */}
         <div className="text-center mb-12">
@@ -304,5 +329,20 @@ export default function PrecosPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PrecosPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando planos...</p>
+        </div>
+      </div>
+    }>
+      <PrecosPageContent />
+    </Suspense>
   );
 }
