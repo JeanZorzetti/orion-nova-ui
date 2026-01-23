@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { helpArticles } from "@/data/help-articles";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br";
 
@@ -189,5 +190,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // If database is not available, continue without categories
   }
 
-  return [...staticPages, ...blogPosts, ...categories];
+  // Help articles (44 artigos estáticos)
+  const helpArticlePages = helpArticles.map((article) => ({
+    url: `${BASE_URL}/ajuda/${article.categorySlug}/${article.slug}`,
+    lastModified: new Date(article.lastUpdated),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...blogPosts, ...categories, ...helpArticlePages];
 }
