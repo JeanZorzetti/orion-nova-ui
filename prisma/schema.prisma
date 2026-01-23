@@ -41,6 +41,8 @@ model User {
   salesOrders   SalesOrder[]
   financialTransactions FinancialTransaction[]
   notifications Notification[]
+  onboarding    UserOnboarding?
+  dataMigrations DataMigration[]
 
   @@map("users")
 }
@@ -583,4 +585,97 @@ enum FinancialStatus {
   PAID
   OVERDUE
   CANCELLED
+}
+
+// ===== ONBOARDING & MIGRAÇÃO =====
+
+// Onboarding do usuário (acompanhamento de progresso)
+model UserOnboarding {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Progresso de onboarding (checklist)
+  completedSteps Json    @default("[]") // Array de step IDs completados
+  currentStep    String? // Step atual em progresso
+
+  // Steps disponíveis:
+  // 1. welcome - Boas-vindas e tour inicial
+  // 2. company_setup - Configurar dados da empresa
+  // 3. fiscal_setup - Configurar dados fiscais (CNPJ, regime tributário)
+  // 4. first_product - Cadastrar primeiro produto
+  // 5. first_customer - Cadastrar primeiro cliente
+  // 6. first_sale - Criar primeira venda
+  // 7. migration - Migrar dados de outro ERP (opcional)
+  // 8. integrations - Conectar integrações (opcional)
+  // 9. completed - Onboarding concluído
+
+  isCompleted   Boolean  @default(false)
+  completedAt   DateTime?
+
+  // Preferências do usuário
+  skipTour      Boolean  @default(false)
+  skipMigration Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("user_onboarding")
+}
+
+// Migração de dados de concorrentes
+model DataMigration {
+  id              String            @id @default(cuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sourceErp       SourceErp         // ERP de origem (Omie, Bling, Tiny, etc)
+  status          MigrationStatus   @default(PENDING)
+
+  // Dados da migração
+  fileName        String?           // Nome do arquivo original
+  fileSize        Int?              // Tamanho em bytes
+  fileType        String?           // csv, xlsx, json
+
+  // Mapeamento de entidades
+  entitiesMapping Json?             // Mapeamento de campos customizado
+
+  // Estatísticas
+  totalRecords    Int               @default(0)
+  processedRecords Int              @default(0)
+  successRecords  Int               @default(0)
+  errorRecords    Int               @default(0)
+
+  // Logs e erros
+  errors          Json?             // Array de erros encontrados
+  warnings        Json?             // Array de avisos
+
+  // Datas
+  startedAt       DateTime?
+  completedAt     DateTime?
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([userId, status])
+  @@map("data_migrations")
+}
+
+enum SourceErp {
+  OMIE
+  BLING
+  TINY
+  CONTA_AZUL
+  SAP
+  TOTVS
+  OTHER
+}
+
+enum MigrationStatus {
+  PENDING       // Aguardando início
+  VALIDATING    // Validando arquivo
+  PROCESSING    // Processando dados
+  COMPLETED     // Concluído com sucesso
+  FAILED        // Falhou
+  PARTIAL       // Concluído com erros parciais
 }
