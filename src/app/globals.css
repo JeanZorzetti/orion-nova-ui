@@ -23,7 +23,7 @@
     --secondary-foreground: 222 47% 11%;
 
     --muted: 217 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 16% 40%; /* Improved contrast for WCAG AAA */
 
     --accent: 271 70% 60%;
     --accent-foreground: 0 0% 100%;
@@ -239,8 +239,12 @@
 
   .btn-ghost {
     @apply px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300;
-    border: 1px solid hsl(0, 0%, 100%, 0.2);
+    border: 1px solid hsl(0, 0%, 0%, 0.12); /* Better visibility in light mode */
     color: hsl(var(--foreground));
+  }
+
+  .dark .btn-ghost {
+    border: 1px solid hsl(0, 0%, 100%, 0.2);
   }
 
   .btn-ghost:hover {
@@ -251,9 +255,15 @@
   /* Animated background grid */
   .grid-bg {
     background-image:
+      linear-gradient(hsl(0, 0%, 0%, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(0, 0%, 0%, 0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .dark .grid-bg {
+    background-image:
       linear-gradient(hsl(217, 33%, 15%, 0.3) 1px, transparent 1px),
       linear-gradient(90deg, hsl(217, 33%, 15%, 0.3) 1px, transparent 1px);
-    background-size: 60px 60px;
   }
 
   /* Floating orbs */
