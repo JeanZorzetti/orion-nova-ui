@@ -6,11 +6,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   reactStrictMode: true,
-
-  // Required for Sentry
-  experimental: {
-    instrumentationHook: true,
-  },
 };
 
 // Sentry configuration options
