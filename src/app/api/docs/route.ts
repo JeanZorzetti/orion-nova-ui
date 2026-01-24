@@ -5,8 +5,8 @@ const config = {
   spec: {
     content: openApiSpec,
   },
-  theme: "purple",
-  layout: "modern",
+  theme: "purple" as const,
+  layout: "modern" as const,
   showSidebar: true,
   darkMode: true,
 };
