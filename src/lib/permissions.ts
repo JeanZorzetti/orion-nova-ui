@@ -126,7 +126,7 @@ export function canManage(userRole: UserRole, module: Module): boolean {
 export function getRolePermissions(
   userRole: UserRole
 ): Record<Module, Permission[]> {
-  return ROLE_PERMISSIONS[userRole] || {};
+  return ROLE_PERMISSIONS[userRole] || ({} as Record<Module, Permission[]>);
 }
 
 /**
