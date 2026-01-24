@@ -8,6 +8,7 @@ import { NotificationsDropdown } from "@/components/notifications-dropdown";
 import { CalendarDropdown } from "@/components/calendar-dropdown";
 import { AIAssistant } from "@/components/ai-assistant";
 import { Onboarding, ReopenOnboarding } from "@/components/onboarding";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { Calendar, User, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import {
@@ -126,6 +127,9 @@ export default async function DashboardLayout({
 
       {/* Onboarding */}
       <Onboarding />
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
     </div>
   );
 }
