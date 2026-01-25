@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { userId, type, title, message, link } = body;
+    const { userId, type, title, message, link, metadata } = body;
 
     if (!userId || !type || !title || !message) {
       return NextResponse.json(
@@ -78,6 +78,7 @@ export async function POST(request: Request) {
         title,
         message,
         link,
+        metadata,
       },
     });
 
