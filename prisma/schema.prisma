@@ -44,6 +44,7 @@ model User {
   onboarding    UserOnboarding?
   dataMigrations DataMigration[]
   pushSubscriptions PushSubscription[]
+  apiKeys       ApiKey[]
 
   @@map("users")
 }
@@ -698,4 +699,25 @@ model PushSubscription {
 
   @@index([userId])
   @@map("push_subscriptions")
+}
+
+// ===== API KEYS =====
+
+model ApiKey {
+  id           String    @id @default(cuid())
+  name         String    // Nome amigável (ex: "Chave de Produção")
+  keyHash      String    @unique // bcrypt hash da API key
+  keyPrefix    String    // Primeiros 12 caracteres para identificação (ex: "sk_live_1234")
+  lastUsed     DateTime?
+  expiresAt    DateTime?
+  requestCount Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyPrefix])
+  @@map("api_keys")
 }

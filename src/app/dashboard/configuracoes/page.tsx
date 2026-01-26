@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Settings, User, Bell, Shield } from "lucide-react";
+import { Settings, User, Bell, Shield, Key } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,6 +102,13 @@ export default function ConfiguracoesPage() {
               <Settings className="w-4 h-4" />
               Sistema
             </a>
+            <Link
+              href="/dashboard/configuracoes/api-keys"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
+            >
+              <Key className="w-4 h-4" />
+              API Keys
+            </Link>
           </nav>
         </div>
 
