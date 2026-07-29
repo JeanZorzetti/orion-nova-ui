@@ -1,4 +1,4 @@
-import { resend, FROM_EMAIL, isResendConfigured } from "./resend";
+import { getResend, FROM_EMAIL, isResendConfigured } from "./resend";
 import {
   TrialExpiringEmail,
   TrialExpiredEmail,
@@ -24,7 +24,7 @@ export async function sendEmail({ to, subject, react }: SendEmailParams) {
   }
 
   try {
-    const data = await resend.emails.send({
+    const data = await getResend().emails.send({
       from: FROM_EMAIL,
       to: [to],
       subject,

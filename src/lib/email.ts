@@ -1,6 +1,8 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy: o construtor do Resend lança se a key faltar, e isso quebrava o build
+let _resend: Resend | null = null;
+const getResend = () => (_resend ??= new Resend(process.env.RESEND_API_KEY));
 
 const FROM_EMAIL = process.env.EMAIL_FROM || "Orion ERP <noreply@orion.roilabs.com.br>";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://orion.roilabs.com.br";
@@ -19,7 +21,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
   }
 
   try {
-    const data = await resend.emails.send({
+    const data = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject,
