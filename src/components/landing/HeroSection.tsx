@@ -139,13 +139,7 @@ const HeroSection = () => {
               </div>
 
               {/* Floating Data Points */}
-              <motion.div
-                animate={{ y: [-5, 5, -5] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-16 right-16 glass-card px-3 py-2 text-xs"
-              >
-                <span className="text-primary">+127%</span> produtividade
-              </motion.div>
+              {/* ponytail: saiu o balão "+127% produtividade" — resultado inventado. */}
               <motion.div
                 animate={{ y: [5, -5, 5] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}

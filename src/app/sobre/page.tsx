@@ -11,11 +11,9 @@ import {
   Heart,
   Users,
   Rocket,
-  Award,
   Globe,
   Lightbulb,
   Shield,
-  TrendingUp,
   MapPin,
   Calendar,
   Building2,
@@ -67,19 +65,11 @@ const milestones = [
     title: "Integração com IA",
     description: "Lançamento da Orion AI, assistente inteligente integrada ao ERP.",
   },
-  {
-    year: "2026",
-    title: "Expansão Nacional",
-    description: "Mais de 1.000 empresas usando o Orion ERP em todo o Brasil.",
-  },
 ];
 
-const stats = [
-  { value: "1.000+", label: "Empresas Atendidas" },
-  { value: "50.000+", label: "Usuários Ativos" },
-  { value: "99.9%", label: "Uptime" },
-  { value: "4.9/5", label: "Avaliação Média" },
-];
+// ponytail: sem bloco de métricas — "1.000+ empresas", "50.000+ usuários" e "4.9/5 de avaliação
+// média" eram inventados, e nota média fabricada é a mesma violação da `aggregateRating` que saiu
+// do schema. Volta quando houver número real de onde puxar.
 
 const team = [
   {
@@ -124,18 +114,6 @@ export default function SobrePage() {
                 tecnologia de gestão empresarial de alta qualidade para pequenas e
                 médias empresas brasileiras.
               </p>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-primary mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -307,37 +285,8 @@ export default function SobrePage() {
           </div>
         </section>
 
-        {/* Awards */}
-        <section className="py-20">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Reconhecimentos
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                Nosso trabalho é reconhecido por quem entende do assunto.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center p-6">
-                <Award className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                <h3 className="font-semibold mb-1">Top 10 Startups SaaS</h3>
-                <p className="text-sm text-muted-foreground">Startup Awards 2025</p>
-              </div>
-              <div className="text-center p-6">
-                <TrendingUp className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                <h3 className="font-semibold mb-1">Crescimento Exponencial</h3>
-                <p className="text-sm text-muted-foreground">500% em 12 meses</p>
-              </div>
-              <div className="text-center p-6">
-                <Heart className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="font-semibold mb-1">Melhor NPS do Segmento</h3>
-                <p className="text-sm text-muted-foreground">Score de 78</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* ponytail: saiu a seção "Reconhecimentos" — prêmio ("Top 10 Startups SaaS / Startup
+            Awards 2025"), crescimento ("500% em 12 meses") e NPS ("78") inventados. */}
 
         {/* CTA Section */}
         <section className="py-20 bg-muted/30">

@@ -169,22 +169,7 @@ const FeaturesGrid = () => {
                     {feature.description}
                   </p>
 
-                  {/* Large card extra visual */}
-                  {isLarge && (
-                    <div className="mt-8 flex items-center gap-4">
-                      <div className="flex -space-x-2">
-                        {[1, 2, 3].map((i) => (
-                          <div
-                            key={i}
-                            className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 border-2 border-background"
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        +2.500 empresas usando
-                      </span>
-                    </div>
-                  )}
+                  {/* ponytail: saiu o selo "+2.500 empresas usando" — número inventado. */}
                 </div>
               </motion.div>
             );

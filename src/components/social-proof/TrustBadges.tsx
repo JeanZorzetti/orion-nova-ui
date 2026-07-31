@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Lock, Award, Zap } from "lucide-react";
+import { Lock, Zap } from "lucide-react";
 import { ReactNode } from "react";
 
 interface Badge {
@@ -12,22 +12,17 @@ interface TrustBadgesProps {
   variant?: "default" | "compact";
 }
 
+// ponytail: saíram "ISO 27001" e "AWS Partner" — certificação e parceria que não existem. Alegar
+// certificação de terceiro é pior que review inflada: é falso perante o próprio certificador.
+// Ficam as duas que a plataforma sustenta: conformidade LGPD e o SLA vendido no plano Enterprise.
 const badges: Badge[] = [
-  {
-    icon: <Shield className="w-5 h-5" />,
-    label: "ISO 27001",
-  },
   {
     icon: <Lock className="w-5 h-5" />,
     label: "LGPD Compliant",
   },
   {
-    icon: <Award className="w-5 h-5" />,
-    label: "AWS Partner",
-  },
-  {
     icon: <Zap className="w-5 h-5" />,
-    label: "99.9% Uptime",
+    label: "SLA 99.9%",
   },
 ];
 
@@ -51,7 +46,7 @@ export default function TrustBadges({
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
       {badges.map((badge, index) => (
         <div
           key={index}

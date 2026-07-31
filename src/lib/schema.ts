@@ -12,36 +12,9 @@ export const organizationSchema = {
   logo: `${BASE_URL}/logo.png`,
   description:
     "Plataforma completa de gestão empresarial com ERP, CRM, Gestão Financeira e muito mais.",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Av. Paulista, 1000",
-    addressLocality: "São Paulo",
-    addressRegion: "SP",
-    postalCode: "01310-100",
-    addressCountry: "BR",
-  },
-  contactPoint: [
-    {
-      "@type": "ContactPoint",
-      telephone: "+55-11-1234-5678",
-      contactType: "customer service",
-      areaServed: "BR",
-      availableLanguage: ["Portuguese"],
-    },
-    {
-      "@type": "ContactPoint",
-      telephone: "+55-11-1234-5679",
-      contactType: "sales",
-      areaServed: "BR",
-      availableLanguage: ["Portuguese"],
-    },
-  ],
-  sameAs: [
-    "https://facebook.com/orionnova",
-    "https://twitter.com/orionnova",
-    "https://linkedin.com/company/orionnova",
-    "https://instagram.com/orionnova",
-  ],
+  // ponytail: sem `address`, `contactPoint` nem `sameAs` — os valores anteriores eram placeholder
+  // (Av. Paulista 1000, +55-11-1234-5678, perfis /orionnova inexistentes). Declarar dado de contato
+  // falso é spam policy. Repor só com endereço/telefone/perfis reais e verificáveis.
 };
 
 // Schema do Website
@@ -77,20 +50,17 @@ export const softwareSchema = {
   name: "Orion Nova",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web, Windows, macOS, Linux",
+  // Espelha `PLANS` em src/lib/mercadopago.ts (starter/professional/enterprise). Não importa de lá
+  // para não arrastar o SDK do Mercado Pago para o bundle da home — mexeu nos planos, mexa aqui.
   offers: {
     "@type": "AggregateOffer",
     priceCurrency: "BRL",
-    lowPrice: "299",
-    highPrice: "1499",
-    offerCount: "4",
+    lowPrice: "99.90",
+    highPrice: "999.90",
+    offerCount: "3",
   },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    ratingCount: "1250",
-    bestRating: "5",
-    worstRating: "1",
-  },
+  // ponytail: sem `aggregateRating` — eram 4,8 sobre 1.250 avaliações inexistentes. Review
+  // fabricada é violação explícita de spam policy. Só volta com avaliação real e auditável.
   description:
     "Plataforma completa de gestão empresarial com módulos de ERP, CRM, Gestão Financeira, Projetos, RH e muito mais.",
   screenshot: `${BASE_URL}/screenshots/dashboard.png`,

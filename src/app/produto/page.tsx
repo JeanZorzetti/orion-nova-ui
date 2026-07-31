@@ -8,8 +8,7 @@ import { InteractiveDemo } from "@/components/demos";
 import { orionDemoConfig } from "@/lib/demo-data";
 import { ScrollReveal, CounterAnimation, ParallaxContainer } from "@/components/animations";
 import { AnimatedCard, AnimatedIcon, AnimatedCheckmark } from "@/components/micro-interactions";
-import { TestimonialCarousel, TrustBadges } from "@/components/social-proof";
-import { testimonials } from "@/lib/social-proof-data";
+import { TrustBadges } from "@/components/social-proof";
 import {
   Sparkles,
   Users,
@@ -308,23 +307,9 @@ export default function ProdutoPage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <ScrollReveal direction="up" duration={0.6}>
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  O Que Nossos Clientes Dizem
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Empresas reais que transformaram sua gestão com o Orion ERP.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <TestimonialCarousel testimonials={testimonials} />
-          </div>
-        </section>
+        {/* ponytail: saiu a seção "O Que Nossos Clientes Dizem" — os depoimentos eram inventados,
+            com pessoas e empresas que não existem. Depoimento fabricado é spam policy do Google,
+            e o texto ainda prometia "empresas reais". Volta com cliente real e autorizado. */}
 
         {/* Trust Badges Section */}
         <section className="py-16 bg-muted/20">
