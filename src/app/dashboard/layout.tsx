@@ -4,7 +4,7 @@ import DashboardSidebar from "@/components/DashboardSidebar";
 import SearchCommand from "@/components/SearchCommand";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { NotificationsDropdown } from "@/components/notifications-dropdown";
+import { NotificationBell } from "@/components/notifications";
 import { CalendarDropdown } from "@/components/calendar-dropdown";
 import { AIAssistant } from "@/components/ai-assistant";
 import { Onboarding, ReopenOnboarding } from "@/components/onboarding";
@@ -43,7 +43,11 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <DashboardSidebar />
+      <DashboardSidebar
+        name={session.user.name || "Usuário"}
+        initials={userInitials}
+        role={session.user.role}
+      />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
@@ -56,7 +60,7 @@ export default async function DashboardLayout({
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <NotificationsDropdown />
+            <NotificationBell />
             <CalendarDropdown />
 
             {/* User Menu */}

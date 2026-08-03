@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
-import { NotificationBell } from "@/components/notifications";
 import {
   Clock,
   Sparkles,
@@ -110,16 +109,13 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">
-              Bem-vindo, {session?.user?.name || "Usuário"}!
-            </h1>
-            <p className="text-muted-foreground">
-              Aqui está um resumo da sua conta e atividades
-            </p>
-          </div>
-          <NotificationBell />
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">
+            Bem-vindo, {session?.user?.name || "Usuário"}!
+          </h1>
+          <p className="text-muted-foreground">
+            Aqui está um resumo da sua conta e atividades
+          </p>
         </div>
 
         {/* Trial Alert */}

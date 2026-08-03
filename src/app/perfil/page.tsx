@@ -54,7 +54,7 @@ export default async function PerfilPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <Link href="/">
+          <Link href="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar

@@ -27,14 +27,26 @@ const menuItems = [
   { icon: Settings, label: "Configurações", href: "/dashboard/configuracoes" },
 ];
 
-const DashboardSidebar = () => {
+const roleLabels: Record<string, string> = {
+  USER: "Usuário",
+  ADMIN: "Administrador",
+  SUPER_ADMIN: "Super Admin",
+};
+
+type DashboardSidebarProps = {
+  name: string;
+  initials: string;
+  role?: string;
+};
+
+const DashboardSidebar = ({ name, initials, role }: DashboardSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 
   return (
     <aside
       className={cn(
-        "h-screen bg-sidebar flex flex-col border-r border-sidebar-border transition-all duration-300",
+        "h-screen sticky top-0 bg-sidebar flex flex-col border-r border-sidebar-border transition-all duration-300",
         collapsed ? "w-20" : "w-64"
       )}
     >
@@ -54,7 +66,7 @@ const DashboardSidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4">
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -93,16 +105,16 @@ const DashboardSidebar = () => {
             collapsed && "justify-center"
           )}
         >
-          <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-sm font-semibold">
-            JD
+          <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-sm font-semibold flex-shrink-0">
+            {initials}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">
-                João da Silva
+                {name}
               </p>
               <p className="text-xs text-muted-foreground truncate">
-                Administrador
+                {roleLabels[role ?? ""] || "Usuário"}
               </p>
             </div>
           )}

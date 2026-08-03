@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,9 @@ interface Customer {
   id: string;
   name: string;
 }
+
+// Radix Select lança erro se um SelectItem tiver value="" — sentinela para "sem cliente"
+const NO_CUSTOMER = "none";
 
 export default function NovaTransacaoPage() {
   const router = useRouter();
@@ -76,15 +80,16 @@ export default function NovaTransacaoPage() {
       });
 
       if (response.ok) {
+        toast.success("Transação criada com sucesso!");
         router.push("/dashboard/financeiro");
         router.refresh();
       } else {
         const data = await response.json();
-        alert(data.error || "Erro ao criar transação");
+        toast.error(data.error || "Erro ao criar transação");
       }
     } catch (error) {
       console.error("Erro ao criar transação:", error);
-      alert("Erro ao criar transação");
+      toast.error("Erro ao criar transação");
     } finally {
       setLoading(false);
     }
@@ -200,16 +205,19 @@ export default function NovaTransacaoPage() {
             <div>
               <Label htmlFor="customerId">Cliente (Opcional)</Label>
               <Select
-                value={formData.customerId}
+                value={formData.customerId || NO_CUSTOMER}
                 onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, customerId: value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    customerId: value === NO_CUSTOMER ? "" : value,
+                  }))
                 }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecionar cliente..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Nenhum</SelectItem>
+                  <SelectItem value={NO_CUSTOMER}>Nenhum</SelectItem>
                   {customers.map((customer) => (
                     <SelectItem key={customer.id} value={customer.id}>
                       {customer.name}

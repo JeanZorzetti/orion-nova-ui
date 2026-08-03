@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Settings, User, Bell, Shield, Key } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,14 +48,14 @@ export default function ConfiguracoesPage() {
 
       if (response.ok) {
         await update();
-        alert("Perfil atualizado com sucesso!");
+        toast.success("Perfil atualizado com sucesso!");
       } else {
         const data = await response.json();
-        alert(data.error || "Erro ao atualizar perfil");
+        toast.error(data.error || "Erro ao atualizar perfil");
       }
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      alert("Erro ao atualizar perfil");
+      toast.error("Erro ao atualizar perfil");
     } finally {
       setLoading(false);
     }
