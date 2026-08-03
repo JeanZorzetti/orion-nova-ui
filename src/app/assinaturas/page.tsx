@@ -22,7 +22,7 @@ import {
   XCircle,
   Rocket,
 } from "lucide-react";
-import { CancelSubscriptionButton } from "./cancel-button";
+import { ManageSubscriptionButton } from "./manage-button";
 
 const statusConfig = {
   ACTIVE: {
@@ -231,12 +231,7 @@ export default async function AssinaturasPage() {
                     </Button>
                   </Link>
 
-                  {subscription.status === "ACTIVE" &&
-                    !subscription.cancelAtPeriodEnd && (
-                      <CancelSubscriptionButton
-                        subscriptionId={subscription.id}
-                      />
-                    )}
+                  <ManageSubscriptionButton />
                 </div>
               </CardContent>
             </Card>

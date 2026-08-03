@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
       maxStorage,
       isActive,
       stripePriceId,
-      mercadoPagoId,
     } = body;
 
     // Validações básicas
@@ -96,7 +95,6 @@ export async function POST(request: NextRequest) {
         maxStorage,
         isActive: isActive !== undefined ? isActive : true,
         stripePriceId,
-        mercadoPagoId,
       },
     });
 
@@ -110,62 +108,4 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/plans - Atualizar plano (Admin only)
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { id, ...data } = body;
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "ID do plano é obrigatório" },
-        { status: 400 }
-      );
-    }
-
-    const plan = await prisma.plan.update({
-      where: { id },
-      data,
-    });
-
-    return NextResponse.json(plan);
-  } catch (error) {
-    console.error("Erro ao atualizar plano:", error);
-    return NextResponse.json(
-      { error: "Erro ao atualizar plano" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/plans - Desativar plano (Admin only)
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "ID do plano é obrigatório" },
-        { status: 400 }
-      );
-    }
-
-    // Não deletar, apenas desativar
-    const plan = await prisma.plan.update({
-      where: { id },
-      data: { isActive: false },
-    });
-
-    return NextResponse.json({
-      message: "Plano desativado com sucesso",
-      plan,
-    });
-  } catch (error) {
-    console.error("Erro ao desativar plano:", error);
-    return NextResponse.json(
-      { error: "Erro ao desativar plano" },
-      { status: 500 }
-    );
-  }
-}
+// Atualizar/desativar plano: PATCH e DELETE em /api/plans/[id], que checam a role.

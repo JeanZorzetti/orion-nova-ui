@@ -53,6 +53,7 @@ interface Plan {
   maxUsers: number | null;
   maxStorage: number | null;
   isActive: boolean;
+  stripePriceId: string | null;
   _count: {
     subscriptions: number;
   };
@@ -76,6 +77,7 @@ export default function AdminPlanosPage() {
   const [maxUsers, setMaxUsers] = useState("");
   const [maxStorage, setMaxStorage] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [stripePriceId, setStripePriceId] = useState("");
 
   useEffect(() => {
     fetchPlans();
@@ -105,6 +107,7 @@ export default function AdminPlanosPage() {
     setMaxUsers("");
     setMaxStorage("");
     setIsActive(true);
+    setStripePriceId("");
   };
 
   const handleNewPlan = () => {
@@ -121,6 +124,7 @@ export default function AdminPlanosPage() {
     setMaxUsers(plan.maxUsers?.toString() || "");
     setMaxStorage(plan.maxStorage?.toString() || "");
     setIsActive(plan.isActive);
+    setStripePriceId(plan.stripePriceId || "");
     setEditingPlan(plan);
   };
 
@@ -142,6 +146,7 @@ export default function AdminPlanosPage() {
         maxStorage: maxStorage ? parseInt(maxStorage) : null,
         isActive,
         features: {}, // Pode ser expandido futuramente
+        stripePriceId: stripePriceId.trim() || null,
       };
 
       const url = editingPlan
@@ -459,6 +464,20 @@ export default function AdminPlanosPage() {
                   placeholder="Ex: 50"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="stripePriceId">Stripe Price ID</Label>
+              <Input
+                id="stripePriceId"
+                value={stripePriceId}
+                onChange={(e) => setStripePriceId(e.target.value)}
+                placeholder="price_..."
+              />
+              <p className="text-sm text-muted-foreground">
+                Sem isto o checkout responde 409. Copie do Price recorrente do
+                Product deste plano na Stripe.
+              </p>
             </div>
 
             <div className="flex items-center space-x-2">

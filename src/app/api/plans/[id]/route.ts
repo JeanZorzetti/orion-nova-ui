@@ -30,6 +30,7 @@ export async function PATCH(
       maxStorage,
       isActive,
       features,
+      stripePriceId,
     } = body;
 
     // Validar se o plano existe
@@ -70,6 +71,10 @@ export async function PATCH(
         ...(maxStorage !== undefined && { maxStorage }),
         ...(isActive !== undefined && { isActive }),
         ...(features && { features }),
+        // stripePriceId é @unique: "" em dois planos viola a constraint, então normaliza para null.
+        ...(stripePriceId !== undefined && {
+          stripePriceId: stripePriceId || null,
+        }),
       },
     });
 

@@ -74,8 +74,8 @@ function CheckoutContent() {
     setError(null);
 
     try {
-      // Criar preferência de pagamento
-      const response = await fetch("/api/checkout/create-preference", {
+      // Criar a Checkout Session da assinatura
+      const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,16 +91,9 @@ function CheckoutContent() {
         return;
       }
 
-      // Redirecionar para o Mercado Pago
-      // Em produção, usar init_point
-      // Em desenvolvimento, usar sandbox_init_point
-      const checkoutUrl =
-        process.env.NODE_ENV === "production"
-          ? data.initPoint
-          : data.sandboxInitPoint;
-
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
+      // Redirecionar para o checkout hospedado da Stripe
+      if (data.url) {
+        window.location.href = data.url;
       } else {
         setError("URL de checkout não disponível");
         setIsProcessing(false);
@@ -244,7 +237,7 @@ function CheckoutContent() {
               <CardHeader>
                 <CardTitle>Método de Pagamento</CardTitle>
                 <CardDescription>
-                  Pagamento processado pelo Mercado Pago
+                  Pagamento processado pela Stripe
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -253,9 +246,9 @@ function CheckoutContent() {
                     <CreditCard className="h-6 w-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold">Mercado Pago</p>
+                    <p className="font-semibold">Stripe</p>
                     <p className="text-sm text-muted-foreground">
-                      Cartão de crédito, débito, boleto ou PIX
+                      Cartão de crédito
                     </p>
                   </div>
                 </div>
@@ -322,7 +315,7 @@ function CheckoutContent() {
                   <div>
                     <p className="font-semibold text-sm">Pagamento Seguro</p>
                     <p className="text-xs text-muted-foreground">
-                      Processado pelo Mercado Pago
+                      Processado pela Stripe
                     </p>
                   </div>
                 </div>

@@ -316,7 +316,7 @@ function PrecosPageContent() {
         {/* Footer */}
         <div className="text-center mt-12">
           <p className="text-sm text-muted-foreground mb-4">
-            Pagamento seguro via Mercado Pago. Cancele quando quiser.
+            Pagamento seguro via Stripe. Cancele quando quiser.
           </p>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span>Cartão de crédito</span>

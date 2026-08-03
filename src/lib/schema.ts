@@ -50,8 +50,8 @@ export const softwareSchema = {
   name: "Orion Nova",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web, Windows, macOS, Linux",
-  // Espelha `PLANS` em src/lib/mercadopago.ts (starter/professional/enterprise). Não importa de lá
-  // para não arrastar o SDK do Mercado Pago para o bundle da home — mexeu nos planos, mexa aqui.
+  // Espelha os planos da tabela `plans` (starter/professional/enterprise). Fica hardcoded
+  // para a home não consultar o banco só por causa do JSON-LD — mexeu nos preços, mexa aqui.
   offers: {
     "@type": "AggregateOffer",
     priceCurrency: "BRL",
