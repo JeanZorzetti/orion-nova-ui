@@ -145,7 +145,8 @@ export default function AdminPlanosPage() {
         maxUsers: maxUsers ? parseInt(maxUsers) : null,
         maxStorage: maxStorage ? parseInt(maxStorage) : null,
         isActive,
-        features: {}, // Pode ser expandido futuramente
+        // features não é editável aqui e {} é truthy: mandar o campo apagaria
+        // os bullets que /precos renderiza. Omitir = a rota mantém os atuais.
         stripePriceId: stripePriceId.trim() || null,
       };
 

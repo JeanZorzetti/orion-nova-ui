@@ -1,4 +1,4 @@
-# Handoff — Orion Nova (03/08/2026, sessão 3)
+# Handoff — Orion Nova (03/08/2026, sessão 4)
 
 Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 `node_modules` vem do vitest — não é build tool aqui.
@@ -6,9 +6,10 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
-Sessão 3 (`cfce212`, `39d135c`, este commit): configurações reorganizadas —
-`migracao` e `integracoes` desceram para `configuracoes/`, as 4 âncoras viraram
-páginas, a sidebar ganhou submenu e o ícone de agenda saiu. Detalhe no final.
+Sessão 4 (este commit): tudo que travava a primeira venda **do lado do código**
+saiu do caminho — NF-e fora dos planos, `features: {}` que apagaria os bullets,
+fallback de URL do checkout e fail-open do middleware. O que resta para receber
+dinheiro é painel: Stripe e Vercel. Detalhe no final.
 
 ---
 
@@ -44,7 +45,11 @@ trabalho de painel, não de editor: ~1 hora.
    [prisma/seed.ts:19](prisma/seed.ts#L19).
 2. Colar os 3 price IDs em `/admin/planos` — o campo já existe
    ([admin/planos/page.tsx:470](src/app/admin/planos/page.tsx#L470)) e a rota
-   normaliza `""` para `null` por causa do `@unique`.
+   normaliza `""` para `null` por causa do `@unique`. Esse salvamento mandava
+   `features: {}` junto e `{}` é truthy no
+   [PATCH](src/app/api/plans/[id]/route.ts#L73): colar os price IDs zerava a
+   lista de bullets dos 3 planos e `/precos` ficava com cards vazios. Corrigido
+   nesta sessão (o form não manda mais o campo, que ele nem edita).
 3. Na Vercel: `STRIPE_SECRET_KEY` (**restricted key `rk_`**, não `sk_`) e
    `STRIPE_WEBHOOK_SECRET`, ambas Sensitive. As permissões exatas da restricted
    key estão em [.env.example:13](.env.example#L13).
@@ -53,13 +58,14 @@ trabalho de painel, não de editor: ~1 hora.
    `checkout.session.completed`, `customer.subscription.updated`,
    `customer.subscription.deleted`.
 
-**Armadilha que vai estragar a primeira compra se passar batido:**
-`NEXT_PUBLIC_APP_URL` **não está configurada na Vercel** (só existem
-`DATABASE_URL`, `NEXTAUTH_SECRET`, `AUTH_SECRET`, `NEXTAUTH_URL`). Tanto o
-checkout ([route.ts:59](src/app/api/checkout/route.ts#L59)) quanto o portal
-([billing/portal/route.ts:30](src/app/api/billing/portal/route.ts#L30)) caem no
-fallback `http://localhost:3000`. O pagamento é aprovado e o cliente é jogado
-numa URL morta. Configure junto com as chaves.
+**Armadilha desarmada, mas configure mesmo assim:** `NEXT_PUBLIC_APP_URL` **não
+está na Vercel** (só existem `DATABASE_URL`, `NEXTAUTH_SECRET`, `AUTH_SECRET`,
+`NEXTAUTH_URL`), e checkout e portal caíam no fallback `http://localhost:3000` —
+pagamento aprovado, cliente jogado numa URL morta. Agora os dois passam por
+[appUrl()](src/lib/app-url.ts), que tenta `NEXT_PUBLIC_APP_URL` →
+`NEXTAUTH_URL` → `VERCEL_PROJECT_PRODUCTION_URL` antes do localhost, então em
+produção já resolve. Setar a variável continua sendo o certo: é a única das três
+que você controla.
 
 Verificação: `SELECT slug, "stripePriceId" FROM plans WHERE "isActive"` retorna
 3 linhas sem nulo, e `POST /api/checkout` devolve URL da Stripe.
@@ -74,28 +80,37 @@ Registrar no arquivo de metas: `payment_intent`, timestamp e os 5 efeitos
 (e-mail, `Subscription.status = ACTIVE`, dashboard destravado, portal abrindo em
 `/assinaturas`, reembolso). Reembolsar em seguida pelo painel.
 
-### 3. Antes de qualquer cliente ver isso: `/precos` promete NF-e
+### 3. `/precos` prometia NF-e — código corrigido, **falta rodar no banco**
 
-Achado desta sessão, e é o mais barato de todos de consertar. O plano Starter
-vende **"Emissão de NF-e (até 100/mês)"** e o Professional **"Emissão ilimitada
-NF-e/NFS-e"** ([seed.ts:28](prisma/seed.ts#L28) e
-[seed.ts:59](prisma/seed.ts#L59)) — a página de preços renderiza essa lista
-direto do banco ([precos/page.tsx:158](src/app/precos/page.tsx#L158)).
+O plano Starter vendia "Emissão de NF-e (até 100/mês)" e o Professional "Emissão
+ilimitada NF-e/NFS-e", enquanto a tela de Fiscal diz "Em desenvolvimento"
+([fiscal/page.tsx:71](src/app/dashboard/configuracoes/fiscal/page.tsx#L71)).
+Cobrar R$ 89/mês prometendo por escrito uma feature inexistente é reembolso na
+primeira semana, e leva o G7 (30 dias de permanência) junto.
 
-Emissão de NF-e **não existe**. A própria tela de Fiscal diz "Em
-desenvolvimento" ([fiscal/page.tsx:71](src/app/dashboard/configuracoes/fiscal/page.tsx#L71)).
+O seed já saiu limpo, mas ele usa `update: {}` — **as linhas que estão em
+produção não mudam sozinhas** e `/precos` renderiza direto do banco
+([precos/page.tsx:158](src/app/precos/page.tsx#L158)). Rode uma vez, antes da
+compra real:
 
-Ou seja: hoje a Orion cobra R$ 89/mês prometendo por escrito a feature que ela
-não tem. O primeiro pagante descobre isso na primeira semana e pede reembolso —
-e o G7 inteiro (30 dias de permanência) vai junto. É um `UPDATE` na coluna
-`features` dos 3 planos + o seed. Faça **antes** da compra real, não depois.
+```bash
+DATABASE_URL="postgresql://...:5449/..." npx tsx scripts/strip-nfe-from-plans.ts
+```
+
+Idempotente: tira os bullets que casam com NF-e/NFS-e/nota fiscal e a chave
+`nfeLimit`, e não faz nada se já estiver limpo. Depois confira em `/precos` que
+os 3 cards continuam com bullets (não vazios).
 
 O resto do G4 (README dizendo "60%", auth e database marcados como "em
-desenvolvimento") pode esperar; isso aqui não.
+desenvolvimento") pode esperar. Uma pendência do mesmo tipo, mais barata:
+[features/page.tsx:142](src/app/features/page.tsx#L142) e
+[solucoes/[slug]/page.tsx:87](src/app/solucoes/[slug]/page.tsx#L87) ainda
+anunciam NF-e no site institucional — não é o que o cliente compra, mas é a
+mesma promessa.
 
 ### Ordem sugerida
 
-1. NF-e fora dos planos (30 min, e destrava o G4 parcialmente)
+1. `strip-nfe-from-plans.ts` no banco de produção (2 min)
 2. Stripe configurada + `NEXT_PUBLIC_APP_URL` na Vercel (~1h, sem código)
 3. Compra real em produção, com evidência registrada no arquivo de metas
 4. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
@@ -105,18 +120,25 @@ desenvolvimento") pode esperar; isso aqui não.
 
 ---
 
-## ⚠️ Segurança — em ordem de urgência, tudo ainda aberto
+## ⚠️ Segurança — em ordem de urgência
 
-1. **`admin@orion.com` / `admin123` é `SUPER_ADMIN` em produção.** Troque a
-   senha. É a primeira coisa a fazer na próxima sessão, leva 2 minutos.
-2. **A senha do Postgres vazou** num chat e é a mesma do usuário
-   `jeanzorzetti@gmail.com` no seed. Rotacione.
+1. **`admin@orion.com` / `admin123` é `SUPER_ADMIN` em produção.** Ainda aberto:
+   o seed não recria mais essa senha (agora vem de `SEED_ADMIN_PASSWORD`, ou é
+   sorteada e impressa), mas o usuário que **já existe** no banco continua com
+   ela — `upsert` com `update: {}` não toca em quem existe. Troque pelo
+   `/esqueci-senha` ou por um `UPDATE` com hash bcrypt. 2 minutos.
+2. **A senha do Postgres vazou** num chat e era a mesma do usuário
+   `jeanzorzetti@gmail.com`. Saiu do repositório (mesmo mecanismo do item 1),
+   mas **rotacionar no Postgres continua pendente**.
 3. **O Postgres aceita conexão da internet aberta com `sslmode=disable`.**
-   Foi possível conectar de fora sem obstáculo, tráfego em claro.
-4. **Fail-open no middleware** ([src/middleware.ts](src/middleware.ts), o `catch`
-   no fim da checagem de trial): quando a consulta ao banco falha, o acesso é
-   liberado. É o G6 e foi o que manteve invisível a queda de produção descrita
-   abaixo. Vira redirect para `/precos` + alerta.
+   Foi possível conectar de fora sem obstáculo, tráfego em claro. Ainda aberto.
+4. ~~Fail-open no middleware~~ — **fechado nesta sessão (G6)**. O `catch` da
+   checagem de trial ([src/middleware.ts](src/middleware.ts)) liberava acesso
+   quando o banco falhava, e foi isso que manteve invisível a queda de produção
+   descrita abaixo. Agora redireciona para `/precos?erro=indisponivel`, que
+   mostra um alerta. O efeito colateral aceito: uma instabilidade momentânea do
+   banco tira o cliente do dashboard — é o comportamento que se quer, porque o
+   dashboard sem banco não funciona mesmo, só fingia.
 
 ---
 
@@ -207,6 +229,20 @@ Regras:
   outbound, e SEO está fora de escopo no arquivo de metas.
 
 ---
+
+## Histórico: o que a sessão 4 entregou
+
+1. **NF-e fora dos planos** — bullets e `nfeLimit` removidos do
+   [seed](prisma/seed.ts) + [scripts/strip-nfe-from-plans.ts](scripts/strip-nfe-from-plans.ts)
+   para as linhas que já estão em produção (com teste).
+2. **`features: {}` não é mais enviado por `/admin/planos`** — `{}` passa no
+   `features &&` do PATCH e apagaria os bullets dos 3 planos no exato momento em
+   que você fosse colar os price IDs da Stripe.
+3. **[appUrl()](src/lib/app-url.ts)** em checkout, portal e links de e-mail de
+   notificação (esse último montava `undefined/...` hoje).
+4. **Middleware fail-closed** + alerta em `/precos`.
+5. **Senhas de admin saíram do seed** — `SEED_ADMIN_PASSWORD` /
+   `SEED_OWNER_PASSWORD`, documentadas no [.env.example](.env.example).
 
 ## Histórico: o que a sessão 3 entregou
 

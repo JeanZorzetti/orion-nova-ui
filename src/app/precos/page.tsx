@@ -40,6 +40,8 @@ function PrecosPageContent() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showTrialExpiredAlert, setShowTrialExpiredAlert] = useState(false);
+  // Middleware manda para cá quando a checagem de trial falha (banco fora).
+  const [showUnavailableAlert, setShowUnavailableAlert] = useState(false);
 
   // Verificar se foi redirecionado por trial expirado
   useEffect(() => {
@@ -47,6 +49,7 @@ function PrecosPageContent() {
     if (trialParam === "expired") {
       setShowTrialExpiredAlert(true);
     }
+    setShowUnavailableAlert(searchParams.get("erro") === "indisponivel");
   }, [searchParams]);
 
   useEffect(() => {
@@ -132,6 +135,17 @@ function PrecosPageContent() {
             </AlertTitle>
             <AlertDescription>
               Seu período de teste de 30 dias chegou ao fim. Escolha um plano abaixo para continuar usando o Orion ERP sem interrupções.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {showUnavailableAlert && (
+          <Alert variant="destructive" className="mb-8">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Não conseguimos verificar sua conta</AlertTitle>
+            <AlertDescription>
+              O sistema está temporariamente indisponível. Tente novamente em
+              alguns minutos — se persistir, fale com o suporte.
             </AlertDescription>
           </Alert>
         )}

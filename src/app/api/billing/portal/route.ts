@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
+import { appUrl } from "@/lib/app-url";
 
 // POST /api/billing/portal - abre o Customer Portal da Stripe.
 // Substitui o cancelamento próprio, que marcava o banco e nunca cancelava na
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const baseUrl = appUrl();
 
     const portal = await getStripe().billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,

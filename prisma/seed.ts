@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -25,13 +26,11 @@ async function main() {
           "Financeiro básico",
           "Cadastro de clientes (até 500)",
           "Cadastro de produtos (até 200)",
-          "Emissão de NF-e (até 100/mês)",
           "Relatórios básicos",
           "IA: Insights básicos",
         ],
         support: "Email (24-48h)",
         integrations: 0,
-        nfeLimit: 100,
         aiFeatures: "Insights básicos, alertas de vencimento",
       },
       maxUsers: 2,
@@ -56,7 +55,6 @@ async function main() {
           "Estoque completo (ilimitado)",
           "Vendas e PDV integrado",
           "CRM com funil de vendas",
-          "Emissão ilimitada NF-e/NFS-e",
           "Dashboards interativos",
           "BI com 20+ relatórios",
           "Conciliação bancária automática",
@@ -64,7 +62,6 @@ async function main() {
         ],
         support: "Chat + Email prioritário (4-8h)",
         integrations: 5,
-        nfeLimit: -1,
         customReports: true,
         aiFeatures: "IA preditiva: previsões de vendas, alertas proativos",
       },
@@ -98,7 +95,6 @@ async function main() {
         ],
         support: "24/7 (telefone, WhatsApp, gerente dedicado)",
         integrations: -1, // Ilimitado
-        nfeLimit: -1,
         customReports: true,
         apiAccess: true,
         whiteLabel: true,
@@ -213,8 +209,15 @@ async function main() {
   // ========== USUÁRIOS ADMIN ==========
   console.log("👤 Criando usuários administradores...");
 
-  const hashedPassword1 = await bcrypt.hash("admin123", 10);
-  const hashedPassword2 = await bcrypt.hash("PAzo18**", 10);
+  // Senha de SUPER_ADMIN não mora no repositório. Sem env, gera uma aleatória e
+  // imprime — assim o seed nunca recria "admin123" em produção.
+  const adminPassword =
+    process.env.SEED_ADMIN_PASSWORD || randomBytes(12).toString("base64url");
+  const ownerPassword =
+    process.env.SEED_OWNER_PASSWORD || randomBytes(12).toString("base64url");
+
+  const hashedPassword1 = await bcrypt.hash(adminPassword, 10);
+  const hashedPassword2 = await bcrypt.hash(ownerPassword, 10);
 
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@orion.com" },
@@ -247,6 +250,10 @@ async function main() {
   console.log("✅ Usuários admin criados:");
   console.log("  -", adminUser.email);
   console.log("  -", superAdminUser.email);
+  if (!process.env.SEED_ADMIN_PASSWORD)
+    console.log("  ⚠️ senha gerada para", adminUser.email, "->", adminPassword);
+  if (!process.env.SEED_OWNER_PASSWORD)
+    console.log("  ⚠️ senha gerada para", superAdminUser.email, "->", ownerPassword);
 
   // ========== POSTS DE EXEMPLO ==========
   console.log("✍️ Criando posts de exemplo...");

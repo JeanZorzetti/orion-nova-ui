@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
+import { appUrl } from "@/lib/app-url";
 
 // POST /api/checkout - Cria a Checkout Session da assinatura e devolve a URL da Stripe
 export async function POST(request: NextRequest) {
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
       select: { stripeCustomerId: true },
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const baseUrl = appUrl();
 
     const checkout = await getStripe().checkout.sessions.create({
       mode: "subscription",

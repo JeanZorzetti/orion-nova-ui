@@ -9,6 +9,7 @@ import {
   sendGenericNotificationEmail,
 } from "./email/send";
 import { sendPushNotificationToUser } from "./web-push";
+import { appUrl } from "./app-url";
 
 // Criar notificação para trial expirando em 7 dias
 export async function createTrialExpiringNotification(
@@ -367,7 +368,7 @@ export async function createGenericNotification(
             title,
             message,
             link ? "Ver Detalhes" : undefined,
-            link ? `${process.env.NEXT_PUBLIC_APP_URL}${link}` : undefined
+            link ? `${appUrl()}${link}` : undefined
           );
           console.log(
             `[Notifications] Email genérico enviado para: ${user.email}`

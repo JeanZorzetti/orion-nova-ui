@@ -111,7 +111,13 @@ export default auth(async (req) => {
       }
     } catch (error) {
       console.error("Erro ao verificar trial no middleware:", error);
-      // Em caso de erro, permitir acesso (fail open para não bloquear usuários)
+      // Fail closed. Liberar acesso aqui foi o que escondeu uma queda inteira de
+      // produção: o banco estava fora, o dashboard abria e todo endpoint dava
+      // 500. Melhor mandar para /precos com o motivo explícito.
+      const errorUrl = new URL("/precos", req.url);
+      errorUrl.searchParams.set("erro", "indisponivel");
+      errorUrl.searchParams.set("from", nextUrl.pathname);
+      return NextResponse.redirect(errorUrl);
     }
   }
 
