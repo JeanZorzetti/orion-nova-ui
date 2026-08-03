@@ -9,6 +9,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   FileText,
 } from "lucide-react";
 import { useState } from "react";
@@ -16,6 +17,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import OrionLogo from "./OrionLogo";
 import { cn } from "@/lib/utils";
+import { settingsNav } from "@/lib/settings-nav";
+
+const SETTINGS_HREF = "/dashboard/configuracoes";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -24,7 +28,7 @@ const menuItems = [
   { icon: ShoppingCart, label: "Vendas", href: "/dashboard/vendas" },
   { icon: Wallet, label: "Financeiro", href: "/dashboard/financeiro" },
   { icon: FileText, label: "Relatórios", href: "/dashboard/relatorios" },
-  { icon: Settings, label: "Configurações", href: "/dashboard/configuracoes" },
+  { icon: Settings, label: "Configurações", href: SETTINGS_HREF },
 ];
 
 const roleLabels: Record<string, string> = {
@@ -41,7 +45,11 @@ type DashboardSidebarProps = {
 
 const DashboardSidebar = ({ name, initials, role }: DashboardSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [settingsToggle, setSettingsToggle] = useState<boolean | null>(null);
   const pathname = usePathname();
+
+  // Aberto por padrão quando já se está numa sub-rota; o clique sobrepõe.
+  const settingsOpen = settingsToggle ?? pathname.startsWith(SETTINGS_HREF);
 
   return (
     <aside
@@ -70,6 +78,63 @@ const DashboardSidebar = ({ name, initials, role }: DashboardSidebarProps) => {
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+
+            // Configurações vira grupo colapsável — exceto com a sidebar
+            // fechada, onde não há espaço para submenu e o hub resolve.
+            if (item.href === SETTINGS_HREF && !collapsed) {
+              return (
+                <li key={item.label}>
+                  <button
+                    onClick={() => setSettingsToggle(!settingsOpen)}
+                    aria-expanded={settingsOpen}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+                      isActive
+                        ? "gradient-primary text-primary-foreground glow-effect"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground"
+                    )}
+                  >
+                    <item.icon
+                      className={cn(
+                        "w-5 h-5 flex-shrink-0",
+                        isActive ? "" : "group-hover:text-primary"
+                      )}
+                    />
+                    <span className="text-sm font-medium flex-1 text-left">
+                      {item.label}
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 transition-transform",
+                        settingsOpen && "rotate-180"
+                      )}
+                    />
+                  </button>
+
+                  {settingsOpen && (
+                    <ul className="mt-1 ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
+                      {settingsNav.map((sub) => (
+                        <li key={sub.href}>
+                          <Link
+                            href={sub.href}
+                            className={cn(
+                              "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                              pathname === sub.href
+                                ? "bg-sidebar-accent text-foreground font-medium"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground"
+                            )}
+                          >
+                            <sub.icon className="w-4 h-4 flex-shrink-0" />
+                            {sub.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            }
+
             return (
               <li key={item.label}>
                 <Link

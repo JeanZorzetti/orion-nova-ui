@@ -13,6 +13,16 @@ os 4 links. Detalhe no final deste arquivo.
 
 ---
 
+## ✅ Resolvido na sessão 3 — os 4 itens abaixo estão feitos
+
+Rotas movidas para `configuracoes/`, 11 referências atualizadas, redirects no
+`next.config.ts`, `pathNameMap` completo, linguagem de onboarding fora da
+migração. Além disso: as 4 âncoras (`#perfil`, `#notificacoes`, `#seguranca`,
+`#sistema`) viraram páginas reais, a sidebar ganhou submenu colapsável e o hub
+`/dashboard/configuracoes` virou grid de atalhos. A lista das 9 sub-rotas mora
+em [src/lib/settings-nav.ts](src/lib/settings-nav.ts) — sidebar e hub leem dela.
+O texto original segue abaixo como registro do diagnóstico.
+
 ## O próximo passo: a IA de configurações não bate com as URLs
 
 Os 3 pontos abaixo são **o mesmo problema**, não três tarefas soltas. Vale a
