@@ -38,37 +38,47 @@ e mesmo assim é uma venda perdida.
 Isso é o G2.5, marcado 🔴 no arquivo de metas, e ele bloqueia todo o resto. É
 trabalho de painel, não de editor: ~1 hora.
 
-### 1. Configurar a Stripe (G2.5)
+### 1. Configurar a Stripe (G2.5) — **falta 1 passo**
 
-1. Conta da ROI Labs em **BRL**, 3 Products (Starter R$ 89, Professional R$ 249,
-   Enterprise) com price **recorrente mensal**. Os valores estão em
-   [prisma/seed.ts:19](prisma/seed.ts#L19).
-2. Colar os 3 price IDs em `/admin/planos` — o campo já existe
-   ([admin/planos/page.tsx:470](src/app/admin/planos/page.tsx#L470)) e a rota
-   normaliza `""` para `null` por causa do `@unique`. Esse salvamento mandava
-   `features: {}` junto e `{}` é truthy no
-   [PATCH](src/app/api/plans/[id]/route.ts#L73): colar os price IDs zerava a
-   lista de bullets dos 3 planos e `/precos` ficava com cards vazios. Corrigido
-   nesta sessão (o form não manda mais o campo, que ele nem edita).
-3. Na Vercel: `STRIPE_SECRET_KEY` (**restricted key `rk_`**, não `sk_`) e
-   `STRIPE_WEBHOOK_SECRET`, ambas Sensitive. As permissões exatas da restricted
-   key estão em [.env.example:13](.env.example#L13).
-4. Endpoint de webhook no painel apontando para
-   `https://orion.roilabs.com.br/api/webhooks/stripe` com os 3 eventos:
-   `checkout.session.completed`, `customer.subscription.updated`,
-   `customer.subscription.deleted`.
+Feito na sessão 4, via MCP da Stripe e CLI da Vercel:
 
-**Armadilha desarmada, mas configure mesmo assim:** `NEXT_PUBLIC_APP_URL` **não
-está na Vercel** (só existem `DATABASE_URL`, `NEXTAUTH_SECRET`, `AUTH_SECRET`,
-`NEXTAUTH_URL`), e checkout e portal caíam no fallback `http://localhost:3000` —
-pagamento aprovado, cliente jogado numa URL morta. Agora os dois passam por
-[appUrl()](src/lib/app-url.ts), que tenta `NEXT_PUBLIC_APP_URL` →
-`NEXTAUTH_URL` → `VERCEL_PROJECT_PRODUCTION_URL` antes do localhost, então em
-produção já resolve. Setar a variável continua sendo o certo: é a única das três
-que você controla.
+| Item | Estado |
+|---|---|
+| 3 Products + prices BRL mensais | ✅ `prod_V0Rh7Z…` / `V0RhZE…` / `V0RhTI…` |
+| Price IDs nos planos do banco | ✅ starter `price_1U0Qnx…`, professional `price_1U0Qo1…`, enterprise `price_1U0Qo3…` |
+| Webhook endpoint + 3 eventos | ✅ `we_1U0QoG…` → `/api/webhooks/stripe` |
+| `STRIPE_WEBHOOK_SECRET` na Vercel | ✅ Production, Sensitive |
+| `NEXT_PUBLIC_APP_URL` na Vercel | ✅ Production |
+| **`STRIPE_SECRET_KEY` na Vercel** | 🔴 **você precisa criar** |
+
+**A conta usada é a `acct_1SjN4c` ("Sirius")**, não uma conta ROI Labs separada —
+decisão de 03/08 para não travar o G2.5 na verificação de uma conta nova. Ela
+liquida em BRL e já hospeda 5 outros produtos em produção. Os produtos do Orion
+têm `metadata.app = "orion"` e `statement_descriptor = "ORION ERP"`, então a
+fatura do cliente não vai dizer "SIRIUS".
+
+O passo que sobra, e que **nenhum agente faz por você** — a Stripe não expõe API
+para criar chave de API, e o OAuth do MCP autoriza as chamadas do agente, não a
+aplicação:
+
+1. [Dashboard → API keys](https://dashboard.stripe.com/acct_1SjN4cD6GTFfNAq4/apikeys)
+   → **Create restricted key** (`rk_`, não `sk_`). Permissões em
+   [.env.example:13](.env.example#L13): Checkout Sessions write, Customers
+   write, Subscriptions read, Billing Portal Sessions write, Prices read.
+2. `npx vercel env add STRIPE_SECRET_KEY production --sensitive`
+3. Redeploy (variável nova só vale no build seguinte).
+
+A armadilha do `NEXT_PUBLIC_APP_URL` está desarmada duas vezes: a variável foi
+configurada na Vercel **e** checkout e portal passaram a usar
+[appUrl()](src/lib/app-url.ts), que tenta `NEXT_PUBLIC_APP_URL` → `NEXTAUTH_URL`
+→ `VERCEL_PROJECT_PRODUCTION_URL` antes de cair em `http://localhost:3000`.
+Antes disso o pagamento era aprovado e o cliente jogado numa URL morta.
 
 Verificação: `SELECT slug, "stripePriceId" FROM plans WHERE "isActive"` retorna
-3 linhas sem nulo, e `POST /api/checkout` devolve URL da Stripe.
+3 linhas sem nulo (✅ em 03/08), e `POST /api/checkout` devolve URL da Stripe
+(pendente da `STRIPE_SECRET_KEY`). Enquanto a chave não existir, o checkout
+responde **500** (`STRIPE_SECRET_KEY não configurada`), não mais 409 — o 409 era
+o preço faltando, e isso já foi resolvido.
 
 ### 2. Uma compra real (G3)
 
@@ -110,10 +120,12 @@ mesma promessa.
 
 ### Ordem sugerida
 
-1. `strip-nfe-from-plans.ts` no banco de produção (2 min)
-2. Stripe configurada + `NEXT_PUBLIC_APP_URL` na Vercel (~1h, sem código)
-3. Compra real em produção, com evidência registrada no arquivo de metas
-4. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
+1. ~~`strip-nfe-from-plans.ts` no banco~~ — ✅ rodado em 03/08, os 3 planos
+   saíram limpos e o script é idempotente
+2. ~~Stripe + `NEXT_PUBLIC_APP_URL`~~ — ✅ menos a `STRIPE_SECRET_KEY` (acima)
+3. **Restricted key + redeploy**, e o caminho do dinheiro está aberto
+4. Compra real em produção, com evidência registrada no arquivo de metas
+5. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
 
 **Não comece módulo novo de ERP.** Está explicitamente fora de escopo até
 01/11 — o que existe basta para provar a tese, e o gargalo não é feature.
@@ -142,22 +154,20 @@ mesma promessa.
 
 ---
 
-## ⚠️ Pendência de deploy — leia antes de subir
+## ✅ Pendência de deploy — resolvida em 03/08
 
-**A migration `20260803120000_add_companies` está commitada e nunca foi aplicada
-em produção.** O `vercel-build` roda `prisma migrate deploy`, então ela sobe no
-próximo deploy.
-
-Não havia `.env`/`.env.local` na máquina das sessões 2 e 3, então **o check de
-drift obrigatório continua sem ser executado**. Rode antes do próximo deploy:
+A migration `20260803120000_add_companies` **foi aplicada** e o check de drift
+finalmente rodou (existe `.env` na máquina agora):
 
 ```bash
 npx prisma migrate diff --from-url "$DATABASE_URL" \
   --to-schema-datamodel prisma/schema.prisma --script
+# -- This is an empty migration.
 ```
 
-Saída esperada: apenas o `CREATE TABLE "companies"`. **Qualquer coisa além disso
-é drift** — pare e resolva antes de deployar.
+Saída vazia = banco e `schema.prisma` alinhados, zero drift. Repita este comando
+antes de cada deploy que mexa em schema; **qualquer saída não vazia é drift**,
+pare e resolva antes de deployar.
 
 ---
 
@@ -243,6 +253,16 @@ Regras:
 4. **Middleware fail-closed** + alerta em `/precos`.
 5. **Senhas de admin saíram do seed** — `SEED_ADMIN_PASSWORD` /
    `SEED_OWNER_PASSWORD`, documentadas no [.env.example](.env.example).
+6. **G2.5 quase inteiro, via MCP da Stripe + CLI da Vercel** — produtos, prices,
+   price IDs no banco, webhook endpoint, `STRIPE_WEBHOOK_SECRET` e
+   `NEXT_PUBLIC_APP_URL`. Só a restricted key ficou de fora, por não ter API.
+7. **NF-e removido do banco de produção** e **check de drift executado** (vazio).
+
+O MCP da Stripe está configurado (`claude mcp add --transport http stripe
+https://mcp.stripe.com/`) e autorizado por OAuth. `stripe_api_read` e
+`stripe_api_write` cobrem qualquer método da API REST — foi assim que os
+produtos e o webhook nasceram. Deixe a confirmação humana das tools ligada:
+`stripe_api_write` é escrita irrestrita na conta.
 
 ## Histórico: o que a sessão 3 entregou
 
