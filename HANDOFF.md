@@ -1,4 +1,4 @@
-# Handoff — Orion Nova (03/08/2026, sessão 6)
+# Handoff — Orion Nova (03/08/2026, sessão 7)
 
 Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 `node_modules` vem do vitest — não é build tool aqui.
@@ -8,170 +8,165 @@ Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 
 ---
 
-## 🎯 Comece por aqui: os planos prometem o que a Orion não entrega
+## 🔴 Comece por aqui: duas env vars faltam e uma delas mata um bullet vendido
 
-A infraestrutura de cobrança está pronta e validada (Stripe, login, gate de
-trial — tudo mais abaixo). **O bloqueio deixou de ser técnico.** A auditoria
-abaixo foi feita na sessão 6 e mudou qual é o próximo passo: hoje, cobrar
-qualquer plano que não seja o Starter é vender o que não existe.
+`vercel env ls` devolve **7 variáveis**, e nenhuma delas é `GROQ_API_KEY` nem
+`RESEND_API_KEY`. As duas quebram coisa que a sessão 7 acabou de publicar como
+verdadeira:
 
-A pergunta que abriu a sessão era "o que a Orion entrega está de acordo com o
-que ela promete?". A resposta é **não**, e a distância cresce com o preço:
+| Falta | O que quebra | Onde |
+|---|---|---|
+| `GROQ_API_KEY` | **A Orion AI responde 500 em produção.** O chat é bullet dos 3 planos e o único diferencial real contra Tiny/Bling | [api/ai/chat:6](src/app/api/ai/chat/route.ts) devolve 500 sem a chave |
+| `RESEND_API_KEY` | **Nenhum e-mail sai.** Confirmação de pagamento, boas-vindas, redefinição de senha e o convite de equipe | [lib/email.ts:18](src/lib/email.ts) avisa no log e retorna sem enviar |
 
-| Plano | Preço | Bullets que existem | Veredito |
-|---|---|---|---|
-| Starter | R$ 89 | **5 de 5** | Vendável hoje (com 2 ressalvas) |
-| Professional | R$ 249 | **2 de 7** | Não vender |
-| Enterprise | R$ 599 | **1 de 8** | Não vender |
+Isto bloqueia o G3: a checklist da compra real exige "e-mail de confirmação
+recebido", e hoje ele não sai. E o convite de equipe cria o usuário mas o
+convidado nunca recebe o link para definir a senha.
 
-O que a próxima sessão precisa decidir não é código, é **escopo e preço** —
-detalhado em "A decisão", mais abaixo. Nenhuma dessas lacunas se fecha com
-implementação até 01/11, e o arquivo de metas já proíbe módulo novo de ERP.
+```bash
+vercel env add GROQ_API_KEY production      # dentro do diretório do projeto!
+vercel env add RESEND_API_KEY production
+vercel env ls                               # `add` fora do projeto falha calado
+```
 
-### O que a Orion realmente entrega hoje
-
-Levantado das rotas, não da landing page. Isto é o produto:
-
-- **Clientes** — CRUD completo (`/dashboard/clientes`, `/api/customers`)
-- **Produtos** — CRUD, com `stockQuantity` e `minStock` no model
-- **Vendas/Pedidos** — CRUD, status, pagamento (`/api/orders/*`)
-- **Financeiro** — lançamentos a pagar/receber (`/api/financial`)
-- **Relatórios** — exatamente **3**: vendas, clientes, financeiro
-- **Dashboard** — métricas agregadas (`/api/dashboard/stats`)
-- **Orion AI** — chat (`/api/ai/chat`)
-- **Suporte, notificações, migração de ERP, API keys, dados de exemplo**
-
-É um ERP enxuto e coerente. O problema não é o produto — é o que está escrito
-nos cards de preço em cima dele.
-
-### Starter (R$ 89) — os 5 bullets existem
-
-`Financeiro básico` · `Clientes (até 500)` · `Produtos (até 200)` ·
-`Relatórios básicos` · `IA: Insights básicos` — todos entregues.
-
-Duas ressalvas, ambas em campos que o card renderiza fora dos bullets:
-
-1. **`users: 2`** — não existe conceito de equipe (ver "O buraco estrutural").
-2. **`storage: 5` GB** — **não existe upload de arquivo em lugar nenhum do
-   sistema.** Nenhuma rota aceita `multipart`, não há S3/blob. Não há o que
-   armazenar, então não há como entregar nem 5 GB nem 50.
-
-Os limites de 500 clientes e 200 produtos **não são aplicados** — nenhuma rota
-consulta o plano antes de criar. Isso não é propaganda enganosa (o cliente
-recebe mais do que comprou), mas significa que **os 3 planos são funcionalmente
-idênticos**: nada no código diferencia quem paga R$ 89 de quem paga R$ 599.
-
-### Professional (R$ 249) — 2 de 7
-
-| Bullet | Existe? |
-|---|---|
-| Estoque completo (ilimitado) | 🟡 campo `stockQuantity` no Product, **sem módulo de estoque** — não há entrada/saída, movimentação nem tela |
-| Vendas e PDV integrado | 🟡 vendas sim, **PDV não existe** |
-| CRM com funil de vendas | 🟡 cadastro de cliente sim, **funil não existe** |
-| Dashboards interativos | ✅ |
-| BI com 20+ relatórios | ❌ **existem 3** |
-| Conciliação bancária automática | ❌ nada no código |
-| Comissões de vendedores | ❌ nada no código |
-
-Mais `integrations: 5`, sendo que `/dashboard/configuracoes/integracoes:120`
-diz literalmente "em desenvolvimento", e `customReports: true`, que não existe.
-
-### Enterprise (R$ 599) — 1 de 8
-
-| Bullet | Existe? |
-|---|---|
-| Multi-empresa/Multi-filial (até 5 CNPJs) | ❌ `Company.userId` é `@unique` — **1 empresa por usuário, por schema** |
-| Produção e MRP básico | ❌ |
-| CRM avançado (automações, workflows) | ❌ |
-| RH e ponto eletrônico | ❌ |
-| Projetos e orçamentos | ❌ |
-| Assistente IA completo | 🟡 o chat existe |
-| API aberta (webhooks, integração custom) | ❌ **as API keys são geradas e nunca verificadas** — nenhuma rota aceita `x-api-key`; nenhum webhook de saída existe |
-| White-label (marca customizada) | ❌ |
-
-Mais `sla: "99.9%"` sem nenhuma instrumentação de uptime que o comprove.
-
-**R$ 599/mês por 7 bullets inexistentes é o item mais perigoso do sistema** —
-mais que qualquer bug. Um cliente Enterprise pede reembolso na primeira semana
-e leva o G7 (30 dias de permanência) junto.
-
-### O buraco estrutural: a Orion é single-user
-
-Todo plano vende usuários (2 / 10 / ilimitado) e **o produto não tem equipe.**
-Não é bullet faltando, é arquitetura: `Customer`, `Product`, `SalesOrder`,
-`FinancialTransaction` — todos escopados por `userId`, e as rotas filtram por
-`session.user.id`. Um segundo usuário não veria os dados do primeiro; teria um
-sistema vazio. Não existe convite, membership nem workspace.
-
-Entregar isso é migração de schema em ~6 models + tela de convite. **Grande, e
-fora de escopo até 01/11.** Então "2 usuários" precisa sair do card, não entrar
-no backlog.
-
-### O vazamento por outra porta: a IA vende NF-e de novo
-
-A sessão 4 tirou NF-e dos planos e do banco. Mas o system prompt em
-[api/ai/chat/route.ts](src/app/api/ai/chat/route.ts) descreve os "módulos do
-Orion ERP" e inclui **"Geração de NF-e"**, além de "Conciliação bancária",
-"Gestão de Fornecedores e Compras", "Precificação dinâmica" e "Segmentação e
-tags personalizadas" (o model `Tag` é do blog, não de clientes).
-
-Ou seja: o assistente dentro do produto pago afirma para o cliente que features
-inexistentes existem, e explica como usá-las. O próprio prompt manda "NUNCA
-especule ou invente informações sobre funcionalidades não confirmadas" — e
-depois lista as inexistentes como confirmadas. **Corrigir o prompt é barato e
-deve andar junto com os cards.**
-
-### E o site institucional promete mais ainda
-
-[features/page.tsx](src/app/features/page.tsx) anuncia 17 features, incluindo
-**NF-e, PDV, Agendamentos, Email Marketing, Contratos, Metas de Vendas, Análise
-de Custos, Backup Automático, Controle de Acesso**. A maioria não existe.
-[solucoes/[slug]](src/app/solucoes/[slug]/page.tsx) vende Ordens de Produção,
-Controle de Matéria-Prima, Gestão de Projetos, Controle de Horas e Programa de
-Fidelidade.
-
-Prioridade menor que os cards de preço (o cliente compra em `/precos`, e é lá
-que o texto vira obrigação contratual), mas é a mesma promessa.
+Depois de adicionar: **redeploy**, e confirme abrindo o chat da IA logado.
 
 ---
 
-## A decisão que a próxima sessão precisa tomar
+## ✅ O que a sessão 7 fez
 
-Não dá para fechar o gap com código até 01/11, e o arquivo de metas proíbe
-módulo novo. Sobram duas saídas honestas — **escolha uma antes de escrever
-qualquer linha**:
+A sessão 6 auditou e não mexeu em código. Esta executou as duas pontas: cortou
+a promessa falsa e construiu o que restou de verdade.
 
-**Opção A — um plano só, o que existe.** Mata Professional e Enterprise do
-`/precos` até que existam. Um plano ~R$ 89–149 com os 6 módulos reais. É a mais
-rápida e a mais alinhada com a meta: o objetivo é *um* pagante, não uma tabela
-de preços. Perde ancoragem de preço e o teto de receita por cliente.
+### Os planos agora dizem a verdade — e diferenciam de verdade
 
-**Opção B — 3 planos, bullets reescritos para o que existe.** Mantém a
-ancoragem, mas exige **aplicar os limites de verdade** (usuários, clientes,
-produtos, relatórios) — senão os planos continuam idênticos e o cliente de
-R$ 599 descobre que o de R$ 89 tem o mesmo sistema. Isso é código novo: um
-helper de checagem de plano chamado nas rotas de criação.
+| Plano | Preço | Usuários | Clientes | Produtos | IA/mês |
+|---|---|---|---|---|---|
+| Starter | R$ 89 | 2 | 500 | 200 | 100 |
+| Professional | R$ 189 | 10 | 5.000 | 2.000 | 1.000 |
+| Enterprise | R$ 349 | ∞ | ∞ | ∞ | ∞ |
 
-**Recomendação: A.** O gargalo é o primeiro pagante, e R$ 89 com 5 bullets
-verdadeiros converte melhor que R$ 599 com 7 falsos. B é o passo seguinte,
-quando houver o que diferenciar.
+**Cada número acima é aplicado por código** ([lib/account.ts](src/lib/account.ts))
+nas rotas de criação. Antes nenhuma rota consultava o plano — os três eram o
+mesmo sistema com preços diferentes.
 
-Decidido isso, a ordem barata:
+Os planos não anunciam nenhum módulo que o Starter não tenha, **porque não
+existe nenhum**. A diferenciação é volume. É pouco para R$ 349, e é honesto;
+quando existir feature exclusiva, ela entra no card.
 
-1. Reescrever `features.modules` dos planos — no [seed](prisma/seed.ts) **e**
-   num script para as linhas de produção, igual ao
-   [strip-nfe-from-plans.ts](scripts/strip-nfe-from-plans.ts). Lembre que o
-   seed usa `update: {}`: **produção não muda sozinha.**
-2. Tirar `storage` e `users` dos cards, ou zerar os campos — são as duas
-   promessas que o produto não tem como cumprir nem no Starter.
-3. Limpar o system prompt da IA (NF-e, conciliação, compras, precificação).
-4. Só então `features/page.tsx` e `solucoes/[slug]`.
-5. **Aí sim, a compra real (G3)** — continua sendo o único passo entre o estado
-   atual e a meta, e continua exigindo cartão de verdade.
+Preços antigos (249/599) foram trocados por **prices novos na Stripe** —
+price da Stripe é imutável. Os ids estão no catálogo, junto do preço.
 
-Reproduzir a auditoria: `GET https://orion.roilabs.com.br/api/plans` devolve os
-bullets que estão em produção; `find src/app/dashboard -name page.tsx` e
-`find src/app/api -name route.ts` mostram o que existe. A comparação é essa.
+### Fonte única de planos
+
+[prisma/plans.ts](prisma/plans.ts) é o catálogo, consumido pelo seed **e** por
+[scripts/sync-plans.ts](scripts/sync-plans.ts). Mudou plano? Edite lá e rode:
+
+```bash
+npx tsx --env-file=.env scripts/sync-plans.ts --dry   # mostra o que mudaria
+npx tsx --env-file=.env scripts/sync-plans.ts
+```
+
+Duas armadilhas já resolvidas dentro dele, não as reintroduza:
+
+- O seed usa `update: {}` — corrigir o seed **não** corrige produção. Por isso
+  o script existe. (Sucede o `strip-nfe-from-plans.ts`, que resolvia só a NF-e.)
+- O Postgres reordena as chaves do `jsonb`, então comparar `JSON.stringify` cru
+  acusa diferença sempre e o script reescreve tudo a cada execução. A
+  comparação é canônica (chaves ordenadas, ordem de array preservada).
+- Mudar `price` sem trocar `stripePriceId` **aborta o script**: seria o card
+  anunciando um valor e a Stripe cobrando outro.
+
+### Equipe — o buraco estrutural foi fechado
+
+O produto era single-user enquanto todo plano vendia N usuários. A escolha de
+design foi a barata: **`User.ownerId`**. Um membro aponta para o dono, e os
+dados do ERP continuam gravados no id do dono — nenhuma das seis tabelas do ERP
+precisou de migração de dados.
+
+A peça central é `session.user.accountId`:
+
+- `session.user.id` = **quem está logado**. Use para perfil, notificações, push.
+- `session.user.accountId` = **de quem são os dados**. Use para clientes,
+  produtos, vendas, financeiro, relatórios, dashboard.
+
+Trocar um pelo outro é o bug mais fácil de cometer aqui: com `id` no lugar de
+`accountId`, o membro abre o sistema vazio; com `accountId` no lugar de `id`,
+ele edita o perfil do dono.
+
+**A query que resolve o `accountId` fica dentro do `if (user)` do callback
+`jwt`** ([lib/auth.ts](src/lib/auth.ts)) — esse ramo só roda no sign-in, que
+acontece em route handler. O resto do callback roda também no proxy, onde o
+Prisma não funciona. Não mova essa query para fora do `if`.
+
+Quem tira o acesso de um membro removido é o
+[dashboard/layout.tsx](src/app/dashboard/layout.tsx): o JWT dele continua
+válido até expirar, e é lá que ele deixa de existir. O gate de trial no mesmo
+arquivo passou a olhar o status **do dono** — membro não tem trial próprio.
+
+Convite reaproveita o fluxo de redefinição de senha em vez de ter token
+próprio. Tela em Configurações → Equipe.
+
+### O que saiu do site
+
+- **Prompt da Orion AI**: agora tem a lista exaustiva dos módulos reais e uma
+  seção "O QUE O ORION NÃO FAZ". Ele afirmava, dentro do produto pago, que o
+  sistema emite NF-e e faz conciliação bancária.
+- **/features**: 17 features viraram os 6 módulos reais + a lista do que falta.
+  A seção "+50 Integrações Disponíveis" saiu inteira — nenhuma existe.
+- **/solucoes/[slug]**: 48 funcionalidades inventadas (PDV com NFC-e, prontuário
+  eletrônico, TISS, roteirização por GPS, KDS, diário de classe) e **8
+  depoimentos com nome, cargo e empresa fabricados**. Cada segmento agora tem
+  uma seção "Onde o Orion não vai te atender", específica dele.
+- **/precos**: banner anunciando 127 clientes (existem 0) e "preço vitalício com
+  25% off" sem cupom que sustentasse; Pix e boleto anunciados num checkout que
+  só aceita cartão.
+
+---
+
+## 🐛 Bugs achados no caminho (todos corrigidos)
+
+1. **`POST /api/subscriptions` dava plano pago de graça.** Qualquer usuário
+   logado podia criar `Subscription` com status `ACTIVE` e virar `ACTIVE` sem
+   pagar nada. `PUT` trocava de plano sem pagar a diferença e `DELETE` marcava
+   `CANCELED` só no banco — a Stripe seguia cobrando quem achou ter cancelado
+   (o mesmo bug que matou `/api/subscriptions/cancel` no G1). **Nenhuma tela
+   chamava os três.** Removidos; sobrou o `GET`.
+2. **8 CTAs "Começar Grátis" apontavam para `/register`**, que não existe — a
+   rota é `/cadastro`. Era o topo do funil inteiro caindo em 404.
+3. **`/api/auth/forgot-password` nunca enviou e-mail.** Gravava o token,
+   imprimia no console e respondia "link enviado". `sendPasswordResetEmail` já
+   existia em `lib/email.ts`, sem nenhum chamador. (Continua sem sair enquanto
+   faltar `RESEND_API_KEY` — ver o topo.)
+
+---
+
+## ⚠️ O que precisa ser validado à mão
+
+Esta sessão mexeu em **auth** (`lib/auth.ts`, `dashboard/layout.tsx`) e o
+histórico deste projeto diz o que acontece quando isso vai para produção sem um
+request autenticado de verdade: foi assim que a sessão 4 derrubou o login.
+
+`npx tsc`, `npx next build` e `npx vitest run` passam (87/90 — os 3 que falham
+são os de `NotificationBell`, pré-existentes). `npm run smoke:auth` cobre só o
+anônimo. **Nada disso alcança o caminho logado.**
+
+Faça, nesta ordem, em produção:
+
+1. **Login real.** Se cair em `/precos` ou em loop de redirect, o `accountId` do
+   token é o suspeito — o fallback em `lib/auth.ts` cobre tokens antigos, mas
+   deslogar e logar de novo é o teste limpo.
+2. **Dashboard carrega com os dados de sempre.** Se aparecer vazio, alguma rota
+   ficou com `session.user.id` onde devia ter `accountId`.
+3. **Configurações → Equipe**: convide um e-mail seu. O usuário aparece como
+   "aguardando definir a senha"; o link só chega depois da `RESEND_API_KEY`.
+4. **Convidado loga e vê os mesmos dados.** É o teste que prova a feature.
+5. **Remova o membro** e confirme que ele cai no login.
+6. Só então **G3, a compra real** (abaixo).
+
+Rollback é `git revert c75c6a2` + `npx tsx --env-file=.env scripts/sync-plans.ts`
+com o catálogo anterior. As migrations são aditivas (duas colunas e uma FK) e
+não precisam voltar.
 
 ---
 
@@ -188,13 +183,11 @@ errada, webhook secret errado e `success_url` apontando para localhost.
    [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) e
    reembolse pelo painel
 
+O efeito "e-mail chegou" **vai falhar** enquanto `RESEND_API_KEY` não existir.
+
 Se falhar no meio, o MCP da Stripe está autorizado: dá para ler o evento, a
 Checkout Session e a subscription e comparar com o que o webhook gravou no
 banco. Comece por `stripe_api_read` em `GetEvents`.
-
-**Faça isso depois de arrumar os cards** — comprar o Starter hoje já
-funcionaria, mas o `/precos` que o cliente vê ao lado ainda oferece dois planos
-que não existem.
 
 ---
 
@@ -205,13 +198,15 @@ Nada aqui precisa de trabalho. Está listado para você não reabrir.
 | Item | Estado |
 |---|---|
 | 3 Products + prices BRL mensais | ✅ `prod_V0Rh7Z…` / `V0RhZE…` / `V0RhTI…` |
-| Price IDs nos planos do banco | ✅ starter `price_1U0Qnx…`, professional `price_1U0Qo1…`, enterprise `price_1U0Qo3…` |
+| Price IDs no catálogo e no banco | ✅ starter `price_1U0Qnx…` (89), professional `price_1U0Tib…` (189), enterprise `price_1U0Tig…` (349) |
 | Webhook endpoint + 3 eventos | ✅ `we_1U0QoG…` → `/api/webhooks/stripe` |
 | `STRIPE_WEBHOOK_SECRET` / `STRIPE_SECRET_KEY` / `NEXT_PUBLIC_APP_URL` | ✅ Production, Sensitive |
 | Rota de checkout, webhook idempotente (4 testes), portal | ✅ |
-| Login em produção | ✅ validado sessão 5, sessão real |
-| Gate de trial, nos dois caminhos | ✅ validado sessão 5 |
-| NF-e fora dos planos em produção | ✅ sessão 4 |
+| Login em produção | ✅ sessão 5 — **revalidar, esta sessão mexeu em auth** |
+| Gate de trial, nos dois caminhos | ✅ sessão 5 — idem |
+
+Os prices de 249 e 599 continuam ativos na Stripe, sem plano apontando para
+eles. Arquive quando quiser; nada os alcança pelo checkout.
 
 **A conta usada é a `acct_1SjN4c` ("Sirius")**, não uma conta ROI Labs separada
 — decisão de 03/08 para não travar o G2.5 na verificação de uma conta nova. Ela
@@ -244,12 +239,8 @@ O conserto (`a1eaf0a`): o gate saiu do proxy e foi para o
 [dashboard/layout.tsx](src/app/dashboard/layout.tsx), server component onde o
 Prisma comprovadamente funciona, **sem try/catch** — se o banco cair, o erro
 aparece em vez de liberar acesso calado. O proxy ficou só com checagens de JWT.
-**Não devolva banco para o proxy.**
-
-Validado em produção na sessão 5: login real cai no `/dashboard`, e um usuário
-`EXPIRED` cai em `/precos?trial=expired&from=/dashboard`. Se voltar a
-redirecionar sem motivo, cheque o `subscriptionStatus` do usuário no banco
-antes de culpar o código.
+**Não devolva banco para o proxy** — e é a mesma razão pela qual a query do
+`accountId` fica no ramo de sign-in do callback `jwt`.
 
 ---
 
@@ -261,11 +252,11 @@ antes de culpar o código.
 2. **O Postgres aceita conexão da internet aberta com `sslmode=disable`.**
    Foi possível conectar de fora sem obstáculo, tráfego em claro. Ainda aberto,
    e some junto com o item 1 se o banco parar de aceitar a internet inteira.
-3. ~~`admin@orion.com` / `admin123`~~ — **fechado na sessão 5**, senha
-   rotacionada por `UPDATE` com hash bcrypt.
-4. ~~Fail-open no middleware~~ — **fechado (G6)**, pela raiz. Ver acima.
-5. ~~O gate de trial nunca foi exercitado~~ — **fechado na sessão 5**, nos dois
-   caminhos e em produção.
+3. ~~Assinatura ACTIVE de graça por `POST /api/subscriptions`~~ — **fechado na
+   sessão 7**, rota removida.
+4. ~~`admin@orion.com` / `admin123`~~ — **fechado na sessão 5**.
+5. ~~Fail-open no middleware~~ — **fechado (G6)**, pela raiz.
+6. ~~O gate de trial nunca foi exercitado~~ — **fechado na sessão 5**.
 
 ---
 
@@ -288,8 +279,9 @@ npx prisma migrate diff --from-url "$DATABASE_URL" \
 # -- This is an empty migration.   ← saída vazia = alinhado
 ```
 
-Rodado em 03/08: zero drift. Repita antes de cada deploy que mexa em schema;
-**qualquer saída não vazia é drift**, pare e resolva antes de deployar.
+Rodado em 03/08 depois das duas migrations desta sessão: zero drift. Repita
+antes de cada deploy que mexa em schema; **qualquer saída não vazia é drift**,
+pare e resolva antes de deployar.
 
 Regras:
 
@@ -315,74 +307,87 @@ sozinho.
 
 ## Pendências menores
 
-- **Limites de plano não são aplicados em lugar nenhum.** É o item 2 da Opção B
-  lá em cima; virou pendência de produto, não bug.
-- O select **"Tipo de Dados"** da migração é coletado e **ignorado** pela rota —
-  `/api/migration` decide tudo pelo parser do ERP. Ou o campo some, ou a rota
-  passa a respeitá-lo.
-- `/api/migration` só tem `POST`. O model `DataMigration` guarda status, totais
-  e `completedAt`, mas não há `GET` nem tela de histórico.
-- Os 3 toggles de `/dashboard/configuracoes/notificacoes` são decorativos —
-  persistir exige coluna nova em `users`. Marcado com comentário `ponytail:`.
+- **Permissão por usuário não existe.** Todo membro de equipe vê tudo, inclusive
+  o financeiro. Está dito no card, no prompt da IA e em `/features` — mas é a
+  primeira coisa que um cliente com 10 usuários vai pedir.
+- **O gate de export é de UI, não de segurança.** Os relatórios montam o CSV no
+  cliente, com dados que ele já recebeu; esconder o botão não impede ninguém
+  decidido. Vira gate de verdade quando a exportação for gerada no servidor.
+  Hoje `canExport: true` nos 3 planos — a chave existe em
+  [prisma/plans.ts](prisma/plans.ts) para o dia em que virar diferencial.
+- **A cota de IA incrementa sem atomicidade** (read-modify-write). Duas
+  mensagens simultâneas do mesmo usuário podem contar como uma. Marcado com
+  `ponytail:` em [lib/account.ts](src/lib/account.ts).
+- **API keys continuam sendo geradas e nunca verificadas** — nenhuma rota lê
+  `x-api-key`. Nenhum plano vende API, então não é mais propaganda enganosa,
+  mas a tela promete algo que não funciona.
+- O select **"Tipo de Dados"** da migração é coletado e **ignorado** pela rota.
+- `/api/migration` só tem `POST`. Sem `GET` nem tela de histórico.
+- Os 3 toggles de `/dashboard/configuracoes/notificacoes` são decorativos.
 - O botão **"Alterar Senha"** em `/dashboard/configuracoes/seguranca` não faz
-  nada. `/esqueci-senha` existe e funciona — ligar os dois é uma linha.
+  nada. `/esqueci-senha` agora envia e-mail de verdade — ligar os dois é uma
+  linha.
 - **VAPID na Vercel** para web push de verdade. O resto do push já está feito.
 - 3 testes falham em `NotificationBell.test.tsx` (formatação de tempo relativo),
-  pré-existentes. Os outros 63 passam.
-- Aviso de build: `middleware` está deprecado no Next 16, quer virar `proxy`
-  (`npx @next/codemod@canary middleware-to-proxy .`). Agora que o arquivo só tem
-  checagem de JWT, a migração ficou trivial — mas não é urgente.
-- **Agenda está fora de escopo** pelo arquivo de metas. Se voltar depois do
-  primeiro pagante, a opção barata é **visão derivada** de vencimentos de
-  `FinancialTransaction` e entregas de `SalesOrder`, não entidade nova.
+  pré-existentes. Os outros 87 passam.
+- O ESLint do projeto **não roda**: falta `eslint-plugin-react-refresh` no
+  `node_modules` e `npx eslint` aborta. Pré-existente.
+- Aviso de build: `middleware` está deprecado no Next 16, quer virar `proxy`.
+- **Agenda está fora de escopo** pelo arquivo de metas.
 - "Mercado Pago" em integrações é integração que o *cliente* conecta no ERP,
   não provedor de cobrança. Não é resíduo.
 - **MCP da Stripe autorizado**; **CLI da Vercel logada e projeto linkado**.
-  Cuidado: `vercel env add` fora do diretório do projeto **falha em silêncio** —
-  confira com `vercel env ls` depois de cada `add`.
-- **Não persiga SEO.** O Orion compete no cluster "ERP" contra TOTVS, Omie,
-  Bling e Conta Azul; em 90 dias não sai do zero. O canal do primeiro pagante é
-  outbound, e SEO está fora de escopo no arquivo de metas.
-- **Não comece módulo novo de ERP.** Explicitamente fora de escopo até 01/11 — e
-  a auditoria acima é um convite forte a desobedecer isso. O caminho é cortar a
-  promessa, não construir a feature.
+  Cuidado: `vercel env add` fora do diretório do projeto **falha em silêncio**.
+- **Não persiga SEO.** Fora de escopo no arquivo de metas.
+- **Não comece módulo novo de ERP.** Fora de escopo até 01/11.
 
 ---
 
 ## Histórico das sessões
 
-**Sessão 6** — auditoria de planos × entregáveis (este documento). Nenhuma
-mudança de código; o diff é só o HANDOFF. O achado é que Professional e
-Enterprise vendem majoritariamente features inexistentes, que o produto é
-single-user enquanto todo plano vende N usuários, que não existe upload apesar
-dos GB anunciados, e que o system prompt da IA voltou a prometer NF-e.
+**Sessão 7** — executou a auditoria da 6. Planos republicados em 89/189/349 com
+limites aplicados por código pela primeira vez; equipe/multi-usuário construída
+via `User.ownerId` + `session.user.accountId`; prompt da IA, `/features`,
+`/solucoes` e `/precos` alinhados ao que existe; removidos 8 depoimentos
+fabricados e o banner de 127 clientes. Três bugs de dinheiro/funil no caminho:
+assinatura ACTIVE de graça, CTAs para rota inexistente, reset de senha que nunca
+enviou e-mail. Descoberto que `GROQ_API_KEY` e `RESEND_API_KEY` nunca foram
+configuradas em produção.
 
-**Sessão 5** — validação em produção: login com sessão real → `/dashboard`
-(fechou o `a1eaf0a` da sessão 4, que subiu sem validação); gate de trial
-exercitado nos dois caminhos pela primeira vez desde que existe; senha de
+**Sessão 6** — auditoria de planos × entregáveis. Nenhuma mudança de código. O
+achado é que Professional e Enterprise vendiam majoritariamente features
+inexistentes, que o produto era single-user enquanto todo plano vendia N
+usuários, que não existia upload apesar dos GB anunciados, e que o system prompt
+da IA voltou a prometer NF-e.
+
+**Sessão 5** — validação em produção: login com sessão real → `/dashboard`; gate
+de trial exercitado nos dois caminhos pela primeira vez; senha de
 `admin@orion.com` rotacionada.
 
 **Sessão 4** — G2.5 inteiro (produtos, prices, price IDs no banco, webhook e as
 3 variáveis na Vercel, via MCP da Stripe + CLI da Vercel); NF-e fora dos planos
 e do banco de produção; [appUrl()](src/lib/app-url.ts) em checkout, portal e
 e-mails; gate de trial fail-closed e fora do proxy; senhas de admin fora do
-seed; `features: {}` não é mais enviado por `/admin/planos` (apagaria os bullets
-dos 3 planos); dois bugs de renderização em `/precos` (`{0 && …}` renderiza o
-próprio zero em JSX — o Enterprise anunciava "-1 GB").
+seed; dois bugs de renderização em `/precos` (`{0 && …}` renderiza o próprio
+zero em JSX — o Enterprise anunciava "-1 GB").
 
 **Sessão 3** — `migracao` e `integracoes` desceram para `configuracoes/` com
-redirects permanentes; as 4 âncoras do hub viraram páginas; submenu colapsável
-na sidebar lendo de [src/lib/settings-nav.ts](src/lib/settings-nav.ts); ícone de
-agenda (mock puro) removido.
+redirects permanentes; submenu colapsável na sidebar lendo de
+[src/lib/settings-nav.ts](src/lib/settings-nav.ts).
 
 ### O que já se errou aqui, para não repetir
 
 - **Deployar mudança de auth sem um request autenticado de verdade.** Foi assim
   que a sessão 4 deixou produção sem login: build e `tsc` não alcançam esse
-  caminho.
+  caminho. **A sessão 7 mexeu em auth de novo** — ver "O que precisa ser
+  validado à mão".
 - **`vercel env add` fora do diretório do projeto falha em silêncio.**
 - **O seed usa `update: {}`.** Corrigir o seed **não** corrige produção. Toda
-  mudança em planos precisa de script próprio, idempotente.
+  mudança em planos passa por `scripts/sync-plans.ts`.
+- **Publicar bullet sem rota que entregue.** Foi o que produziu a auditoria da
+  sessão 6. Hoje `prisma/plans.test.ts` trava parte disso: assentos anunciados
+  têm que bater com os aplicados, e plano mais caro não pode entregar menos.
 
 Verificação usada: `npx tsc --noEmit`, `npx next build`, `npx vitest run`.
-`npm run smoke:auth` só se encostar em auth.
+`npm run smoke:auth` só se encostar em auth — e ele **não** cobre o caminho
+logado.

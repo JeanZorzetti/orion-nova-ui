@@ -73,18 +73,40 @@ não entra nesta lista.
 | **R** | Test mode esconde chave de produção errada, webhook secret errado e `NEXT_PUBLIC_APP_URL` errado nas `success_url`/`return_url`. Só a compra real prova. |
 | **T** | **31/08/2026** |
 
+> 🔴 **Bloqueado por env var.** `RESEND_API_KEY` nunca foi configurada na Vercel,
+> então nenhum e-mail sai — e "e-mail de confirmação recebido" é um dos 5
+> efeitos que o G3 exige. `GROQ_API_KEY` também falta, e sem ela a Orion AI
+> responde 500 em produção, quebrando um bullet dos 3 planos. Ver o topo do
+> [HANDOFF.md](../HANDOFF.md).
+
 ---
 
-## G4 — Site diz a verdade sobre o produto
+## G4 — Site diz a verdade sobre o produto ✅ (03/08/2026, sessão 7)
 
 | | |
 |---|---|
 | **S** | Toda afirmação pública (landing, `/precos`, `/features`, `/solucoes`) corresponde a algo que existe e funciona hoje. O resto é removido ou marcado explicitamente como roadmap. |
-| **M** | Planilha com uma linha por afirmação → rota que a entrega → verificado/removido. 100% das linhas resolvidas, 0 promessa sem entrega. `README.md` atualizado (hoje cita Stripe em vez de Mercado Pago, marca auth e database como "em desenvolvimento" — ambos entregues — e declara "60%"). |
-| **Baseline** | Prova social fabricada já removida em `94a6bdb`. Promessas de feature e README continuam desatualizados. |
-| **A** | Leitura de 4 páginas + `grep` nas rotas. Meia tarde. |
-| **R** | Primeiro pagante que descobre feature inexistente pede reembolso e não volta. Custa menos ser honesto antes. |
-| **T** | **07/09/2026** |
+| **M** | ✅ `/precos` lê de [prisma/plans.ts](../prisma/plans.ts), onde cada bullet tem um limite aplicado por [lib/account.ts](../src/lib/account.ts). `/features` são os 6 módulos reais + a lista do que falta. `/solucoes/[slug]` tem "Onde o Orion não vai te atender" por segmento. O prompt da Orion AI tem a seção "O QUE O ORION NÃO FAZ". `prisma/plans.test.ts` trava a regressão: assento anunciado = assento aplicado, e plano mais caro não entrega menos. |
+| **Baseline** | 15 bullets inexistentes vendidos por até R$ 599/mês; 17 features anunciadas em `/features`; 48 por segmento em `/solucoes`; 8 depoimentos com nome e empresa fabricados; banner de "127 clientes" com 0 clientes. |
+| **A** | Cortar a promessa, não construir a feature. Mais [scripts/sync-plans.ts](../scripts/sync-plans.ts), porque o seed usa `update: {}` e produção não muda sozinha. |
+| **R** | Primeiro pagante que descobre feature inexistente pede reembolso e leva os 30 dias de permanência do G7 junto. |
+| **T** | ~~07/09/2026~~ — **fechado 03/08/2026** |
+
+**Falta ainda:** `README.md` (cita Mercado Pago, marca auth e database como "em
+desenvolvimento" — ambos entregues — e declara "60%").
+
+---
+
+## G4.5 — Os planos diferenciam de verdade ✅ (03/08/2026, sessão 7)
+
+| | |
+|---|---|
+| **S** | Quem paga mais recebe mais. Assentos, volume de cadastros e cota de IA aplicados por código, não escritos no card. |
+| **M** | ✅ 89 / 189 / 349 com 2/10/∞ usuários, 500/5.000/∞ clientes, 200/2.000/∞ produtos, 100/1.000/∞ mensagens de IA. Barrado em `POST /api/team`, `/api/customers`, `/api/products` e `/api/ai/chat`, com 13 testes em `src/lib/__tests__/account.test.ts`. |
+| **Baseline** | Nenhuma rota consultava o plano antes de criar nada: os 3 planos eram funcionalmente idênticos, e quem pagasse R$ 599 recebia o mesmo que quem pagasse R$ 89. |
+| **A** | Exigiu fechar o buraco de multi-usuário antes (`User.ownerId` + `session.user.accountId`), porque todo plano vendia N usuários num produto single-user. |
+| **R** | Sem isso não existe motivo para ninguém sair do plano mais barato — nem para acreditar na tabela. |
+| **T** | **fechado 03/08/2026** |
 
 ---
 
