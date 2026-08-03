@@ -39,7 +39,7 @@ export async function GET() {
     }
 
     const company = await prisma.company.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: session.user.accountId },
     });
 
     return NextResponse.json({ company });
@@ -64,8 +64,8 @@ export async function PUT(request: NextRequest) {
     const { companyName, ...rest } = parsed;
 
     const company = await prisma.company.upsert({
-      where: { userId: session.user.id },
-      create: { userId: session.user.id, companyName: companyName!, ...rest },
+      where: { userId: session.user.accountId },
+      create: { userId: session.user.accountId, companyName: companyName!, ...rest },
       update: { companyName: companyName!, ...rest },
     });
 

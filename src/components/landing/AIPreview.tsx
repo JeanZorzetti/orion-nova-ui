@@ -185,7 +185,7 @@ export default function AIPreview() {
                         Você usou suas 3 perguntas grátis. Cadastre-se para ter acesso ilimitado e conversar com a IA sobre seus dados reais!
                       </p>
                       <Button asChild className="w-full">
-                        <Link href="/register">
+                        <Link href="/cadastro">
                           Criar Conta Grátis
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
@@ -254,7 +254,7 @@ export default function AIPreview() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild size="lg">
-                <Link href="/register">
+                <Link href="/cadastro">
                   <Sparkles className="w-4 h-4 mr-2" />
                   Começar Trial Gratuito (30 dias)
                 </Link>

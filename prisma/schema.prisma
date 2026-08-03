@@ -26,6 +26,20 @@ model User {
   subscriptionStatus SubscriptionUserStatus @default(TRIAL)
   trialEndsAt        DateTime?              // Data de expiração do trial (30 dias após registro)
 
+  // Cota mensal da Orion AI. Fica no dono (a cota é da conta, não da pessoa) e
+  // zera sozinha quando vira o mês — sem tabela de log e sem cron.
+  aiMessagesUsed    Int       @default(0)
+  aiMessagesPeriod  String?   // "2026-08": mês a que aiMessagesUsed se refere
+
+  // Equipe. Um membro aponta para o dono da conta; o dono tem ownerId nulo.
+  // Todo dado do ERP (Customer, Product, SalesOrder, FinancialTransaction...)
+  // continua gravado no id do DONO — é isso que faz os dois usuários enxergarem
+  // a mesma empresa sem renomear userId em seis tabelas. Quem paga, tem trial e
+  // assinatura é sempre o dono; o membro herda o acesso dele.
+  ownerId String?
+  owner   User?   @relation("AccountMembers", fields: [ownerId], references: [id], onDelete: Cascade)
+  members User[]  @relation("AccountMembers")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -47,6 +61,7 @@ model User {
   apiKeys       ApiKey[]
   company       Company?
 
+  @@index([ownerId])
   @@map("users")
 }
 

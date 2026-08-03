@@ -14,123 +14,106 @@ import {
   FileText,
   Bell,
   Shield,
-  Zap,
   Globe,
   Smartphone,
   ArrowRight,
   CheckCircle2,
   Database,
   Cloud,
-  Bot,
-  Receipt,
   CreditCard,
-  TrendingUp,
-  PieChart,
-  Calendar,
-  Mail,
-  Plug,
-  Settings,
-  Lock,
+  Search,
   RefreshCw,
 } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata.features;
 
+// Esta página é contrato: o que está escrito aqui, o cliente cobra depois.
+// Cada bullet abaixo corresponde a uma tela ou rota que existe hoje — a lista
+// anterior anunciava 17 features (NF-e, PDV, agenda, e-mail marketing, +50
+// integrações) das quais a maioria nunca foi construída. O que falta está no
+// roadmap, não aqui.
 const mainModules = [
   {
     icon: Users,
-    title: "Gestão de Clientes (CRM)",
-    description: "Cadastro completo e relacionamento centralizado com seus clientes.",
+    title: "Clientes",
+    description: "Cadastro central de quem compra de você.",
     features: [
-      "Cadastro completo PF e PJ",
-      "Histórico de compras e interações",
-      "Segmentação por perfil e comportamento",
-      "Importação em massa via CSV/Excel",
-      "Campos personalizados",
-      "Tags e categorização",
-      "Geolocalização de clientes",
-      "Análise de CLV (Customer Lifetime Value)",
+      "Pessoa física e jurídica",
+      "CPF/CNPJ, telefone e e-mail",
+      "Endereço completo",
+      "Observações por cliente",
+      "Busca e filtro por status",
+      "Histórico de pedidos do cliente",
     ],
     color: "from-blue-500 to-blue-600",
   },
   {
     icon: Package,
-    title: "Controle de Estoque",
-    description: "Gerencie produtos, categorias e movimentações com precisão.",
+    title: "Produtos e Serviços",
+    description: "Um cadastro só para o que você vende.",
     features: [
-      "Cadastro ilimitado de produtos",
-      "Múltiplos almoxarifados",
-      "Código de barras e SKU",
-      "Alertas de estoque baixo",
-      "Inventário automático",
-      "Controle de lotes e validade",
-      "Curva ABC de produtos",
-      "Histórico de movimentações",
+      "Produtos e serviços no mesmo lugar",
+      "Preço de venda e custo",
+      "SKU e unidade de medida",
+      "Categoria",
+      "Quantidade em estoque e estoque mínimo",
+      "Alerta quando o estoque fica abaixo do mínimo",
     ],
     color: "from-green-500 to-green-600",
   },
   {
     icon: ShoppingCart,
     title: "Vendas e Pedidos",
-    description: "Funil de vendas completo com orçamentos e pedidos.",
+    description: "Do rascunho ao pedido pago.",
     features: [
-      "Orçamentos rápidos",
-      "Conversão orçamento → pedido",
-      "Funil de vendas visual",
-      "Comissões automáticas",
-      "Múltiplas formas de pagamento",
-      "Descontos e promoções",
-      "Integração com estoque",
-      "Histórico por vendedor",
+      "Pedido com vários itens",
+      "Desconto e total calculados",
+      "Status do pedido (rascunho, confirmado, concluído)",
+      "Status de pagamento separado",
+      "Data de vencimento e data de pagamento",
+      "Numeração automática de pedido",
     ],
     color: "from-purple-500 to-purple-600",
   },
   {
     icon: DollarSign,
-    title: "Financeiro Completo",
-    description: "Controle total das finanças do seu negócio.",
+    title: "Financeiro",
+    description: "Contas a pagar e a receber, com vencimento.",
     features: [
-      "Contas a pagar e receber",
-      "Fluxo de caixa projetado",
-      "Conciliação bancária",
-      "DRE automático",
-      "Centro de custos",
-      "Rateio de despesas",
-      "Boletos e cobranças",
-      "Integração bancária (Open Banking)",
+      "Lançamentos a pagar e a receber",
+      "Categoria e descrição",
+      "Vencimento e baixa de pagamento",
+      "Vínculo com cliente e com pedido",
+      "Status (pendente, pago, atrasado)",
+      "Alertas de vencimento",
     ],
     color: "from-emerald-500 to-emerald-600",
   },
   {
     icon: BarChart3,
-    title: "Relatórios e BI",
-    description: "Dashboards interativos e métricas em tempo real.",
+    title: "Relatórios e Dashboard",
+    description: "Três relatórios e um painel com os números do mês.",
     features: [
-      "Dashboards personalizados",
-      "KPIs em tempo real",
-      "Relatórios de vendas",
-      "Análise de rentabilidade",
-      "Exportação PDF/Excel",
-      "Agendamento de relatórios",
-      "Comparativos de período",
-      "Gráficos interativos",
+      "Relatório de vendas por período",
+      "Relatório de clientes",
+      "Relatório financeiro",
+      "Exportação em CSV e PDF",
+      "Dashboard com receitas, despesas e saldo",
+      "Gráficos por período",
     ],
     color: "from-orange-500 to-orange-600",
   },
   {
     icon: Sparkles,
-    title: "IA Integrada (Orion AI)",
-    description: "Assistente inteligente que entende seu negócio.",
+    title: "Orion AI",
+    description: "Assistente que responde olhando os seus dados, não a internet.",
     features: [
-      "Análise de dados em linguagem natural",
-      "Previsões de vendas",
-      "Alertas proativos",
-      "Recomendações personalizadas",
-      "Detecção de anomalias",
-      "Insights de mercado",
-      "Automação de tarefas",
-      "Chatbot para clientes",
+      "Chat em linguagem natural",
+      "Enxerga seus clientes, produtos, vendas e financeiro",
+      "Perguntas sobre o seu próprio mês",
+      "Orientação de gestão para PMEs brasileiras",
+      "Diz o que o sistema não faz em vez de inventar",
     ],
     color: "from-violet-500 to-violet-600",
   },
@@ -138,83 +121,55 @@ const mainModules = [
 
 const additionalFeatures = [
   {
-    icon: Receipt,
-    title: "Emissão de NF-e/NFS-e",
-    description: "Emita notas fiscais eletrônicas diretamente do sistema.",
-  },
-  {
-    icon: CreditCard,
-    title: "PDV (Ponto de Venda)",
-    description: "Sistema de caixa completo para vendas presenciais.",
-  },
-  {
-    icon: Calendar,
-    title: "Agendamentos",
-    description: "Gestão de agenda para serviços e compromissos.",
-  },
-  {
-    icon: Mail,
-    title: "Email Marketing",
-    description: "Envie campanhas segmentadas para seus clientes.",
-  },
-  {
-    icon: FileText,
-    title: "Contratos",
-    description: "Gestão de contratos com assinatura digital.",
+    icon: RefreshCw,
+    title: "Importação do seu ERP atual",
+    description: "Traga clientes, produtos e vendas do sistema que você já usa.",
   },
   {
     icon: Bell,
     title: "Notificações",
-    description: "Alertas por email e push.",
+    description: "Avisos no sistema e push no navegador.",
   },
   {
-    icon: TrendingUp,
-    title: "Metas de Vendas",
-    description: "Defina e acompanhe metas por vendedor ou equipe.",
-  },
-  {
-    icon: PieChart,
-    title: "Análise de Custos",
-    description: "Custeio de produtos e análise de margem.",
+    icon: Search,
+    title: "Busca global",
+    description: "Encontre cliente, produto ou pedido de qualquer tela.",
   },
   {
     icon: Database,
-    title: "Backup Automático",
-    description: "Seus dados sempre seguros com backups diários.",
+    title: "Dados de exemplo",
+    description: "Conheça o sistema preenchido antes de cadastrar o seu.",
   },
   {
-    icon: Lock,
-    title: "Controle de Acesso",
-    description: "Permissões por usuário, função e módulo.",
+    icon: FileText,
+    title: "Suporte por ticket",
+    description: "Abra chamados e acompanhe a resposta dentro do sistema.",
   },
   {
-    icon: RefreshCw,
-    title: "Atualizações Automáticas",
-    description: "Sempre na versão mais recente sem custo extra.",
+    icon: CreditCard,
+    title: "Assinatura self-service",
+    description: "Assine, troque o cartão e cancele sozinho, sem falar com ninguém.",
+  },
+  {
+    icon: Users,
+    title: "Equipe",
+    description: "Convide gente da sua empresa; todos trabalham nos mesmos dados.",
   },
 ];
 
-const integrations = [
-  { name: "Mercado Livre", category: "Marketplace" },
-  { name: "Shopee", category: "Marketplace" },
-  { name: "Amazon", category: "Marketplace" },
-  { name: "Magalu", category: "Marketplace" },
-  { name: "iFood", category: "Delivery" },
-  { name: "Rappi", category: "Delivery" },
-  { name: "99Food", category: "Delivery" },
-  { name: "Aiqfome", category: "Delivery" },
-  { name: "Stripe", category: "Pagamento" },
-  { name: "Mercado Pago", category: "Pagamento" },
-  { name: "PagSeguro", category: "Pagamento" },
-  { name: "Pix", category: "Pagamento" },
-  { name: "Correios", category: "Logística" },
-  { name: "Jadlog", category: "Logística" },
-  { name: "Melhor Envio", category: "Logística" },
-  { name: "Loggi", category: "Logística" },
-  { name: "Google Analytics", category: "Analytics" },
-  { name: "Meta Pixel", category: "Analytics" },
-  { name: "RD Station", category: "Marketing" },
-  { name: "Mailchimp", category: "Marketing" },
+const notYet = [
+  "Emissão de NF-e ou NFS-e",
+  "PDV / frente de caixa",
+  "Movimentação de estoque (entrada e saída)",
+  "Conciliação e integração bancária",
+  "Integração com marketplaces e transportadoras",
+  "Permissões por usuário (a equipe existe, mas todos veem tudo)",
+  "Mais de uma empresa ou filial",
+  "Anexo de arquivos",
+  "Funil de vendas e automações de CRM",
+  "Comissões de vendedores",
+  "API pública e webhooks",
+  "Agenda, contratos e e-mail marketing",
 ];
 
 const techFeatures = [
@@ -225,28 +180,18 @@ const techFeatures = [
   },
   {
     icon: Shield,
-    title: "Segurança Avançada",
-    description: "Criptografia de ponta, LGPD compliant, certificações ISO.",
-  },
-  {
-    icon: Zap,
-    title: "Alta Performance",
-    description: "Infraestrutura global com resposta em milissegundos.",
+    title: "Dados protegidos",
+    description: "Conexão criptografada e senha com hash. Sem certificação ISO — não temos.",
   },
   {
     icon: Smartphone,
-    title: "Mobile First",
-    description: "Interface otimizada para tablets e smartphones.",
+    title: "Funciona no celular",
+    description: "Interface responsiva para tablets e smartphones.",
   },
   {
     icon: Globe,
-    title: "Multi-idioma",
-    description: "Suporte a português, inglês e espanhol.",
-  },
-  {
-    icon: Bot,
-    title: "API Completa",
-    description: "Integre com qualquer sistema via REST API.",
+    title: "Português e inglês",
+    description: "Interface disponível em pt-BR e en-US.",
   },
 ];
 
@@ -270,12 +215,13 @@ export default function FeaturesPage() {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              O Orion ERP oferece mais de 100 funcionalidades integradas para você
-              gerenciar seu negócio de forma completa e eficiente.
+              Seis módulos que cobrem o ciclo básico de uma PME: cliente, produto,
+              venda, dinheiro, relatório e um assistente de IA que enxerga tudo
+              isso. Sem módulo de enfeite — o que está listado aqui existe.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
-                <Link href="/register">
+                <Link href="/cadastro">
                   Começar Grátis (30 dias)
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -339,8 +285,7 @@ export default function FeaturesPage() {
                 Recursos Adicionais
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Além dos módulos principais, o Orion ERP oferece dezenas de recursos
-                extras para potencializar sua operação.
+                O que vem junto, sem custo extra e sem plano especial.
               </p>
             </div>
 
@@ -361,47 +306,33 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* Integrations */}
+        {/* O que o Orion ainda não faz.
+            Substituiu a seção "+50 Integrações Disponíveis", que listava 20
+            marketplaces, gateways e transportadoras — nenhum deles integrado.
+            Dizer o que falta antes da assinatura custa menos que o reembolso. */}
         <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
-                <Plug className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Integrações</span>
-              </div>
+          <div className="container mx-auto px-4 max-w-4xl">
+            <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                +50 Integrações Disponíveis
+                O que o Orion ainda não faz
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Conecte o Orion ERP com as principais plataformas do mercado.
+                Se algum destes é indispensável para você hoje, o Orion não é a
+                escolha certa ainda — e é melhor você saber agora.
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-3">
-              {integrations.map((integration, index) => (
-                <div
-                  key={index}
-                  className="px-4 py-2 bg-card border border-border rounded-full hover:border-primary/50 transition-colors"
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {notYet.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 bg-card border border-border rounded-lg p-4"
                 >
-                  <span className="text-sm font-medium">{integration.name}</span>
-                  <span className="text-xs text-muted-foreground ml-2">
-                    {integration.category}
-                  </span>
-                </div>
+                  <span aria-hidden className="text-muted-foreground mt-0.5">—</span>
+                  <span className="text-sm text-muted-foreground">{item}</span>
+                </li>
               ))}
-            </div>
-
-            <div className="text-center mt-8">
-              <p className="text-muted-foreground mb-4">
-                Não encontrou a integração que precisa?
-              </p>
-              <Button variant="outline" asChild>
-                <Link href="/contato">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Solicitar Integração
-                </Link>
-              </Button>
-            </div>
+            </ul>
           </div>
         </section>
 
@@ -410,11 +341,10 @@ export default function FeaturesPage() {
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Tecnologia de Ponta
+                Como o Orion roda
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Infraestrutura moderna para garantir segurança, performance e
-                disponibilidade.
+                Sem promessa de SLA que não medimos e sem selo que não temos.
               </p>
             </div>
 
@@ -442,12 +372,12 @@ export default function FeaturesPage() {
                 Experimente Todas as Funcionalidades
               </h2>
               <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-                Comece seu trial gratuito de 30 dias com acesso completo a todos os
-                recursos. Sem cartão de crédito, sem compromisso.
+                30 dias grátis, com os seis módulos liberados. Sem cartão de
+                crédito e sem compromisso.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href="/register">
+                  <Link href="/cadastro">
                     Criar Conta Grátis
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>

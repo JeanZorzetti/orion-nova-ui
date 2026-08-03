@@ -288,7 +288,7 @@ export default function BlogPage() {
                     30 dias grátis para testar todas as funcionalidades.
                   </p>
                   <Button asChild className="w-full">
-                    <Link href="/register">
+                    <Link href="/cadastro">
                       Começar Grátis
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>

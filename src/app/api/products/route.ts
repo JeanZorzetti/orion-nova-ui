@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { limiteEstourado } from "@/lib/account";
 
 // Schema de validação para criação de produto
 const createProductSchema = z.object({
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros
     const where: any = {
-      userId: session.user.id,
+      userId: session.user.accountId,
     };
 
     if (search) {
@@ -107,6 +108,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createProductSchema.parse(body);
 
+    const limite = await limiteEstourado(session.user.accountId, "products");
+    if (limite) {
+      return NextResponse.json({ error: limite, code: "PLAN_LIMIT" }, { status: 402 });
+    }
+
     // Verificar se já existe produto com mesmo SKU
     if (validatedData.sku) {
       const existingSku = await prisma.product.findUnique({
@@ -134,7 +140,7 @@ export async function POST(request: NextRequest) {
         unit: validatedData.unit,
         isActive: validatedData.isActive,
         image: validatedData.image || null,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 

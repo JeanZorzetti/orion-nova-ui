@@ -45,13 +45,17 @@ const competitors: CompetitorPlan[] = [
       api: false,
     },
   },
+  // A linha do Orion é o plano de entrada, com os números que a rota aplica.
+  // Antes dizia "Orion Pro R$ 249 / 10 usuários / BI ✅": preço de um plano que
+  // hoje custa outro, assentos que o produto não tinha e BI que são 3
+  // relatórios.
   {
-    name: "Orion Pro",
-    price: "R$ 249",
+    name: "Orion Starter",
+    price: "R$ 89",
     features: {
-      users: "10",
+      users: "2",
       ia: true,
-      bi: true,
+      bi: false,
       api: false,
     },
   },
@@ -69,7 +73,7 @@ export default function PricingComparison() {
           Orion vs Concorrentes
         </h3>
         <p className="text-muted-foreground">
-          Veja por que somos a melhor escolha custo-benefício
+          Preços de tabela dos concorrentes, sem maquiagem do nosso lado
         </p>
       </div>
 
@@ -88,7 +92,7 @@ export default function PricingComparison() {
           </thead>
           <tbody>
             {competitors.map((competitor, index) => {
-              const isOrion = competitor.name === "Orion Pro";
+              const isOrion = competitor.name === "Orion Starter";
               return (
                 <tr
                   key={index}
@@ -138,7 +142,7 @@ export default function PricingComparison() {
       {/* Mobile View */}
       <div className="md:hidden space-y-4">
         {competitors.map((competitor, index) => {
-          const isOrion = competitor.name === "Orion Pro";
+          const isOrion = competitor.name === "Orion Starter";
           return (
             <div
               key={index}
@@ -190,9 +194,14 @@ export default function PricingComparison() {
       </div>
 
       <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+        {/* Sem "único" e sem "IA preditiva": o que existe é chat com contexto
+            dos dados, e superlativo de mercado não temos como comprovar. */}
         <p className="text-sm text-center">
-          <span className="font-semibold text-primary">Orion Professional:</span>{" "}
-          Único com IA preditiva na faixa de preço. 25% mais barato que SAP/TOTVS.
+          <span className="font-semibold text-primary">Onde o Orion ganha:</span>{" "}
+          assistente de IA que enxerga os seus dados, no plano de entrada.{" "}
+          <span className="font-semibold text-primary">Onde ainda perde:</span>{" "}
+          não emite NF-e nem faz controle de estoque — se você precisa dos dois,
+          Tiny e Bling resolvem melhor hoje.
         </p>
       </div>
     </div>

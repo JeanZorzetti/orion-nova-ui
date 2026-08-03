@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     // Criar registro de migração
     const migration = await prisma.dataMigration.create({
       data: {
-        userId: session.user.id,
+        userId: session.user.accountId,
         sourceErp,
         fileName: file.name,
         fileSize: file.size,
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
             await prisma.customer.create({
               data: {
                 ...customer,
-                userId: session.user.id,
+                userId: session.user.accountId,
               },
             });
             successCount++;
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
               data: {
                 ...product,
                 type: "PRODUCT",
-                userId: session.user.id,
+                userId: session.user.accountId,
               },
             });
             successCount++;

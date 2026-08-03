@@ -300,7 +300,7 @@ export default function SobrePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
-                <Link href="/register">
+                <Link href="/cadastro">
                   Começar Grátis
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>

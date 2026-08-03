@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
     const { action } = await request.json();
 
     if (action === "populate") {
-      const result = await populateSampleData(session.user.id);
+      const result = await populateSampleData(session.user.accountId);
       return NextResponse.json(result);
     } else if (action === "clear") {
-      const result = await clearSampleData(session.user.id);
+      const result = await clearSampleData(session.user.accountId);
       return NextResponse.json(result);
     } else if (action === "check") {
-      const exists = await hasSampleData(session.user.id);
+      const exists = await hasSampleData(session.user.accountId);
       return NextResponse.json({ exists });
     } else {
       return NextResponse.json(

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = session.user.accountId;
 
     // Buscar estatísticas em paralelo para melhor performance
     const [customersCount, productsCount, salesCount, salesOrdersData] =

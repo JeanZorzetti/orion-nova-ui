@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros
     const where: any = {
-      userId: session.user.id,
+      userId: session.user.accountId,
     };
 
     if (search) {
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       const customer = await prisma.customer.findFirst({
         where: {
           id: validatedData.customerId,
-          userId: session.user.id,
+          userId: session.user.accountId,
         },
       });
 
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
         orderId: validatedData.orderId || null,
         dueDate: new Date(validatedData.dueDate),
         status: validatedData.status,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         customer: {

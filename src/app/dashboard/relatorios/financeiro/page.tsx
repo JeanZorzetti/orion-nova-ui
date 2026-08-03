@@ -1,5 +1,7 @@
 "use client";
 
+import { useEntitlements } from "@/hooks/useEntitlements";
+
 import { useEffect, useState } from "react";
 import { ArrowLeft, Download, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import Link from "next/link";
@@ -72,6 +74,10 @@ interface ReportData {
 }
 
 export default function RelatorioFinanceiroPage() {
+  const entitlements = useEntitlements();
+  // null enquanto carrega: mostra o botão em vez de piscar.
+  const podeExportar = entitlements?.canExport !== false;
+
   const [loading, setLoading] = useState(true);
   const [reportData, setReportData] = useState<ReportData | null>(null);
 
@@ -187,10 +193,12 @@ export default function RelatorioFinanceiroPage() {
               Análise de fluxo de caixa e movimentações financeiras
             </p>
           </div>
+          {podeExportar && (
           <Button onClick={exportToCSV} className="gap-2">
             <Download className="w-4 h-4" />
             Exportar CSV
           </Button>
+          )}
         </div>
       </div>
 

@@ -34,7 +34,7 @@ export async function GET(
     const order = await prisma.salesOrder.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         customer: true,
@@ -82,7 +82,7 @@ export async function PUT(
     const existingOrder = await prisma.salesOrder.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         items: {
@@ -239,7 +239,7 @@ export async function DELETE(
     const existingOrder = await prisma.salesOrder.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         items: {

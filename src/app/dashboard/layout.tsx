@@ -36,16 +36,34 @@ export default async function DashboardLayout({
   // Gate de trial. Mora aqui, e não no middleware, porque lá a query do Prisma
   // falha e o antigo catch fail-open escondia isso. Sem try/catch de propósito:
   // se o banco cair, o erro sobe e aparece, em vez de liberar acesso calado.
-  const account = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      subscriptionStatus: true,
-      trialEndsAt: true,
-      subscriptions: { where: { status: "ACTIVE" }, take: 1, select: { id: true } },
-    },
-  });
+  //
+  // Quem paga é o dono da conta, então é o status DELE que decide — um membro
+  // de equipe tem subscriptionStatus próprio que ninguém atualiza. Esta é também
+  // a única checagem que reconhece um membro removido: o JWT dele continua
+  // válido até expirar, e é aqui que ele perde o acesso.
+  const [membro, account] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { ownerId: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.accountId },
+      select: {
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        subscriptions: { where: { status: "ACTIVE" }, take: 1, select: { id: true } },
+      },
+    }),
+  ]);
 
-  if (account && account.subscriptions.length === 0) {
+  // Usuário apagado, ou tirado da equipe depois do login: o token ainda aponta
+  // para uma conta que não é mais dele. Refazer o login regrava o accountId.
+  const contaDoToken = membro?.ownerId ?? session.user.id;
+  if (!membro || !account || contaDoToken !== session.user.accountId) {
+    redirect("/login?callbackUrl=/dashboard");
+  }
+
+  if (account.subscriptions.length === 0) {
     const trialExpirou =
       account.subscriptionStatus === "TRIAL" &&
       account.trialEndsAt !== null &&
@@ -53,7 +71,7 @@ export default async function DashboardLayout({
 
     if (trialExpirou) {
       await prisma.user.update({
-        where: { id: session.user.id },
+        where: { id: session.user.accountId },
         data: { subscriptionStatus: "EXPIRED" },
       });
     }

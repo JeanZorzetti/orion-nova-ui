@@ -333,7 +333,7 @@ export default async function BlogPostPage({ params }: Props) {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button variant="secondary" size="lg" asChild>
-                  <Link href="/register">
+                  <Link href="/cadastro">
                     Começar Trial Grátis
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>

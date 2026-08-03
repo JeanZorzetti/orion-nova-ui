@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
+import { sendPasswordResetEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,12 +40,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Enviar email com o link de reset
-    // const resetUrl = `${process.env.NEXTAUTH_URL}/redefinir-senha?token=${resetToken}`;
-    // await sendPasswordResetEmail(user.email, resetUrl);
-
-    console.log(`Password reset requested for ${email}`);
-    console.log(`Reset token: ${resetToken}`);
+    // O e-mail era um TODO: a rota gravava o token, imprimia no console e
+    // respondia "link enviado". Ninguém nunca recebeu link nenhum — e
+    // sendPasswordResetEmail já existia em lib/email.ts, sem ser chamada.
+    await sendPasswordResetEmail({
+      to: user.email,
+      name: user.name ?? "",
+      resetToken,
+    });
 
     return NextResponse.json({
       message: "Se o email existir, um link de recuperação será enviado.",

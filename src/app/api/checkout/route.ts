@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { appUrl } from "@/lib/app-url";
+import { isMember } from "@/lib/account";
 
 // POST /api/checkout - Cria a Checkout Session da assinatura e devolve a URL da Stripe
 export async function POST(request: NextRequest) {
@@ -11,6 +12,16 @@ export async function POST(request: NextRequest) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    // Quem paga é o dono da conta. Sem isto, um membro de equipe assinaria em
+    // nome próprio: o webhook ativaria a assinatura no usuário dele, e ele
+    // pagaria por um acesso que já tem pelo plano do dono.
+    if (isMember(session)) {
+      return NextResponse.json(
+        { error: "Só o dono da conta pode assinar. Fale com quem te convidou." },
+        { status: 403 }
+      );
     }
 
     const { planId } = await request.json();

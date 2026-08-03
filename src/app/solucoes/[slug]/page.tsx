@@ -17,567 +17,304 @@ import {
   ArrowRight,
   CheckCircle2,
   Sparkles,
-  TrendingUp,
-  Clock,
   DollarSign,
   BarChart3,
   Users,
   Package,
   ShoppingCart,
-  FileText,
-  Settings,
-  Shield,
-  Zap,
-  Target,
-  Award,
   LucideIcon,
 } from "lucide-react";
 
-// Dados detalhados de cada segmento
+// As oito páginas de segmento vendiam 48 funcionalidades específicas — PDV com
+// NFC-e, prontuário eletrônico, faturamento TISS, roteirização com GPS, KDS,
+// diário de classe, cronograma físico-financeiro — e nenhuma delas existe.
+// Cada página trazia ainda um depoimento com nome, cargo e empresa inventados,
+// e três estatísticas de resultado ("+35% em vendas") sem cliente que as
+// tivesse produzido: o Orion não tem cliente pagante.
+//
+// O produto é um só. O que muda por segmento é o enquadramento, o público e —
+// principalmente — o que falta para aquele segmento, agora dito na própria
+// página em vez de descoberto depois da assinatura.
+
+const CORE_FEATURES: { title: string; description: string; icon: LucideIcon }[] = [
+  {
+    title: "Clientes",
+    description:
+      "Cadastro de pessoa física e jurídica, com CPF/CNPJ, contato, endereço e o histórico de pedidos de cada um.",
+    icon: Users,
+  },
+  {
+    title: "Produtos e serviços",
+    description:
+      "Um cadastro para o que você vende, com preço, custo, SKU, unidade, quantidade em estoque e alerta de estoque mínimo.",
+    icon: Package,
+  },
+  {
+    title: "Vendas e pedidos",
+    description:
+      "Pedido com vários itens, desconto, numeração automática, status próprio e status de pagamento separado.",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Financeiro",
+    description:
+      "Contas a pagar e a receber com categoria, vencimento, baixa de pagamento e vínculo ao cliente e ao pedido.",
+    icon: DollarSign,
+  },
+  {
+    title: "Relatórios e dashboard",
+    description:
+      "Três relatórios — vendas, clientes e financeiro — exportáveis em CSV e PDF, mais um painel com receitas, despesas e saldo.",
+    icon: BarChart3,
+  },
+  {
+    title: "Orion AI",
+    description:
+      "Assistente que responde olhando os seus dados: o seu mês, os seus clientes, o seu caixa. E que avisa quando o sistema não faz algo.",
+    icon: Sparkles,
+  },
+];
+
 const segmentsData: Record<string, SegmentData> = {
   varejo: {
     icon: Store,
     title: "Varejo",
-    subtitle: "ERP completo para lojas físicas e e-commerce",
+    subtitle: "O administrativo da loja, sem o caixa",
     description:
-      "Gerencie sua operação de varejo com controle total de estoque, PDV integrado, vendas multicanal e análises em tempo real. O Orion ERP foi desenvolvido para atender desde pequenas lojas até grandes redes de varejo.",
-    heroStats: [
-      { value: "40%", label: "Redução no tempo de fechamento", icon: Clock },
-      { value: "+35%", label: "Aumento em vendas", icon: TrendingUp },
-      { value: "-25%", label: "Redução de perdas", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "PDV Integrado",
-        description: "Ponto de venda completo com emissão de NFC-e, controle de caixa, sangrias e suprimentos.",
-        icon: ShoppingCart,
-      },
-      {
-        title: "Controle de Estoque",
-        description: "Gestão em tempo real com alertas de estoque baixo, inventário e múltiplos almoxarifados.",
-        icon: Package,
-      },
-      {
-        title: "Gestão Multicanal",
-        description: "Integração com marketplaces (Mercado Livre, Amazon, Shopee) e e-commerce próprio.",
-        icon: Store,
-      },
-      {
-        title: "Programa de Fidelidade",
-        description: "Crie campanhas de pontos, cashback e descontos exclusivos para clientes recorrentes.",
-        icon: Award,
-      },
-      {
-        title: "Relatórios de Vendas",
-        description: "Dashboards com ABC de produtos, análise de margem, ticket médio e performance por vendedor.",
-        icon: BarChart3,
-      },
-      {
-        title: "Gestão de Compras",
-        description: "Pedidos de compra automáticos baseados em ponto de reposição e histórico de vendas.",
-        icon: FileText,
-      },
-    ],
+      "O Orion cobre o cadastro de produtos, as vendas, o contas a pagar e receber e os relatórios da sua loja. Não é frente de caixa e não emite nota: é a camada de gestão por trás dela.",
     benefits: [
-      "Redução de 40% no tempo de fechamento de caixa",
-      "Controle de estoque em tempo real em todas as lojas",
-      "Integração automática com marketplaces",
-      "Programa de fidelidade para aumentar recorrência",
-      "Relatórios gerenciais para tomada de decisão",
-      "Emissão de NFC-e e NF-e integrada",
-      "Gestão de múltiplas lojas centralizada",
-      "Controle de comissões por vendedor",
+      "Catálogo de produtos com preço, custo e estoque mínimo",
+      "Alerta quando um produto passa do estoque mínimo",
+      "Pedidos com desconto, status e status de pagamento separados",
+      "Contas a receber ligadas ao pedido que as gerou",
+      "Relatório de vendas por período, exportável em CSV e PDF",
+      "Pergunte à IA o que vendeu mais no mês, em português",
     ],
     useCases: [
       "Lojas de roupas e calçados",
-      "Supermercados e mercearias",
-      "Lojas de eletrônicos",
       "Pet shops",
-      "Farmácias e drogarias",
+      "Lojas de eletrônicos",
       "Lojas de materiais de construção",
+      "Comércio de bairro",
+      "Vendas por catálogo e encomenda",
     ],
-    testimonial: {
-      quote: "O Orion ERP transformou completamente a gestão da nossa loja. O controle de estoque em tempo real nos ajudou a reduzir perdas em 40% e aumentar nossas vendas em 35%.",
-      author: "Maria Silva",
-      role: "Proprietária",
-      company: "Fashion Center",
-    },
+    notFor: [
+      "PDV / frente de caixa, sangria e suprimento",
+      "Emissão de NFC-e ou NF-e",
+      "Integração com Mercado Livre, Shopee ou Amazon",
+      "Movimentação de estoque e inventário",
+      "Programa de fidelidade e cashback",
+    ],
   },
   servicos: {
     icon: Briefcase,
     title: "Prestadores de Serviço",
-    subtitle: "Gestão eficiente para consultorias e profissionais",
+    subtitle: "Clientes, cobranças e o que entra no mês",
     description:
-      "Ideal para consultorias, escritórios de advocacia, contabilidade, agências e profissionais autônomos. Controle projetos, horas trabalhadas, faturamento e relacionamento com clientes em um só lugar.",
-    heroStats: [
-      { value: "+60%", label: "Aumento em produtividade", icon: TrendingUp },
-      { value: "-50%", label: "Tempo em tarefas manuais", icon: Clock },
-      { value: "+40%", label: "Melhoria no faturamento", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Controle de Horas",
-        description: "Timesheet integrado para registro de horas trabalhadas por projeto e cliente.",
-        icon: Clock,
-      },
-      {
-        title: "Gestão de Projetos",
-        description: "Acompanhe projetos, tarefas, prazos e entregas com visão clara do progresso.",
-        icon: Target,
-      },
-      {
-        title: "Faturamento Automático",
-        description: "Gere faturas automaticamente baseadas em horas trabalhadas ou contratos recorrentes.",
-        icon: FileText,
-      },
-      {
-        title: "CRM Integrado",
-        description: "Gerencie leads, propostas comerciais e relacionamento com clientes.",
-        icon: Users,
-      },
-      {
-        title: "Contratos Recorrentes",
-        description: "Gestão de contratos mensais com faturamento automático e reajustes programados.",
-        icon: Settings,
-      },
-      {
-        title: "Relatórios de Produtividade",
-        description: "Análise de rentabilidade por projeto, cliente e colaborador.",
-        icon: BarChart3,
-      },
-    ],
+      "Para quem vende hora e projeto: cadastro de clientes, serviços com preço, pedidos e um financeiro que mostra o que está a receber e o que já venceu. Sem apontamento de horas e sem contrato recorrente automático.",
     benefits: [
-      "Aumento de 60% na produtividade da equipe",
-      "Faturamento automático sem erros",
-      "Visão clara de rentabilidade por projeto",
-      "Controle preciso de horas trabalhadas",
-      "Gestão de contratos recorrentes",
-      "CRM para não perder oportunidades",
-      "Relatórios para precificação correta",
-      "Integração com agenda e calendário",
+      "Serviços cadastrados como itens, com preço próprio",
+      "Pedido por cliente, com status de pagamento",
+      "Contas a receber com vencimento e alerta de atraso",
+      "Relatório de clientes para ver quem concentra a receita",
+      "Exportação em CSV e PDF para mandar ao contador",
+      "IA que responde sobre o seu próprio faturamento",
     ],
     useCases: [
-      "Escritórios de advocacia",
       "Consultorias empresariais",
       "Agências de marketing",
       "Escritórios de contabilidade",
       "Arquitetos e engenheiros",
       "Profissionais de TI autônomos",
+      "Escritórios de advocacia",
     ],
-    testimonial: {
-      quote: "Antes do Orion, gastávamos horas fazendo relatórios e perdíamos o controle das horas trabalhadas. Agora temos tudo automatizado e aumentamos nossa receita em 40%.",
-      author: "João Santos",
-      role: "Sócio Diretor",
-      company: "JNS Consultoria",
-    },
+    notFor: [
+      "Apontamento e controle de horas",
+      "Gestão de projetos e cronograma",
+      "Contratos recorrentes com faturamento automático",
+      "Emissão de NFS-e",
+      "Assinatura digital de contrato",
+    ],
   },
   industria: {
     icon: Factory,
     title: "Indústria",
-    subtitle: "Controle de produção e gestão industrial",
+    subtitle: "A parte comercial e financeira, não o chão de fábrica",
     description:
-      "Sistema completo para indústrias de todos os portes. Gerencie ordens de produção, matéria-prima, custeio de produtos, controle de qualidade e rastreabilidade de ponta a ponta.",
-    heroStats: [
-      { value: "-35%", label: "Redução de desperdícios", icon: TrendingUp },
-      { value: "+25%", label: "Aumento de produtividade", icon: Clock },
-      { value: "-20%", label: "Redução de custos", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Ordens de Produção",
-        description: "Crie e acompanhe OPs com status em tempo real, materiais necessários e prazos.",
-        icon: FileText,
-      },
-      {
-        title: "Controle de Matéria-Prima",
-        description: "Gestão de insumos com rastreabilidade de lotes e controle de validade.",
-        icon: Package,
-      },
-      {
-        title: "Custeio de Produtos",
-        description: "Cálculo automático de custo de produção considerando materiais, mão de obra e overhead.",
-        icon: DollarSign,
-      },
-      {
-        title: "Ficha Técnica",
-        description: "Cadastro completo de estrutura de produtos com lista de materiais (BOM).",
-        icon: Settings,
-      },
-      {
-        title: "Controle de Qualidade",
-        description: "Inspeção de entrada, processo e saída com laudos e não conformidades.",
-        icon: Shield,
-      },
-      {
-        title: "Rastreabilidade",
-        description: "Rastreie produtos do início ao fim da cadeia produtiva.",
-        icon: Target,
-      },
-    ],
+      "O Orion atende o lado comercial de uma indústria pequena: clientes, catálogo, pedidos e financeiro. Produção, ficha técnica e matéria-prima não existem — se o seu gargalo é o chão de fábrica, o Orion ainda não resolve.",
     benefits: [
-      "Redução de 35% em desperdícios de produção",
-      "Controle preciso de custos industriais",
-      "Rastreabilidade completa de lotes",
-      "Planejamento de produção otimizado",
-      "Controle de qualidade integrado",
-      "Gestão de manutenção preventiva",
-      "Integração com chão de fábrica",
-      "Relatórios de eficiência (OEE)",
+      "Catálogo de produtos acabados com preço e custo",
+      "Pedidos de venda com itens e desconto",
+      "Contas a pagar de fornecedores e a receber de clientes",
+      "Relatório financeiro por período",
+      "Alerta de estoque mínimo por produto",
+      "Dashboard com receitas, despesas e saldo",
     ],
     useCases: [
-      "Indústrias de alimentos",
       "Confecções e têxtil",
-      "Metalúrgicas",
-      "Indústrias químicas",
       "Fábricas de móveis",
-      "Indústrias de plástico",
+      "Metalúrgicas pequenas",
+      "Indústrias de alimentos",
+      "Produção sob encomenda",
+      "Marcas próprias com produção terceirizada",
     ],
-    testimonial: {
-      quote: "Com o Orion ERP conseguimos reduzir nosso desperdício de matéria-prima em 35% e ter uma visão clara dos custos de cada produto.",
-      author: "Carlos Mendes",
-      role: "Diretor Industrial",
-      company: "Indústria MetalTech",
-    },
+    notFor: [
+      "Ordens de produção e MRP",
+      "Ficha técnica e lista de materiais",
+      "Controle de matéria-prima e apontamento de perdas",
+      "Custeio de produção e rastreabilidade de lote",
+      "Controle de qualidade",
+    ],
   },
   alimentacao: {
     icon: Utensils,
     title: "Alimentação",
-    subtitle: "Gestão completa para food service",
+    subtitle: "A gestão de trás do balcão",
     description:
-      "Para restaurantes, bares, lanchonetes, pizzarias e delivery. Controle de comandas, fichas técnicas, gestão de insumos, integração com apps de delivery e muito mais.",
-    heroStats: [
-      { value: "+50%", label: "Aumento no ticket médio", icon: TrendingUp },
-      { value: "-30%", label: "Redução de desperdício", icon: Clock },
-      { value: "+40%", label: "Melhoria na margem", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Controle de Comandas",
-        description: "Gestão de mesas, comandas individuais e divisão de contas simplificada.",
-        icon: FileText,
-      },
-      {
-        title: "Fichas Técnicas",
-        description: "Cadastre receitas com ingredientes, rendimento e custo automático de cada prato.",
-        icon: Settings,
-      },
-      {
-        title: "Gestão de Delivery",
-        description: "Integração nativa com iFood, Rappi, Uber Eats e aplicativo próprio.",
-        icon: Truck,
-      },
-      {
-        title: "Controle de Insumos",
-        description: "Baixa automática de estoque baseada nas fichas técnicas de cada venda.",
-        icon: Package,
-      },
-      {
-        title: "KDS (Kitchen Display)",
-        description: "Tela para cozinha com pedidos em tempo real e controle de preparo.",
-        icon: Zap,
-      },
-      {
-        title: "Cardápio Digital",
-        description: "QR Code para cardápio online com pedidos direto na mesa.",
-        icon: ShoppingCart,
-      },
-    ],
+      "Cadastro de itens, pedidos, contas a pagar aos fornecedores e relatórios do mês. O Orion não é PDV, não roda comanda e não integra com iFood — atende a operação administrativa, não o salão.",
     benefits: [
-      "Aumento de 50% no ticket médio",
-      "Integração com iFood, Rappi e Uber Eats",
-      "Controle preciso de CMV (Custo de Mercadoria Vendida)",
-      "Fichas técnicas com custo automático",
-      "Redução de 30% no desperdício de alimentos",
-      "Cardápio digital com QR Code",
-      "Gestão de múltiplas unidades",
-      "Relatórios de vendas por período",
+      "Cadastro de itens do cardápio com preço e custo",
+      "Pedidos registrados com valor e status de pagamento",
+      "Contas a pagar de fornecedores com vencimento",
+      "Relatório financeiro para fechar o mês",
+      "Alerta de insumo abaixo do mínimo cadastrado",
+      "IA que responde sobre a margem e o caixa do período",
     ],
     useCases: [
       "Restaurantes",
-      "Bares e pubs",
-      "Lanchonetes e fast food",
-      "Pizzarias",
       "Cafeterias",
+      "Lanchonetes",
+      "Pizzarias",
       "Dark kitchens",
+      "Buffets e eventos",
     ],
-    testimonial: {
-      quote: "A integração com o iFood e o controle de fichas técnicas nos deu uma visão clara dos custos. Aumentamos nossa margem em 15% no primeiro mês.",
-      author: "Ana Costa",
-      role: "Gerente",
-      company: "Sabor da Casa Restaurante",
-    },
+    notFor: [
+      "Comandas e mesas",
+      "KDS (tela de cozinha)",
+      "Cardápio digital e delivery próprio",
+      "Integração com iFood, Rappi ou 99Food",
+      "Ficha técnica com rendimento de receita",
+    ],
   },
   saude: {
     icon: Stethoscope,
     title: "Saúde",
-    subtitle: "Sistema para clínicas e consultórios",
+    subtitle: "O financeiro da clínica — não o atendimento",
     description:
-      "Solução completa para clínicas médicas, odontológicas, laboratórios e consultórios. Agendamento online, prontuário eletrônico, gestão de convênios e faturamento TISS/TUSS.",
-    heroStats: [
-      { value: "-70%", label: "Redução de faltas", icon: TrendingUp },
-      { value: "+45%", label: "Aumento de consultas", icon: Clock },
-      { value: "-60%", label: "Tempo de faturamento", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Agendamento Online",
-        description: "Agenda com confirmação automática por e-mail e lembretes de consulta.",
-        icon: Clock,
-      },
-      {
-        title: "Prontuário Eletrônico",
-        description: "PEP completo com histórico, anexos, prescrições e atestados digitais.",
-        icon: FileText,
-      },
-      {
-        title: "Gestão de Convênios",
-        description: "Cadastro de convênios, tabelas de preços e regras de autorização.",
-        icon: Shield,
-      },
-      {
-        title: "Faturamento TISS",
-        description: "Geração automática de guias TISS/TUSS para faturamento de convênios.",
-        icon: DollarSign,
-      },
-      {
-        title: "Controle de Estoque",
-        description: "Gestão de medicamentos, materiais e insumos médicos com rastreabilidade.",
-        icon: Package,
-      },
-      {
-        title: "Telemedicina",
-        description: "Consultas por vídeo integradas ao sistema com prontuário online.",
-        icon: Users,
-      },
-    ],
+      "Para clínicas e consultórios, o Orion cobre pacientes como clientes, procedimentos como serviços, e todo o contas a pagar e receber. Não tem agenda, prontuário nem faturamento de convênio. Seja honesto com o seu caso antes de assinar.",
     benefits: [
-      "Redução de 70% nas faltas em consultas",
-      "Prontuário eletrônico completo (PEP)",
-      "Faturamento TISS automático",
-      "Confirmação de consultas por e-mail",
-      "Telemedicina integrada",
-      "Controle de estoque médico",
-      "Gestão de múltiplas unidades",
-      "Relatórios de produtividade médica",
+      "Cadastro de pacientes com contato e documento",
+      "Procedimentos cadastrados como serviços, com preço",
+      "Recebimentos por paciente, com vencimento e baixa",
+      "Contas a pagar da clínica em um lugar só",
+      "Relatório financeiro exportável para a contabilidade",
+      "Dashboard com o resultado do mês",
     ],
     useCases: [
-      "Clínicas médicas",
       "Consultórios odontológicos",
-      "Laboratórios de análises",
       "Clínicas de fisioterapia",
       "Clínicas de estética",
-      "Hospitais e UPAs",
+      "Nutricionistas e psicólogos",
+      "Consultórios particulares",
+      "Profissionais autônomos da saúde",
     ],
-    testimonial: {
-      quote: "Com o agendamento online e a confirmação automática, reduzimos as faltas em 70%. O faturamento TISS automático nos economiza dias de trabalho.",
-      author: "Dr. Roberto Lima",
-      role: "Diretor Clínico",
-      company: "Clínica VidaSaúde",
-    },
+    notFor: [
+      "Agenda e marcação de consulta",
+      "Prontuário eletrônico",
+      "Convênios e faturamento TISS",
+      "Telemedicina",
+      "Emissão de NFS-e",
+    ],
   },
   educacao: {
     icon: GraduationCap,
     title: "Educação",
-    subtitle: "Gestão acadêmica e financeira",
+    subtitle: "Mensalidades e caixa, sem parte acadêmica",
     description:
-      "Para escolas, cursos livres, faculdades e instituições de ensino. Matrículas online, gestão de turmas, controle de mensalidades, portal do aluno e comunicação com responsáveis.",
-    heroStats: [
-      { value: "-80%", label: "Redução de inadimplência", icon: TrendingUp },
-      { value: "+50%", label: "Matrículas online", icon: Clock },
-      { value: "-40%", label: "Tempo administrativo", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Gestão de Matrículas",
-        description: "Processo de matrícula online com documentos digitais e assinatura eletrônica.",
-        icon: FileText,
-      },
-      {
-        title: "Controle de Mensalidades",
-        description: "Cobrança automática, boletos, cartão recorrente e gestão de inadimplência.",
-        icon: DollarSign,
-      },
-      {
-        title: "Portal do Aluno",
-        description: "Acesso a notas, frequência, materiais, boletos e comunicados.",
-        icon: Users,
-      },
-      {
-        title: "Gestão de Turmas",
-        description: "Criação de turmas, grade horária, alocação de professores e salas.",
-        icon: Settings,
-      },
-      {
-        title: "Diário de Classe",
-        description: "Lançamento de frequência e notas online com acesso mobile para professores.",
-        icon: Package,
-      },
-      {
-        title: "Comunicação",
-        description: "Envio de comunicados por app e e-mail para pais e alunos.",
-        icon: Zap,
-      },
-    ],
+      "Alunos entram como clientes, cursos como serviços e as mensalidades como contas a receber com vencimento. Matrícula, turma, diário e portal do aluno não existem no Orion.",
     benefits: [
-      "Redução de 80% na inadimplência",
-      "Matrícula 100% online",
-      "Portal do aluno e responsável",
-      "Diário de classe digital",
-      "Comunicação automática com pais",
-      "Gestão de bolsas e descontos",
-      "Controle de frequência em tempo real",
-      "Relatórios acadêmicos e financeiros",
+      "Cadastro de alunos e responsáveis",
+      "Cursos e turmas cadastrados como serviços com preço",
+      "Mensalidades como contas a receber, com vencimento",
+      "Alerta de mensalidade vencida",
+      "Relatório de inadimplência a partir do financeiro",
+      "Exportação em CSV e PDF",
     ],
     useCases: [
-      "Escolas de educação básica",
       "Cursos de idiomas",
-      "Cursos técnicos e profissionalizantes",
-      "Faculdades e universidades",
       "Escolas de música e arte",
-      "Academias e escolas de esporte",
+      "Cursos técnicos e profissionalizantes",
+      "Escolas de esporte",
+      "Professores particulares",
+      "Cursos livres e workshops",
     ],
-    testimonial: {
-      quote: "Implementamos o Orion e nossa inadimplência caiu de 15% para menos de 3%. A matrícula online aumentou as conversões em 50%.",
-      author: "Profa. Márcia Oliveira",
-      role: "Diretora",
-      company: "Colégio Nova Era",
-    },
+    notFor: [
+      "Matrícula, turmas e grade",
+      "Diário de classe e notas",
+      "Portal do aluno e do responsável",
+      "Comunicação com pais",
+      "Boleto e carnê de mensalidade",
+    ],
   },
   logistica: {
     icon: Truck,
     title: "Logística",
-    subtitle: "Gestão de transportes e entregas",
+    subtitle: "O comercial e o financeiro da operação",
     description:
-      "Para transportadoras, distribuidoras e operadores logísticos. Roteirização inteligente, gestão de frota, controle de entregas, rastreamento em tempo real e comprovante digital.",
-    heroStats: [
-      { value: "-30%", label: "Redução custos combustível", icon: TrendingUp },
-      { value: "+40%", label: "Entregas no prazo", icon: Clock },
-      { value: "-25%", label: "Tempo de roteirização", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Roteirização Inteligente",
-        description: "Algoritmo de otimização de rotas considerando trânsito, janelas de entrega e capacidade.",
-        icon: Target,
-      },
-      {
-        title: "Gestão de Frota",
-        description: "Controle de veículos, manutenções, documentos, multas e custos operacionais.",
-        icon: Truck,
-      },
-      {
-        title: "Controle de Entregas",
-        description: "Acompanhamento em tempo real de cada entrega com status e ocorrências.",
-        icon: Package,
-      },
-      {
-        title: "Rastreamento GPS",
-        description: "Localização em tempo real de veículos e motoristas com histórico de rotas.",
-        icon: Settings,
-      },
-      {
-        title: "Comprovante Digital",
-        description: "Assinatura digital, foto da entrega e geolocalização como prova de entrega.",
-        icon: FileText,
-      },
-      {
-        title: "App do Motorista",
-        description: "Aplicativo mobile para motoristas com roteiro, navegação e registro de entregas.",
-        icon: Zap,
-      },
-    ],
+      "O Orion registra clientes, serviços prestados, pedidos e o financeiro da transportadora. Não faz roteirização, não rastreia veículo e não tem app de motorista — a operação em campo fica fora.",
     benefits: [
-      "Redução de 30% nos custos com combustível",
-      "Roteirização otimizada automaticamente",
-      "Rastreamento GPS em tempo real",
-      "Comprovante de entrega digital",
-      "Gestão completa de frota",
-      "App para motoristas",
-      "Controle de ocorrências",
-      "Integração com ERPs de clientes",
+      "Cadastro de embarcadores e clientes contratantes",
+      "Serviços de frete cadastrados com preço",
+      "Pedidos com status e status de pagamento",
+      "Contas a pagar de combustível, manutenção e terceiros",
+      "Relatório financeiro por período",
+      "Dashboard com o saldo do mês",
     ],
     useCases: [
-      "Transportadoras",
+      "Transportadoras pequenas",
       "Distribuidoras",
-      "Operadores logísticos (3PL)",
-      "E-commerce com frota própria",
       "Empresas de courier",
-      "Delivery de última milha",
+      "Frota própria de e-commerce",
+      "Fretes dedicados",
+      "Operações de última milha",
     ],
-    testimonial: {
-      quote: "A roteirização inteligente reduziu nossos custos com combustível em 30% e aumentamos as entregas no prazo em 40%.",
-      author: "Pedro Almeida",
-      role: "Diretor de Operações",
-      company: "TransLog Express",
-    },
+    notFor: [
+      "Roteirização e otimização de rota",
+      "Rastreamento por GPS",
+      "Gestão de frota e manutenção",
+      "App do motorista e comprovante digital",
+      "Emissão de CT-e ou MDF-e",
+    ],
   },
   construcao: {
     icon: Building2,
     title: "Construção Civil",
-    subtitle: "Gestão de obras e empreendimentos",
+    subtitle: "Orçamento vira pedido, obra ainda não vira projeto",
     description:
-      "Para construtoras, incorporadoras e empreiteiras. Gestão de obras, orçamentos detalhados, controle de materiais, cronograma físico-financeiro e diário de obra digital.",
-    heroStats: [
-      { value: "-25%", label: "Redução custos materiais", icon: TrendingUp },
-      { value: "+35%", label: "Precisão em orçamentos", icon: Clock },
-      { value: "-40%", label: "Tempo de relatórios", icon: DollarSign },
-    ],
-    features: [
-      {
-        title: "Gestão de Obras",
-        description: "Controle centralizado de múltiplas obras com visão geral de progresso e custos.",
-        icon: Building2,
-      },
-      {
-        title: "Orçamentos Detalhados",
-        description: "Composições de custos, BDI, encargos sociais e curva ABC de insumos.",
-        icon: FileText,
-      },
-      {
-        title: "Controle de Materiais",
-        description: "Requisições, pedidos de compra, recebimento e controle de estoque por obra.",
-        icon: Package,
-      },
-      {
-        title: "Cronograma Físico-Financeiro",
-        description: "Planejamento de etapas com acompanhamento de avanço físico e financeiro.",
-        icon: Settings,
-      },
-      {
-        title: "Diário de Obra",
-        description: "Registro diário de atividades, mão de obra, equipamentos e ocorrências.",
-        icon: Clock,
-      },
-      {
-        title: "Medições",
-        description: "Controle de medições de serviços executados para faturamento e pagamento.",
-        icon: DollarSign,
-      },
-    ],
+      "Clientes, materiais e serviços no catálogo, pedidos e um financeiro com vencimentos. O Orion não tem gestão de obra, cronograma físico-financeiro nem medição — o controle da obra em si continua fora dele.",
     benefits: [
-      "Redução de 25% nos custos com materiais",
-      "Orçamentos precisos com composições",
-      "Cronograma físico-financeiro integrado",
-      "Diário de obra digital",
-      "Controle de medições",
-      "Gestão de múltiplas obras",
-      "Controle de mão de obra",
-      "Relatórios gerenciais por obra",
+      "Cadastro de clientes e contratantes",
+      "Materiais e serviços com preço e custo",
+      "Pedido com itens, desconto e total",
+      "Contas a pagar de fornecedores e a receber por etapa",
+      "Relatório financeiro do período",
+      "IA que responde sobre custos e recebimentos",
     ],
     useCases: [
-      "Construtoras",
-      "Incorporadoras",
       "Empreiteiras",
       "Empresas de reforma",
       "Instaladoras",
-      "Empresas de infraestrutura",
+      "Prestadores de serviço de obra",
+      "Construtoras pequenas",
+      "Autônomos da construção",
     ],
-    testimonial: {
-      quote: "O controle de materiais e o cronograma integrado nos ajudaram a reduzir custos em 25% e entregar obras dentro do prazo.",
-      author: "Eng. Fernando Costa",
-      role: "Diretor Técnico",
-      company: "Construtora Horizonte",
-    },
+    notFor: [
+      "Gestão de obras e diário de obra",
+      "Cronograma físico-financeiro",
+      "Medições e boletins",
+      "Orçamento com composição de custos (SINAPI/TCPO)",
+      "Controle de materiais por obra",
+    ],
   },
 };
 
@@ -586,16 +323,10 @@ interface SegmentData {
   title: string;
   subtitle: string;
   description: string;
-  heroStats: { value: string; label: string; icon: LucideIcon }[];
-  features: { title: string; description: string; icon: LucideIcon }[];
   benefits: string[];
   useCases: string[];
-  testimonial: {
-    quote: string;
-    author: string;
-    role: string;
-    company: string;
-  };
+  /** O que o Orion não entrega para este segmento. Dito antes da assinatura. */
+  notFor: string[];
 }
 
 // Generate static params for all segments
@@ -680,19 +411,6 @@ export default async function SegmentPage({
                 </Button>
               </div>
             </div>
-
-            {/* Hero Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto mt-12">
-              {segment.heroStats.map((stat, index) => (
-                <div key={index} className="text-center p-6 bg-card border border-border rounded-2xl">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <stat.icon className="w-5 h-5 text-primary" />
-                    <span className="text-3xl font-bold">{stat.value}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -701,15 +419,17 @@ export default async function SegmentPage({
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Funcionalidades para {segment.title}
+                O que você recebe
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Recursos desenvolvidos especificamente para as necessidades do seu segmento.
+                Os seis módulos do Orion. São os mesmos para todo segmento — não
+                existe versão especial de {segment.title.toLowerCase()}, e dizer
+                que existe seria mentira.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {segment.features.map((feature, index) => (
+              {CORE_FEATURES.map((feature, index) => (
                 <div
                   key={index}
                   className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-shadow"
@@ -764,23 +484,33 @@ export default async function SegmentPage({
           </div>
         </section>
 
-        {/* Testimonial Section */}
+        {/* Onde o Orion não serve para este segmento.
+            Substituiu o depoimento — que era inventado, com nome, cargo e
+            empresa de um cliente que não existe. */}
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4 max-w-4xl">
-            <div className="bg-card border border-border rounded-2xl p-8 md:p-12 text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <Icon className="w-8 h-8 text-primary" />
-              </div>
-              <blockquote className="text-xl md:text-2xl font-medium mb-8 italic">
-                &quot;{segment.testimonial.quote}&quot;
-              </blockquote>
-              <div>
-                <p className="font-semibold text-lg">{segment.testimonial.author}</p>
-                <p className="text-muted-foreground">
-                  {segment.testimonial.role}, {segment.testimonial.company}
-                </p>
-              </div>
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Onde o Orion não vai te atender
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Específico de {segment.title.toLowerCase()}. Se um destes é
+                indispensável hoje, procure outro sistema — vai custar menos aos
+                dois.
+              </p>
             </div>
+
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {segment.notFor.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 bg-card border border-border rounded-lg p-4"
+                >
+                  <span aria-hidden className="text-muted-foreground mt-0.5">—</span>
+                  <span className="text-sm text-muted-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 

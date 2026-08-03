@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { appUrl } from "@/lib/app-url";
+import { isMember } from "@/lib/account";
 
 // POST /api/billing/portal - abre o Customer Portal da Stripe.
 // Substitui o cancelamento próprio, que marcava o banco e nunca cancelava na
@@ -13,6 +14,14 @@ export async function POST(request: NextRequest) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    // O portal expõe cartão, faturas e cancelamento da conta inteira. Só o dono.
+    if (isMember(session)) {
+      return NextResponse.json(
+        { error: "Só o dono da conta gerencia a assinatura." },
+        { status: 403 }
+      );
     }
 
     const subscription = await prisma.subscription.findFirst({

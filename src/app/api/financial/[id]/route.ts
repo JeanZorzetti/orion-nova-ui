@@ -25,7 +25,7 @@ export async function GET(
     const transaction = await prisma.financialTransaction.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         customer: true,
@@ -84,7 +84,7 @@ export async function PATCH(
     const existingTransaction = await prisma.financialTransaction.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 
@@ -150,7 +150,7 @@ export async function DELETE(
     const existingTransaction = await prisma.financialTransaction.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 

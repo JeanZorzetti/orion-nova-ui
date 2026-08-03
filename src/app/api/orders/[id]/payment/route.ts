@@ -29,7 +29,7 @@ export async function PATCH(
     const existingOrder = await prisma.salesOrder.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 
@@ -64,7 +64,7 @@ export async function PATCH(
     ) {
       try {
         await createSalePaidNotification(
-          session.user.id,
+          session.user.accountId,
           order.id,
           order.orderNumber,
           Number(order.total),

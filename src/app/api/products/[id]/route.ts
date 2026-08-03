@@ -35,7 +35,7 @@ export async function GET(
     const product = await prisma.product.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         orderItems: {
@@ -88,7 +88,7 @@ export async function PUT(
     const existingProduct = await prisma.product.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 
@@ -150,7 +150,7 @@ export async function DELETE(
     const existingProduct = await prisma.product.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
       include: {
         orderItems: true,

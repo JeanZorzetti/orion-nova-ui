@@ -27,7 +27,7 @@ export async function PATCH(
     const existingOrder = await prisma.salesOrder.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 

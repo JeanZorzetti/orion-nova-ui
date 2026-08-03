@@ -437,9 +437,12 @@ export async function createBroadcastNotification(
 // Verificar e criar notificações de trial para todos os usuários
 export async function checkAndCreateTrialNotifications() {
   try {
-    // Buscar todos os usuários em trial
+    // Buscar todos os usuários em trial. Só donos de conta: membro de equipe
+    // não tem trial próprio nem paga — avisar ele que "seu trial expira" seria
+    // mentira e ainda mandaria e-mail para a pessoa errada.
     const usersInTrial = await prisma.user.findMany({
       where: {
+        ownerId: null,
         subscriptionStatus: "TRIAL",
         trialEndsAt: {
           not: null,

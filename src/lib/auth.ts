@@ -62,6 +62,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
+
+        // Conta a que este login pertence: o dono, ou ele mesmo se for o dono.
+        // A query fica DENTRO do `if (user)` de propósito — esse ramo só roda no
+        // sign-in, que acontece em route handler. O resto do callback roda
+        // também no proxy, onde o Prisma não funciona (foi assim que o gate de
+        // trial ficou meses sem rodar). Não mova esta query para fora daqui.
+        const owner = await prisma.user.findUnique({
+          where: { id: user.id as string },
+          select: { ownerId: true },
+        });
+        token.accountId = owner?.ownerId ?? (user.id as string);
       }
       return token;
     },
@@ -69,6 +80,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         (session.user as any).role = token.role;
+        // Fallback para tokens emitidos antes da feature de equipe existir.
+        session.user.accountId = (token.accountId as string) ?? (token.id as string);
       }
       return session;
     },

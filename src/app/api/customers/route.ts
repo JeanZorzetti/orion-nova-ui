@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { limiteEstourado } from "@/lib/account";
 
 // Schema de validação para criação de cliente
 const createCustomerSchema = z.object({
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros
     const where: any = {
-      userId: session.user.id,
+      userId: session.user.accountId,
     };
 
     if (search) {
@@ -95,6 +96,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createCustomerSchema.parse(body);
 
+    const limite = await limiteEstourado(session.user.accountId, "customers");
+    if (limite) {
+      return NextResponse.json({ error: limite, code: "PLAN_LIMIT" }, { status: 402 });
+    }
+
     // Verificar se já existe cliente com mesmo email ou CPF/CNPJ
     if (validatedData.email) {
       const existingEmail = await prisma.customer.findUnique({
@@ -133,7 +139,7 @@ export async function POST(request: NextRequest) {
         zipCode: validatedData.zipCode || null,
         notes: validatedData.notes || null,
         isActive: validatedData.isActive,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 

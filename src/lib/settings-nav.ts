@@ -1,5 +1,6 @@
 import {
   User,
+  Users,
   Bell,
   Shield,
   Settings,
@@ -14,6 +15,7 @@ import {
 /** Fonte única das sub-rotas de Configurações: submenu da sidebar e hub. */
 export const settingsNav: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Perfil", href: "/dashboard/configuracoes/perfil", icon: User },
+  { label: "Equipe", href: "/dashboard/configuracoes/equipe", icon: Users },
   { label: "Notificações", href: "/dashboard/configuracoes/notificacoes", icon: Bell },
   { label: "Segurança", href: "/dashboard/configuracoes/seguranca", icon: Shield },
   { label: "Sistema", href: "/dashboard/configuracoes/sistema", icon: Settings },

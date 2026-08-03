@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
+import { syncPlans } from "./plans";
 
 const prisma = new PrismaClient();
 
@@ -8,112 +9,11 @@ async function main() {
   console.log("🌱 Iniciando seed do banco de dados...");
 
   // ========== PLANOS ==========
-  console.log("📦 Criando planos...");
-
-  const starterPlan = await prisma.plan.upsert({
-    where: { slug: "starter" },
-    update: {},
-    create: {
-      name: "Starter",
-      slug: "starter",
-      description: "Ideal para MEIs e Microempresas que estão começando",
-      price: 89.0,
-      billingPeriod: "MONTHLY",
-      features: {
-        users: 2,
-        storage: 5,
-        modules: [
-          "Financeiro básico",
-          "Cadastro de clientes (até 500)",
-          "Cadastro de produtos (até 200)",
-          "Relatórios básicos",
-          "IA: Insights básicos",
-        ],
-        support: "Email (24-48h)",
-        integrations: 0,
-        aiFeatures: "Insights básicos, alertas de vencimento",
-      },
-      maxUsers: 2,
-      maxStorage: 5,
-      isActive: true,
-    },
-  });
-
-  const professionalPlan = await prisma.plan.upsert({
-    where: { slug: "professional" },
-    update: {},
-    create: {
-      name: "Professional",
-      slug: "professional",
-      description: "Para Pequenas Empresas em crescimento (R$ 360k - R$ 4,8M/ano)",
-      price: 249.0,
-      billingPeriod: "MONTHLY",
-      features: {
-        users: 10,
-        storage: 50,
-        modules: [
-          "Estoque completo (ilimitado)",
-          "Vendas e PDV integrado",
-          "CRM com funil de vendas",
-          "Dashboards interativos",
-          "BI com 20+ relatórios",
-          "Conciliação bancária automática",
-          "Comissões de vendedores",
-        ],
-        support: "Chat + Email prioritário (4-8h)",
-        integrations: 5,
-        customReports: true,
-        aiFeatures: "IA preditiva: previsões de vendas, alertas proativos",
-      },
-      maxUsers: 10,
-      maxStorage: 50,
-      isActive: true,
-    },
-  });
-
-  const enterprisePlan = await prisma.plan.upsert({
-    where: { slug: "enterprise" },
-    update: {},
-    create: {
-      name: "Enterprise",
-      slug: "enterprise",
-      description: "Solução completa para Médias Empresas (R$ 4,8M+ ano, múltiplas filiais)",
-      price: 599.0,
-      billingPeriod: "MONTHLY",
-      features: {
-        users: -1, // Ilimitado
-        storage: -1, // Ilimitado
-        modules: [
-          "Multi-empresa/Multi-filial (até 5 CNPJs)",
-          "Produção e MRP básico",
-          "CRM avançado (automações, workflows)",
-          "RH e ponto eletrônico",
-          "Projetos e orçamentos",
-          "Assistente IA completo",
-          "API aberta (webhooks, integração custom)",
-          "White-label (marca customizada)",
-        ],
-        support: "24/7 (telefone, WhatsApp, gerente dedicado)",
-        integrations: -1, // Ilimitado
-        customReports: true,
-        apiAccess: true,
-        whiteLabel: true,
-        multiCompany: 5,
-        dedicatedManager: true,
-        sla: "99.9%",
-        aiFeatures: "IA completa: chat GPT-4.5, análises personalizadas",
-      },
-      maxUsers: null,
-      maxStorage: null,
-      isActive: true,
-    },
-  });
-
-  console.log("✅ Planos criados:", {
-    starter: starterPlan.id,
-    professional: professionalPlan.id,
-    enterprise: enterprisePlan.id,
-  });
+  // Fonte única em prisma/plans.ts, compartilhada com scripts/sync-plans.ts.
+  // Antes o seed tinha a própria cópia com `update: {}` — corrigir aqui não
+  // corrigia produção, e as duas cópias divergiram.
+  console.log("📦 Sincronizando planos...");
+  await syncPlans(prisma);
 
   // ========== CATEGORIAS DE BLOG ==========
   console.log("📚 Criando categorias de blog...");

@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros
     const where: any = {
-      userId: session.user.id,
+      userId: session.user.accountId,
     };
 
     if (search) {
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
     const customer = await prisma.customer.findFirst({
       where: {
         id: validatedData.customerId,
-        userId: session.user.id,
+        userId: session.user.accountId,
       },
     });
 
@@ -177,14 +177,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Gerar número do pedido
-    const orderNumber = await generateOrderNumber(session.user.id);
+    const orderNumber = await generateOrderNumber(session.user.accountId);
 
     // Criar pedido com itens
     const order = await prisma.salesOrder.create({
       data: {
         orderNumber,
         customerId: validatedData.customerId,
-        userId: session.user.id,
+        userId: session.user.accountId,
         subtotal,
         discount: validatedData.discount,
         total,

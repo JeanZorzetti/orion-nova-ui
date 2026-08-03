@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = session.user.accountId;
     const { searchParams } = new URL(request.url);
 
     // Filtros

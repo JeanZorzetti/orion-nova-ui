@@ -19,7 +19,6 @@ import { Check, Loader2, ArrowLeft, Star, Sparkles, AlertTriangle, Clock } from 
 import { pageMetadata } from "@/lib/metadata";
 import { PricingComparison } from "@/components/pricing";
 import { ROICalculator } from "@/components/roi";
-import { EarlyAdopterBanner } from "@/components/campaigns";
 import { trackPlanView, trackPlanSelected, trackCheckoutStarted } from "@/lib/analytics";
 
 interface Plan {
@@ -105,9 +104,9 @@ function PrecosPageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Early Adopter Banner */}
-      <EarlyAdopterBanner currentCustomers={127} maxCustomers={500} />
-
+      {/* O banner "Early Adopter" saiu daqui: anunciava 127 clientes (existem 0)
+          e prometia preço vitalício com 25% off, sem cupom que sustentasse a
+          promessa. Prova social fabricada e oferta não implementada. */}
       <div className="pt-24 pb-12 px-4">
         <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -298,7 +297,7 @@ function PrecosPageContent() {
             </div>
             <h3 className="font-semibold mb-2">IA Nativa</h3>
             <p className="text-sm text-muted-foreground">
-              Único ERP brasileiro com inteligência artificial real em todos os planos
+              Assistente que lê os dados da sua empresa — não é um chat genérico
             </p>
           </div>
           <div className="text-center p-6 bg-card border border-border rounded-xl">
@@ -307,7 +306,7 @@ function PrecosPageContent() {
             </div>
             <h3 className="font-semibold mb-2">Preço Justo</h3>
             <p className="text-sm text-muted-foreground">
-              25% mais barato que Omie, 60% mais barato que SAP/TOTVS
+              R$ 89/mês, sem implantação, sem fidelidade e sem taxa de setup
             </p>
           </div>
           <div className="text-center p-6 bg-card border border-border rounded-xl">
@@ -326,12 +325,11 @@ function PrecosPageContent() {
           <p className="text-sm text-muted-foreground mb-4">
             Pagamento seguro via Stripe. Cancele quando quiser.
           </p>
+          {/* Só cartão: assinatura com renovação automática exige mandato
+              recorrente, e Pix/boleto não têm. Anunciar os três era prometer
+              uma forma de pagamento que o checkout não aceita. */}
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span>Cartão de crédito</span>
-            <span>•</span>
-            <span>PIX</span>
-            <span>•</span>
-            <span>Boleto</span>
           </div>
         </div>
         </div>

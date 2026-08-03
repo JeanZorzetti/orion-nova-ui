@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
     // Buscar dados do usuário
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: session.user.accountId },
       select: {
         subscriptionStatus: true,
         trialEndsAt: true,
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       if (daysRemaining <= 0) {
         // Atualizar status para EXPIRED
         await prisma.user.update({
-          where: { id: session.user.id },
+          where: { id: session.user.accountId },
           data: { subscriptionStatus: "EXPIRED" },
         });
 
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
     trialEndsAt.setDate(trialEndsAt.getDate() + 30);
 
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: session.user.accountId },
       data: {
         subscriptionStatus: "TRIAL",
         trialEndsAt,
