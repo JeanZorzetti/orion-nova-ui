@@ -11,9 +11,53 @@ Sessão anterior: itens 1–7 do handoff velho entregues no commit `d687ffd`
 logado, `/perfil/configuracoes`, e o `<SelectItem value="">` que derrubava o
 form financeiro). Produção está de pé.
 
+**Sessão de 03/08 (commit `5cbc72f`): os 5 itens abaixo foram executados.**
+O registro do que foi decidido e feito está na próxima seção; a lista original
+ficou preservada logo depois como histórico.
+
 ---
 
-## O que fazer agora
+## ✅ Entregue em 5cbc72f
+
+1. **`/precos` voltar** — destino pela sessão (`useSession()` → `/dashboard` se
+   logado, `/` se não). Sem `router.back()`.
+2. **`empresa`** — caminho (a): model `Company` (1:1 com `User`), migration
+   `20260803120000_add_companies`, rota `/api/company` (GET + PUT upsert, zod).
+   A tela carrega o que já está salvo, ganhou campo CNPJ, perdeu o "Passo 2 de
+   5" e o `router.push` para fiscal.
+3. **`fiscal`** — adiada. O formulário morto saiu; a tela agora é um aviso
+   honesto de "em desenvolvimento" com link para Dados da Empresa. O botão
+   "Entendi" marca o step do onboarding como pulado.
+4. **`/dashboard/migracao`** — postando em `/api/migration` de verdade:
+   `File` em estado, `FormData` com `file` + `sourceErp`, resultado
+   (`totalRecords`/`successRecords`/`errorRecords`/`errors`) renderizado na
+   própria tela. Textos de "assíncrono" corrigidos.
+5. **`/dashboard/integracoes`** — todas as 6 marcadas `available: false`,
+   seleção e linguagem de onboarding removidas, aponta para a migração (que
+   funciona). WhatsApp saiu daqui e de `features/page.tsx` e
+   `solucoes/[slug]/page.tsx`. `contato` e `share-buttons` ficaram.
+6. **Hub de configurações** — 4 `<Link>` novos: Empresa, Fiscal, Migração de
+   Dados, Integrações.
+
+### ⚠️ Pendências operacionais desta entrega
+
+- **A migration `add_companies` ainda não foi aplicada em produção.** Não há
+  `.env`/`.env.local` na máquina, então **não foi possível rodar o
+  `prisma migrate diff` de drift** que esta seção exige. Rode-o **antes** do
+  próximo deploy — se houver drift, `prisma migrate deploy` (que o
+  `vercel-build` executa) vai aplicar `add_companies` sobre um banco
+  desalinhado.
+- O SQL foi escrito à mão seguindo o padrão de `20260126000000_add_api_keys` e
+  gravado sem BOM (verificado: começa em `2D 2D`).
+- `npx tsc --noEmit` e `next build` passam. `vitest`: 60 passam, os mesmos 3 de
+  `NotificationBell.test.tsx` falham (pré-existente).
+- O select "Tipo de Dados" da migração continua sendo coletado e **ignorado**
+  pela rota — `/api/migration` decide pelo parser. Ou some, ou a rota passa a
+  respeitá-lo.
+
+---
+
+## Histórico: os 5 itens como foram levantados
 
 Os 5 itens abaixo foram levantados **lendo o código**, não navegando a
 produção. Onde o diagnóstico depende de comportamento em runtime está marcado.
