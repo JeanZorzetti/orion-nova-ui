@@ -19,7 +19,9 @@ const trialExceptionRoutes = ["/precos", "/checkout", "/perfil"];
 
 export default auth(async (req) => {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
+  // req.auth existe mesmo sem sessão; só `user` distingue. Os server components
+  // checam `session?.user` — critério diferente aqui gera loop de redirect.
+  const isLoggedIn = !!req.auth?.user;
   const isAdmin = req.auth?.user?.role === "ADMIN" || req.auth?.user?.role === "SUPER_ADMIN";
 
   const isProtectedRoute = protectedRoutes.some((route) =>

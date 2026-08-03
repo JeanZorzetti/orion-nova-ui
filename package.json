@@ -17,6 +17,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
+    "smoke:auth": "node scripts/smoke-auth.mjs",
     "lighthouse": "node scripts/lighthouse-audit.js",
     "lighthouse:ci": "lhci autorun",
     "prisma:generate": "dotenv -e .env.local -- prisma generate",
