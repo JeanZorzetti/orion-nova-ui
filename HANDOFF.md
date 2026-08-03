@@ -6,37 +6,95 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
-Sessão 4 (este commit): tudo que travava a primeira venda **do lado do código**
-saiu do caminho — NF-e fora dos planos, `features: {}` que apagaria os bullets,
-fallback de URL do checkout e fail-open do middleware. O que resta para receber
-dinheiro é painel: Stripe e Vercel. Detalhe no final.
+---
+
+## 🎯 Comece por aqui: confirmar o login e comprar
+
+A Stripe está inteira (G2.5 fechado, detalhe mais abaixo). O único motivo de
+isto não ter virado uma venda ainda é que o login quebrou no meio da sessão 4 e
+o conserto (`a1eaf0a`) **não foi validado com uma sessão de verdade** — a
+sessão anterior não tinha como logar na conta de ninguém.
+
+### Passo 1 — logar (2 min)
+
+Abra `https://orion.roilabs.com.br/login`, entre e confirme que cai no
+`/dashboard`.
+
+- **Funcionou?** Vá para o passo 2.
+- **Ainda cai em `/precos`?** Leia "O que quebrou o login" abaixo antes de
+  mexer em qualquer coisa. A causa está mapeada e o próximo suspeito é o
+  `redirect()` novo no [dashboard/layout.tsx](src/app/dashboard/layout.tsx).
+
+### Passo 2 — a compra real (G3)
+
+É a única coisa entre o estado atual e a meta. Nada de test mode, nada de
+localhost:
+
+1. Logado, em `/precos`, assine o **Starter** (R$ 89) com cartão de verdade
+2. Confirme os 5 efeitos: e-mail chegou · `Subscription.status = ACTIVE` ·
+   dashboard destravado · portal abrindo em `/assinaturas` · reembolso
+3. Registre `payment_intent` + timestamp em
+   [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) e
+   reembolse pelo painel
+
+Se falhar no meio, o MCP da Stripe está autorizado: dá para ler o evento, a
+Checkout Session e a subscription e comparar com o que o webhook gravou no
+banco. Comece por `stripe_api_read` em `GetEvents`.
 
 ---
 
-## O próximo passo: a Orion não consegue receber dinheiro
+## ⚠️ O que quebrou o login (leia se o passo 1 falhar)
 
-Você está certo — o básico está redondo. Cadastro, ERP, onboarding, trial,
-configurações: tudo de pé. E é exatamente por isso que o próximo passo não é
-tela nenhuma.
+**Sintoma:** todo login terminava em
+`/precos?erro=indisponivel&from=%2Fdashboard`.
 
-### O diagnóstico
+**Não era o banco.** As três medidas que descartam isso, todas de 03/08:
+o banco respondeu a query direto da máquina; `GET /api/plans` em produção
+devolveu 200 pela mesma conexão; e o usuário barrado estava `ACTIVE` com
+`trialEndsAt: null` — nenhum ramo da checagem de trial redirecionaria ele. Só o
+`catch` podia produzir aquele redirect.
 
-O caminho do dinheiro **já está escrito e testado**. G1 e G2 do arquivo de metas
-fecharam em 03/08: existe uma rota de checkout
+**A causa:** a query do Prisma **dentro do proxy** (`src/middleware.ts`) falha,
+enquanto a query idêntica funciona nas rotas de API. Não é runtime de Edge — no
+Next 16 o proxy já roda em Node.js por padrão; o mais provável é o engine do
+Prisma não ir junto no bundle do proxy. **A causa exata nunca foi lida num log**,
+porque `vercel logs` só transmite eventos novos e ninguém conseguia reproduzir
+enquanto o stream rodava. Se precisar do erro literal: deixe
+`npx vercel logs <url-do-deploy>` rodando e faça login noutra janela.
+
+**E o detalhe que importa:** essa query falha **desde sempre**. O `catch`
+antigo era fail-open, então engolia o erro em 100% dos requests — o gate de
+trial nunca rodou uma vez em produção. Trocar o fail-open por fail-closed (G6)
+não criou o bug, só parou de escondê-lo. O HANDOFF anterior dizia que o
+fail-open "manteve invisível a queda de produção"; era mais literal do que
+parecia, a queda que ele escondia era a dele mesmo.
+
+**O conserto (`a1eaf0a`):** o gate saiu do proxy e foi para o
+[dashboard/layout.tsx](src/app/dashboard/layout.tsx), server component que roda
+onde o Prisma comprovadamente funciona, **sem try/catch** — se o banco cair, o
+erro aparece em vez de liberar acesso calado. O proxy ficou só com as checagens
+de JWT e não importa mais o Prisma. **Não devolva banco para o proxy.**
+
+Se o passo 1 ainda falhar depois disso, o suspeito passa a ser o
+`redirect("/precos?trial=expired")` do layout: cheque no banco o
+`subscriptionStatus` do seu usuário antes de culpar o código.
+
+---
+
+## Histórico: por que a Orion não conseguia receber dinheiro
+
+O caminho do dinheiro **já estava escrito e testado**. G1 e G2 fecharam em
+03/08: existe uma rota de checkout
 ([api/checkout/route.ts](src/app/api/checkout/route.ts)), um webhook autenticado
 e idempotente com 4 testes
 ([webhooks/stripe](src/app/api/webhooks/stripe/__tests__/route.test.ts)) e um
-portal de billing. O código está pronto.
+portal de billing. O código estava pronto.
 
-O que falta não é código: **os 3 planos estão no banco com `stripePriceId` nulo**
-e as chaves da Stripe não existem na Vercel. Com isso,
-[api/checkout/route.ts:33](src/app/api/checkout/route.ts#L33) responde
-`409 Plano sem preço configurado na Stripe` para qualquer plano. Hoje, se um
-cliente aparecer e quiser pagar, ele não consegue — a falha é explícita e limpa,
-e mesmo assim é uma venda perdida.
-
-Isso é o G2.5, marcado 🔴 no arquivo de metas, e ele bloqueia todo o resto. É
-trabalho de painel, não de editor: ~1 hora.
+O que faltava não era código: os 3 planos estavam com `stripePriceId` nulo e as
+chaves da Stripe não existiam na Vercel, então
+[api/checkout/route.ts:33](src/app/api/checkout/route.ts#L33) respondia `409
+Plano sem preço configurado na Stripe` para qualquer plano. Era o G2.5, e ele
+bloqueava todo o resto.
 
 ### 1. Configurar a Stripe (G2.5) — ✅ **fechado em 03/08**
 
@@ -81,15 +139,11 @@ os 3 planos com `stripePriceId` preenchido, 5/7/8 bullets e nenhuma menção a
 NF-e. É o comando mais barato para conferir tudo de uma vez se algo parecer
 errado depois.
 
-### 2. Uma compra real (G3)
+### 2. Uma compra real (G3) — **é o passo 2 lá do topo**
 
 Cartão pessoal, dinheiro real, em produção — não test mode, não localhost. O
 test mode esconde exatamente as três coisas que quebram aqui: chave de produção
 errada, webhook secret errado e `success_url` apontando para localhost.
-
-Registrar no arquivo de metas: `payment_intent`, timestamp e os 5 efeitos
-(e-mail, `Subscription.status = ACTIVE`, dashboard destravado, portal abrindo em
-`/assinaturas`, reembolso). Reembolsar em seguida pelo painel.
 
 ### 3. `/precos` prometia NF-e — código corrigido, **falta rodar no banco**
 
@@ -123,9 +177,7 @@ mesma promessa.
 
 1. ~~`strip-nfe-from-plans.ts` no banco~~ — ✅ 03/08, idempotente
 2. ~~Stripe + variáveis na Vercel~~ — ✅ 03/08, G2.5 inteiro
-3. **A compra real (G3) é a próxima ação.** Nada mais bloqueia: entre em
-   `/precos` logado, assine o Starter com cartão de verdade e siga o roteiro
-   abaixo. É o primeiro teste do caminho autenticado ponta a ponta.
+3. **Confirmar o login e comprar** — é o bloco no topo deste arquivo
 4. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
 
 **Não comece módulo novo de ERP.** Está explicitamente fora de escopo até
@@ -145,13 +197,17 @@ mesma promessa.
    mas **rotacionar no Postgres continua pendente**.
 3. **O Postgres aceita conexão da internet aberta com `sslmode=disable`.**
    Foi possível conectar de fora sem obstáculo, tráfego em claro. Ainda aberto.
-4. ~~Fail-open no middleware~~ — **fechado nesta sessão (G6)**. O `catch` da
-   checagem de trial ([src/middleware.ts](src/middleware.ts)) liberava acesso
-   quando o banco falhava, e foi isso que manteve invisível a queda de produção
-   descrita abaixo. Agora redireciona para `/precos?erro=indisponivel`, que
-   mostra um alerta. O efeito colateral aceito: uma instabilidade momentânea do
-   banco tira o cliente do dashboard — é o comportamento que se quer, porque o
-   dashboard sem banco não funciona mesmo, só fingia.
+4. ~~Fail-open no middleware~~ — **fechado (G6)**, e pela raiz: o gate saiu do
+   proxy e foi para o [dashboard/layout.tsx](src/app/dashboard/layout.tsx), sem
+   `catch`. Se o banco cair, o erro aparece em vez de liberar acesso calado. Ver
+   "O que quebrou o login" no topo — foi este item que expôs o bug, e o bug
+   provou que o gate nunca tinha rodado.
+5. **O gate de trial nunca foi exercitado de verdade.** Ele existe desde sempre
+   no código e nunca executou em produção (a query falhava, o fail-open
+   engolia). Depois de conseguir logar, vale testar o caminho triste de
+   propósito: `UPDATE users SET "subscriptionStatus"='EXPIRED'` num usuário
+   descartável e conferir que ele cai em `/precos?trial=expired`. Sem isso, a
+   única evidência de que o gate funciona é ele ter compilado.
 
 ---
 
@@ -229,12 +285,20 @@ Regras:
 - **VAPID na Vercel** para web push de verdade. O resto do push já está
   implementado.
 - 3 testes falham em `NotificationBell.test.tsx` (formatação de tempo relativo),
-  pré-existentes. Os outros 60 passam.
-- Aviso de build: `middleware` está deprecado no Next 16, quer virar `proxy`.
+  pré-existentes. Os outros 63 passam.
+- Aviso de build: `middleware` está deprecado no Next 16, quer virar `proxy`
+  (`npx @next/codemod@canary middleware-to-proxy .`). Agora que o arquivo só tem
+  checagem de JWT, a migração ficou trivial — mas não é urgente.
 - "Mercado Pago" em integrações e `features/page.tsx` é integração que o
   *cliente* conecta no ERP, não provedor de cobrança. Não é resíduo.
-- MCP da Stripe não autorizado. Autorize via `claude mcp` numa sessão
-  interativa ou trabalhe sem ele.
+- **MCP da Stripe autorizado** (`claude mcp add --transport http stripe
+  https://mcp.stripe.com/`, OAuth). `stripe_api_read`/`stripe_api_write` cobrem
+  qualquer método REST — foi assim que produtos e webhook nasceram. Mantenha a
+  confirmação humana das tools ligada: `stripe_api_write` é escrita irrestrita.
+- **CLI da Vercel logada e projeto linkado**, então `vercel env add` e `vercel
+  --prod` funcionam daqui. Cuidado: fora do diretório do projeto o comando falha
+  dizendo que o codebase não está linkado — e é fácil não perceber. Confira com
+  `vercel env ls` depois de cada `env add`.
 - **Não persiga SEO.** O Orion compete no cluster "ERP" contra TOTVS, Omie,
   Bling e Conta Azul; em 90 dias não sai do zero. O canal do primeiro pagante é
   outbound, e SEO está fora de escopo no arquivo de metas.
@@ -251,19 +315,28 @@ Regras:
    que você fosse colar os price IDs da Stripe.
 3. **[appUrl()](src/lib/app-url.ts)** em checkout, portal e links de e-mail de
    notificação (esse último montava `undefined/...` hoje).
-4. **Middleware fail-closed** + alerta em `/precos`.
+4. **Gate de trial fail-closed e fora do proxy** (`a1eaf0a`) — o caminho todo
+   está em "O que quebrou o login", no topo. **É a única entrega da sessão que
+   não foi validada em produção**, porque exige uma sessão logada.
 5. **Senhas de admin saíram do seed** — `SEED_ADMIN_PASSWORD` /
    `SEED_OWNER_PASSWORD`, documentadas no [.env.example](.env.example).
-6. **G2.5 quase inteiro, via MCP da Stripe + CLI da Vercel** — produtos, prices,
-   price IDs no banco, webhook endpoint, `STRIPE_WEBHOOK_SECRET` e
-   `NEXT_PUBLIC_APP_URL`. Só a restricted key ficou de fora, por não ter API.
+6. **G2.5 inteiro, via MCP da Stripe + CLI da Vercel** — produtos, prices, price
+   IDs no banco, webhook endpoint e as 3 variáveis de ambiente. Só a criação da
+   restricted key foi manual, por não existir API para isso.
 7. **NF-e removido do banco de produção** e **check de drift executado** (vazio).
+8. **Dois bugs de renderização em `/precos`** — o Enterprise anunciava "-1 GB de
+   armazenamento" e o Starter mostrava um "0" solto, porque `{0 && …}` renderiza
+   o próprio zero em JSX. Ambos estavam na página que o cliente usa para comprar.
 
-O MCP da Stripe está configurado (`claude mcp add --transport http stripe
-https://mcp.stripe.com/`) e autorizado por OAuth. `stripe_api_read` e
-`stripe_api_write` cobrem qualquer método da API REST — foi assim que os
-produtos e o webhook nasceram. Deixe a confirmação humana das tools ligada:
-`stripe_api_write` é escrita irrestrita na conta.
+### O que a sessão 4 errou, para não repetir
+
+- **O fail-closed foi deployado sem nunca ter sido exercitado com uma sessão
+  logada.** O `catch` estava a um request de distância de ser testado e não foi;
+  o resultado foi produção sem login. Mudança em middleware/proxy precisa de um
+  request autenticado de verdade antes de subir — build e `tsc` não alcançam
+  esse caminho.
+- **`vercel env add` rodado fora do diretório do projeto falhou em silêncio.** A
+  variável não entrou e o erro só apareceu no `env ls` seguinte. Sempre conferir.
 
 ## Histórico: o que a sessão 3 entregou
 
