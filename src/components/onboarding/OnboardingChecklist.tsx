@@ -94,7 +94,7 @@ export default function OnboardingChecklist({
       description: "Importe dados do seu ERP anterior (opcional)",
       icon: <Database className="h-5 w-5" />,
       completed: completedSteps.includes("migration"),
-      link: "/dashboard/migracao",
+      link: "/dashboard/configuracoes/migracao",
       optional: true,
     },
     {
@@ -103,7 +103,7 @@ export default function OnboardingChecklist({
       description: "Conecte-se com outras ferramentas (opcional)",
       icon: <Plug className="h-5 w-5" />,
       completed: completedSteps.includes("integrations"),
-      link: "/dashboard/integracoes",
+      link: "/dashboard/configuracoes/integracoes",
       optional: true,
     },
   ];

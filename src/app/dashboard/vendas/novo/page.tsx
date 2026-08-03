@@ -221,7 +221,7 @@ export default function NovoVendaPage() {
 
         // Redirecionar para próxima etapa do onboarding (migração - opcional) ou para listagem
         if (shouldContinueOnboarding) {
-          router.push("/dashboard/migracao");
+          router.push("/dashboard/configuracoes/migracao");
         } else {
           router.push("/dashboard/vendas");
         }

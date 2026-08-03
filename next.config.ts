@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   reactStrictMode: true,
+  async redirects() {
+    return [
+      { source: '/dashboard/migracao', destination: '/dashboard/configuracoes/migracao', permanent: true },
+      { source: '/dashboard/integracoes', destination: '/dashboard/configuracoes/integracoes', permanent: true },
+    ];
+  },
 };
 
 // Sentry configuration options

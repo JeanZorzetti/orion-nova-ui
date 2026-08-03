@@ -74,14 +74,14 @@ export function OnboardingControl() {
       id: "migration",
       title: "Migrar Dados",
       icon: <Database className="h-4 w-4" />,
-      link: "/dashboard/migracao",
+      link: "/dashboard/configuracoes/migracao",
       optional: true,
     },
     {
       id: "integrations",
       title: "Integrações",
       icon: <Plug className="h-4 w-4" />,
-      link: "/dashboard/integracoes",
+      link: "/dashboard/configuracoes/integracoes",
       optional: true,
     },
   ];

@@ -128,14 +128,14 @@ export default function ConfiguracoesPage() {
               Fiscal
             </Link>
             <Link
-              href="/dashboard/migracao"
+              href="/dashboard/configuracoes/migracao"
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
             >
               <Database className="w-4 h-4" />
               Migração de Dados
             </Link>
             <Link
-              href="/dashboard/integracoes"
+              href="/dashboard/configuracoes/integracoes"
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
             >
               <Plug className="w-4 h-4" />

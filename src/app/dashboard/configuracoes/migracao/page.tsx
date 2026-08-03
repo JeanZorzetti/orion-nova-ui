@@ -98,35 +98,6 @@ export default function MigracaoPage() {
     }
   };
 
-  const handleSkip = async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/user/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          stepId: "migration",
-          action: "skip",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao pular etapa");
-      }
-
-      router.push("/dashboard/integracoes");
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Não foi possível pular a etapa.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
@@ -137,7 +108,7 @@ export default function MigracaoPage() {
           <div>
             <h1 className="text-3xl font-bold">Migração de Dados</h1>
             <p className="text-muted-foreground">
-              Etapa Opcional - Importe dados do seu ERP anterior
+              Importe clientes e produtos de outro ERP
             </p>
           </div>
         </div>
@@ -180,7 +151,7 @@ export default function MigracaoPage() {
               type="button"
               size="sm"
               className="mt-3"
-              onClick={() => router.push("/dashboard/integracoes")}
+              onClick={() => router.push("/dashboard/configuracoes/integracoes")}
             >
               Continuar
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -253,16 +224,7 @@ export default function MigracaoPage() {
           </CardContent>
         </Card>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSkip}
-            disabled={isLoading}
-          >
-            Pular Esta Etapa
-          </Button>
-
+        <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Importando..." : "Importar Dados"}
             <ArrowRight className="ml-2 h-4 w-4" />

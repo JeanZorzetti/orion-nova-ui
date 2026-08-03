@@ -130,7 +130,7 @@ export default function IntegracoesPage() {
             🚧 Nenhuma destas integrações está disponível ainda. Esta é a lista
             do que está no roteiro — avisaremos assim que a primeira sair. Para
             trazer dados de outro ERP agora, use a{" "}
-            <a href="/dashboard/migracao" className="underline font-medium">
+            <a href="/dashboard/configuracoes/migracao" className="underline font-medium">
               migração de dados
             </a>
             , que já funciona.

@@ -13,6 +13,11 @@ const pathNameMap: Record<string, string> = {
   financeiro: "Financeiro",
   relatorios: "Relatórios",
   configuracoes: "Configurações",
+  empresa: "Empresa",
+  fiscal: "Fiscal",
+  migracao: "Migração de Dados",
+  integracoes: "Integrações",
+  "api-keys": "API Keys",
   novo: "Novo",
   editar: "Editar",
 };

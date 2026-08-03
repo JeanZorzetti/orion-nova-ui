@@ -272,7 +272,7 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href="/dashboard/migracao">
+                <Link href="/dashboard/configuracoes/migracao">
                   <Button className="w-full">Iniciar Migração</Button>
                 </Link>
               </CardContent>
