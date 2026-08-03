@@ -38,7 +38,7 @@ e mesmo assim é uma venda perdida.
 Isso é o G2.5, marcado 🔴 no arquivo de metas, e ele bloqueia todo o resto. É
 trabalho de painel, não de editor: ~1 hora.
 
-### 1. Configurar a Stripe (G2.5) — **falta 1 passo**
+### 1. Configurar a Stripe (G2.5) — ✅ **fechado em 03/08**
 
 Feito na sessão 4, via MCP da Stripe e CLI da Vercel:
 
@@ -49,7 +49,8 @@ Feito na sessão 4, via MCP da Stripe e CLI da Vercel:
 | Webhook endpoint + 3 eventos | ✅ `we_1U0QoG…` → `/api/webhooks/stripe` |
 | `STRIPE_WEBHOOK_SECRET` na Vercel | ✅ Production, Sensitive |
 | `NEXT_PUBLIC_APP_URL` na Vercel | ✅ Production |
-| **`STRIPE_SECRET_KEY` na Vercel** | 🔴 **você precisa criar** |
+| `STRIPE_SECRET_KEY` (`rk_live_…`) na Vercel | ✅ Production, Sensitive |
+| Deploy com as 3 variáveis | ✅ |
 
 **A conta usada é a `acct_1SjN4c` ("Sirius")**, não uma conta ROI Labs separada —
 decisão de 03/08 para não travar o G2.5 na verificação de uma conta nova. Ela
@@ -57,16 +58,17 @@ liquida em BRL e já hospeda 5 outros produtos em produção. Os produtos do Ori
 têm `metadata.app = "orion"` e `statement_descriptor = "ORION ERP"`, então a
 fatura do cliente não vai dizer "SIRIUS".
 
-O passo que sobra, e que **nenhum agente faz por você** — a Stripe não expõe API
-para criar chave de API, e o OAuth do MCP autoriza as chamadas do agente, não a
-aplicação:
+A restricted key foi criada à mão no painel — é o único passo sem API (a Stripe
+não expõe endpoint para criar chave de API, e o OAuth do MCP autoriza as
+chamadas do agente, não a aplicação em runtime). Se precisar refazer:
+[Dashboard → API keys](https://dashboard.stripe.com/acct_1SjN4cD6GTFfNAq4/apikeys)
+→ Create restricted key, permissões em [.env.example:13](.env.example#L13).
 
-1. [Dashboard → API keys](https://dashboard.stripe.com/acct_1SjN4cD6GTFfNAq4/apikeys)
-   → **Create restricted key** (`rk_`, não `sk_`). Permissões em
-   [.env.example:13](.env.example#L13): Checkout Sessions write, Customers
-   write, Subscriptions read, Billing Portal Sessions write, Prices read.
-2. `npx vercel env add STRIPE_SECRET_KEY production --sensitive`
-3. Redeploy (variável nova só vale no build seguinte).
+Preflight feito com a chave real: `POST /v1/checkout/sessions` com o price do
+Starter devolveu `cs_live_…`, `livemode: true`, `total: 8900 brl` — depois
+expirada. Prova que a chave tem Checkout Sessions write e Prices read. O que
+**não** foi exercitado é o caminho autenticado do próprio app: isso é a compra
+real do G3, abaixo.
 
 A armadilha do `NEXT_PUBLIC_APP_URL` está desarmada duas vezes: a variável foi
 configurada na Vercel **e** checkout e portal passaram a usar
@@ -74,11 +76,10 @@ configurada na Vercel **e** checkout e portal passaram a usar
 → `VERCEL_PROJECT_PRODUCTION_URL` antes de cair em `http://localhost:3000`.
 Antes disso o pagamento era aprovado e o cliente jogado numa URL morta.
 
-Verificação: `SELECT slug, "stripePriceId" FROM plans WHERE "isActive"` retorna
-3 linhas sem nulo (✅ em 03/08), e `POST /api/checkout` devolve URL da Stripe
-(pendente da `STRIPE_SECRET_KEY`). Enquanto a chave não existir, o checkout
-responde **500** (`STRIPE_SECRET_KEY não configurada`), não mais 409 — o 409 era
-o preço faltando, e isso já foi resolvido.
+Verificação em produção (`GET https://orion.roilabs.com.br/api/plans`, 03/08):
+os 3 planos com `stripePriceId` preenchido, 5/7/8 bullets e nenhuma menção a
+NF-e. É o comando mais barato para conferir tudo de uma vez se algo parecer
+errado depois.
 
 ### 2. Uma compra real (G3)
 
@@ -120,12 +121,12 @@ mesma promessa.
 
 ### Ordem sugerida
 
-1. ~~`strip-nfe-from-plans.ts` no banco~~ — ✅ rodado em 03/08, os 3 planos
-   saíram limpos e o script é idempotente
-2. ~~Stripe + `NEXT_PUBLIC_APP_URL`~~ — ✅ menos a `STRIPE_SECRET_KEY` (acima)
-3. **Restricted key + redeploy**, e o caminho do dinheiro está aberto
-4. Compra real em produção, com evidência registrada no arquivo de metas
-5. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
+1. ~~`strip-nfe-from-plans.ts` no banco~~ — ✅ 03/08, idempotente
+2. ~~Stripe + variáveis na Vercel~~ — ✅ 03/08, G2.5 inteiro
+3. **A compra real (G3) é a próxima ação.** Nada mais bloqueia: entre em
+   `/precos` logado, assine o Starter com cartão de verdade e siga o roteiro
+   abaixo. É o primeiro teste do caminho autenticado ponta a ponta.
+4. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
 
 **Não comece módulo novo de ERP.** Está explicitamente fora de escopo até
 01/11 — o que existe basta para provar a tese, e o gargalo não é feature.
