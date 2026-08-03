@@ -1,4 +1,4 @@
-# Handoff — Orion Nova (03/08/2026, sessão 4)
+# Handoff — Orion Nova (03/08/2026, sessão 5)
 
 Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 `node_modules` vem do vitest — não é build tool aqui.
@@ -8,24 +8,23 @@ Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 
 ---
 
-## 🎯 Comece por aqui: confirmar o login e comprar
+## 🎯 Comece por aqui: a compra real (G3)
 
-A Stripe está inteira (G2.5 fechado, detalhe mais abaixo). O único motivo de
-isto não ter virado uma venda ainda é que o login quebrou no meio da sessão 4 e
-o conserto (`a1eaf0a`) **não foi validado com uma sessão de verdade** — a
-sessão anterior não tinha como logar na conta de ninguém.
+O login **foi validado em produção na sessão 5** — o passo 1 do handoff
+anterior está fechado, não repita. Sessão real em `orion.roilabs.com.br`,
+credenciais reais, caiu no `/dashboard` com o onboarding abrindo. O conserto
+`a1eaf0a` (gate fora do proxy) funciona. Nada de código pendente aqui.
 
-### Passo 1 — logar (2 min)
+E o gate foi exercitado nos dois caminhos, também pela primeira vez —
+`subscriptionStatus='EXPIRED'` no banco redirecionou para
+`/precos?trial=expired&from=/dashboard` no request seguinte, e o valor foi
+revertido para `TRIAL`. O item 5 de segurança ("o gate nunca rodou") está
+fechado: ele roda, e nos dois sentidos.
 
-Abra `https://orion.roilabs.com.br/login`, entre e confirme que cai no
-`/dashboard`.
+Ou seja: **a compra é a única coisa entre o estado atual e a meta.** Ela exige
+cartão de verdade, então é sua — nenhum agente fecha esse passo.
 
-- **Funcionou?** Vá para o passo 2.
-- **Ainda cai em `/precos`?** Leia "O que quebrou o login" abaixo antes de
-  mexer em qualquer coisa. A causa está mapeada e o próximo suspeito é o
-  `redirect()` novo no [dashboard/layout.tsx](src/app/dashboard/layout.tsx).
-
-### Passo 2 — a compra real (G3)
+### O passo que falta — a compra real (G3)
 
 É a única coisa entre o estado atual e a meta. Nada de test mode, nada de
 localhost:
@@ -43,7 +42,10 @@ banco. Comece por `stripe_api_read` em `GetEvents`.
 
 ---
 
-## ⚠️ O que quebrou o login (leia se o passo 1 falhar)
+## ✅ Histórico: o que quebrou o login (resolvido e validado)
+
+Mantido porque explica por que o gate mora onde mora — e por que **não se
+devolve banco para o proxy**. O bug em si acabou.
 
 **Sintoma:** todo login terminava em
 `/precos?erro=indisponivel&from=%2Fdashboard`.
@@ -75,9 +77,11 @@ onde o Prisma comprovadamente funciona, **sem try/catch** — se o banco cair, o
 erro aparece em vez de liberar acesso calado. O proxy ficou só com as checagens
 de JWT e não importa mais o Prisma. **Não devolva banco para o proxy.**
 
-Se o passo 1 ainda falhar depois disso, o suspeito passa a ser o
-`redirect("/precos?trial=expired")` do layout: cheque no banco o
-`subscriptionStatus` do seu usuário antes de culpar o código.
+**Validado em produção na sessão 5**, com sessão real: login cai no
+`/dashboard`, e um usuário `EXPIRED` cai em `/precos?trial=expired`. Se algum
+dia voltar a redirecionar sem motivo, cheque no banco o `subscriptionStatus` do
+usuário antes de culpar o código — o layout só redireciona quem está
+`EXPIRED`/`CANCELLED` ou com trial vencido **e** sem subscription `ACTIVE`.
 
 ---
 
@@ -177,8 +181,9 @@ mesma promessa.
 
 1. ~~`strip-nfe-from-plans.ts` no banco~~ — ✅ 03/08, idempotente
 2. ~~Stripe + variáveis na Vercel~~ — ✅ 03/08, G2.5 inteiro
-3. **Confirmar o login e comprar** — é o bloco no topo deste arquivo
-4. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
+3. ~~Confirmar o login~~ — ✅ sessão 5, com sessão real em produção
+4. **Comprar** — é o bloco no topo deste arquivo, e exige cartão de verdade
+5. Só então G5 (3 pessoas reais cronometradas) e G7 (outbound)
 
 **Não comece módulo novo de ERP.** Está explicitamente fora de escopo até
 01/11 — o que existe basta para provar a tese, e o gargalo não é feature.
@@ -187,27 +192,25 @@ mesma promessa.
 
 ## ⚠️ Segurança — em ordem de urgência
 
-1. **`admin@orion.com` / `admin123` é `SUPER_ADMIN` em produção.** Ainda aberto:
-   o seed não recria mais essa senha (agora vem de `SEED_ADMIN_PASSWORD`, ou é
-   sorteada e impressa), mas o usuário que **já existe** no banco continua com
-   ela — `upsert` com `update: {}` não toca em quem existe. Troque pelo
-   `/esqueci-senha` ou por um `UPDATE` com hash bcrypt. 2 minutos.
-2. **A senha do Postgres vazou** num chat e era a mesma do usuário
-   `jeanzorzetti@gmail.com`. Saiu do repositório (mesmo mecanismo do item 1),
-   mas **rotacionar no Postgres continua pendente**.
-3. **O Postgres aceita conexão da internet aberta com `sslmode=disable`.**
-   Foi possível conectar de fora sem obstáculo, tráfego em claro. Ainda aberto.
+1. **A senha do Postgres vazou** num chat e era a mesma do usuário
+   `jeanzorzetti@gmail.com`. Saiu do repositório, mas **rotacionar no Postgres
+   continua pendente** — e agora é o item mais urgente da lista, porque é a
+   credencial que dá acesso direto a tudo.
+2. **O Postgres aceita conexão da internet aberta com `sslmode=disable`.**
+   Foi possível conectar de fora sem obstáculo, tráfego em claro. Ainda aberto,
+   e some junto com o item 1 se o banco parar de aceitar a internet inteira.
+3. ~~`admin@orion.com` / `admin123` em produção~~ — **fechado na sessão 5.** A
+   senha foi rotacionada por `UPDATE` com hash bcrypt (18 bytes aleatórios,
+   entregues fora do repositório); `bcrypt.compare("admin123", …)` agora dá
+   `false`. O seed já não recriava a senha antiga — quem sobrava era a linha
+   que já existia no banco, e ela foi corrigida.
 4. ~~Fail-open no middleware~~ — **fechado (G6)**, e pela raiz: o gate saiu do
    proxy e foi para o [dashboard/layout.tsx](src/app/dashboard/layout.tsx), sem
-   `catch`. Se o banco cair, o erro aparece em vez de liberar acesso calado. Ver
-   "O que quebrou o login" no topo — foi este item que expôs o bug, e o bug
-   provou que o gate nunca tinha rodado.
-5. **O gate de trial nunca foi exercitado de verdade.** Ele existe desde sempre
-   no código e nunca executou em produção (a query falhava, o fail-open
-   engolia). Depois de conseguir logar, vale testar o caminho triste de
-   propósito: `UPDATE users SET "subscriptionStatus"='EXPIRED'` num usuário
-   descartável e conferir que ele cai em `/precos?trial=expired`. Sem isso, a
-   única evidência de que o gate funciona é ele ter compilado.
+   `catch`. Se o banco cair, o erro aparece em vez de liberar acesso calado.
+5. ~~O gate de trial nunca foi exercitado~~ — **fechado na sessão 5**, nos dois
+   caminhos e em produção: usuário válido entra no `/dashboard`, usuário
+   `EXPIRED` cai em `/precos?trial=expired&from=/dashboard`. A evidência deixou
+   de ser "compilou".
 
 ---
 
@@ -304,6 +307,26 @@ Regras:
   outbound, e SEO está fora de escopo no arquivo de metas.
 
 ---
+
+## Histórico: o que a sessão 5 entregou
+
+Sessão de validação, não de código — o diff é só este arquivo. As mudanças
+reais foram no banco de produção e o que se ganhou foi evidência.
+
+1. **Login validado em produção** com sessão real (`orion.roilabs.com.br`,
+   navegador, credenciais reais) → `/dashboard`. Era a única entrega da sessão
+   4 sem validação, e o `a1eaf0a` passou.
+2. **Gate de trial exercitado nos dois caminhos** — `EXPIRED` no banco →
+   `/precos?trial=expired&from=/dashboard`; revertido para `TRIAL` em seguida.
+   Primeira execução real do gate desde que ele existe.
+3. **Senha de `admin@orion.com` rotacionada** — `admin123` não vale mais em
+   produção, verificado com `bcrypt.compare`.
+4. **Banco conferido** contra o que o handoff afirmava: 3 planos com
+   `stripePriceId` preenchido, 5/7/8 bullets, zero menção a NF-e; nenhum
+   usuário com subscription `ACTIVE` (ninguém pagou ainda, como esperado).
+
+O que **não** foi feito, e por quê: a compra do G3 exige cartão de crédito
+real. Nenhum agente fecha esse passo — é a única coisa que sobrou.
 
 ## Histórico: o que a sessão 4 entregou
 
