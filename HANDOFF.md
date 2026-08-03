@@ -1,4 +1,4 @@
-# Handoff — Orion Nova (03/08/2026)
+# Handoff — Orion Nova (03/08/2026, sessão 2)
 
 Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 `node_modules` vem do vitest — não é build tool aqui.
@@ -6,207 +6,168 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
-Sessão anterior: itens 1–7 do handoff velho entregues no commit `d687ffd`
-(notificações reais no header, 404 em português, sidebar sticky com o usuário
-logado, `/perfil/configuracoes`, e o `<SelectItem value="">` que derrubava o
-form financeiro). Produção está de pé.
-
-**Sessão de 03/08 (commit `5cbc72f`): os 5 itens abaixo foram executados.**
-O registro do que foi decidido e feito está na próxima seção; a lista original
-ficou preservada logo depois como histórico.
+Sessão anterior (`5cbc72f`): as 4 telas órfãs foram ligadas a backend real —
+`Company` + `/api/company`, migração postando em `/api/migration`, fiscal virou
+aviso honesto, integrações viraram "Em Breve", e o hub de configurações ganhou
+os 4 links. Detalhe no final deste arquivo.
 
 ---
 
-## ✅ Entregue em 5cbc72f
+## O próximo passo: a IA de configurações não bate com as URLs
 
-1. **`/precos` voltar** — destino pela sessão (`useSession()` → `/dashboard` se
-   logado, `/` se não). Sem `router.back()`.
-2. **`empresa`** — caminho (a): model `Company` (1:1 com `User`), migration
-   `20260803120000_add_companies`, rota `/api/company` (GET + PUT upsert, zod).
-   A tela carrega o que já está salvo, ganhou campo CNPJ, perdeu o "Passo 2 de
-   5" e o `router.push` para fiscal.
-3. **`fiscal`** — adiada. O formulário morto saiu; a tela agora é um aviso
-   honesto de "em desenvolvimento" com link para Dados da Empresa. O botão
-   "Entendi" marca o step do onboarding como pulado.
-4. **`/dashboard/migracao`** — postando em `/api/migration` de verdade:
-   `File` em estado, `FormData` com `file` + `sourceErp`, resultado
-   (`totalRecords`/`successRecords`/`errorRecords`/`errors`) renderizado na
-   própria tela. Textos de "assíncrono" corrigidos.
-5. **`/dashboard/integracoes`** — todas as 6 marcadas `available: false`,
-   seleção e linguagem de onboarding removidas, aponta para a migração (que
-   funciona). WhatsApp saiu daqui e de `features/page.tsx` e
-   `solucoes/[slug]/page.tsx`. `contato` e `share-buttons` ficaram.
-6. **Hub de configurações** — 4 `<Link>` novos: Empresa, Fiscal, Migração de
-   Dados, Integrações.
+Os 3 pontos abaixo são **o mesmo problema**, não três tarefas soltas. Vale a
+pena ler os três antes de escrever qualquer linha, porque resolver o 1 do jeito
+certo entrega o 2 e o 3 quase de graça.
 
-### ⚠️ Pendências operacionais desta entrega
+### O diagnóstico
 
-- **A migration `add_companies` ainda não foi aplicada em produção.** Não há
-  `.env`/`.env.local` na máquina, então **não foi possível rodar o
-  `prisma migrate diff` de drift** que esta seção exige. Rode-o **antes** do
-  próximo deploy — se houver drift, `prisma migrate deploy` (que o
-  `vercel-build` executa) vai aplicar `add_companies` sobre um banco
-  desalinhado.
-- O SQL foi escrito à mão seguindo o padrão de `20260126000000_add_api_keys` e
-  gravado sem BOM (verificado: começa em `2D 2D`).
-- `npx tsc --noEmit` e `next build` passam. `vitest`: 60 passam, os mesmos 3 de
-  `NotificationBell.test.tsx` falham (pré-existente).
-- O select "Tipo de Dados" da migração continua sendo coletado e **ignorado**
-  pela rota — `/api/migration` decide pelo parser. Ou some, ou a rota passa a
-  respeitá-lo.
+Na sessão passada, `migracao` e `integracoes` viraram itens de **Configurações**
+no menu — mas continuaram morando em `/dashboard/migracao` e
+`/dashboard/integracoes`, fora de `/dashboard/configuracoes/`.
 
----
+O breadcrumb ([src/components/breadcrumbs.tsx](src/components/breadcrumbs.tsx))
+é derivado **puramente do pathname** (linha 28: `pathname.split("/")`). Ele não
+tem como inventar um nível que não existe na URL. Por isso a tela mostra
+`🏠 > Migracao` em vez de `🏠 > Configurações > Migração de Dados`.
 
-## Histórico: os 5 itens como foram levantados
+Repare que `empresa` e `fiscal` já mostram o caminho certo — porque essas duas
+**estão** aninhadas em `/dashboard/configuracoes/`. O breadcrumb não está
+quebrado; as URLs é que estão erradas.
 
-Os 5 itens abaixo foram levantados **lendo o código**, não navegando a
-produção. Onde o diagnóstico depende de comportamento em runtime está marcado.
+### 1 e 2. Mover as duas rotas para baixo de `configuracoes`
 
-Ordem sugerida por custo/benefício: **1 → 4 → 5 → 2/3**. O item 4 é o de maior
-valor e o backend já existe. Os itens 2 e 3 precisam de uma decisão sua antes
-de virar código.
+```
+src/app/dashboard/migracao/     → src/app/dashboard/configuracoes/migracao/
+src/app/dashboard/integracoes/  → src/app/dashboard/configuracoes/integracoes/
+```
 
-### 1. Botão voltar do /precos
+Feito isso, o breadcrumb passa a renderizar o caminho certo **sem tocar no
+componente**.
 
-[src/app/precos/page.tsx:113](src/app/precos/page.tsx#L113) — `<Link href="/">`,
-mesma classe do bug do `/perfil` já corrigido. Aqui é pior, porque `/precos` é
-rota de usuário **logado** com frequência:
+**Não resolva com um mapa de exceção no `breadcrumbs.tsx`.** É tentador (2
+linhas), mas produz um breadcrumb cujo link "Configurações" aponta para uma
+rota que não é pai da atual — mentira de hierarquia, exatamente a classe de
+problema que a sessão passada removeu do produto.
 
-- o middleware redireciona para lá quando o trial expira
-  ([src/middleware.ts:96](src/middleware.ts#L96) e
-  [:106](src/middleware.ts#L106));
-- notificações de trial linkam para lá
-  ([src/lib/notifications.ts:44](src/lib/notifications.ts#L44) e
-  [:105](src/lib/notifications.ts#L105));
-- `/assinaturas`, `subscription-gate.tsx` e `subscription-banner.tsx` também.
+Os 11 lugares que apontam para as URLs velhas (`rg "dashboard/(migracao|integracoes)" src`):
 
-Ou seja: o cliente com trial vencido é jogado na home de marketing quando
-clica em "Voltar".
-
-A página já é `"use client"` e já usa `useRouter`. O certo é decidir o destino
-pela sessão (`useSession()` → `/dashboard` se logado, `/` se não).
-**Não use `router.back()`**: quem chega por link de notificação ou e-mail não
-tem histórico e o botão vira no-op.
-
-### 2 e 3. `/dashboard/configuracoes/empresa` e `/dashboard/configuracoes/fiscal`
-
-**Leia antes de linkar: as duas telas não salvam nada.**
-
-[empresa/page.tsx:48](src/app/dashboard/configuracoes/empresa/page.tsx#L48) e
-[fiscal/page.tsx:52](src/app/dashboard/configuracoes/fiscal/page.tsx#L52) têm
-o mesmo `// TODO: Criar API para salvar...`. O submit só faz
-`POST /api/user/onboarding` marcando o step como completo — e mesmo assim
-exibe *"Configurações salvas!"*. Razão social, CNPJ, inscrição estadual,
-regime tributário: tudo descartado.
-
-Não existe onde guardar: o schema tem 24 models e **nenhum** `Company` /
-`Organization`, e não há rota `/api/company`. Linkar essas telas no hub de
-configurações hoje é expor dois formulários que mentem para o cliente.
-
-**Decida antes de escrever código:**
-
-- **(a) Criar `Company` + migration + `/api/company`.** É o caminho honesto.
-  CNPJ e razão social são pré-requisito para emissão fiscal e para cobrar o
-  primeiro pagante. Envolve migration — leia a seção de schema mais abaixo
-  antes de encostar no Prisma.
-- **(b) Linkar mesmo assim** e trocar o toast por um aviso honesto
-  ("em breve"). Barato, mas mantém tela morta no produto.
-
-Recomendo (a) para `empresa` e adiar `fiscal` (emissão de NF-e é escopo bem
-maior que guardar os campos).
-
-Detalhe que pega em qualquer um dos caminhos: os cabeçalhos dizem
-**"Passo 2 de 5"** e **"Passo 3 de 5"**, e ao salvar a página empurra o usuário
-para a etapa seguinte do onboarding
-([empresa:69](src/app/dashboard/configuracoes/empresa/page.tsx#L69) → fiscal,
-[fiscal:73](src/app/dashboard/configuracoes/fiscal/page.tsx#L73) →
-`/dashboard/produtos/novo`). Se elas viram item de configurações, o subtítulo e
-esse `router.push` têm que mudar, senão salvar uma configuração joga o cliente
-no meio do onboarding.
-
-### 4. `/dashboard/migracao` — o backend inteiro existe e a página não usa
-
-**Maior valor da lista, e o mais barato do que parece.**
-
-[/api/migration](src/app/api/migration/route.ts) está pronto e é sério: parseia
-CSV, XLSX e JSON, aplica o parser do ERP de origem
-([src/lib/migration/parsers.ts](src/lib/migration/parsers.ts)), cria `Customer`
-e `Product` de verdade, e grava `DataMigration` com status, total, sucessos,
-erros e `completedAt`.
-
-A página **nunca chama essa rota**. O `<Input type="file">` da
-[linha 180](src/app/dashboard/migracao/page.tsx#L180) não tem `onChange` nem
-`ref` — o arquivo escolhido é descartado. O submit
-([linha 46](src/app/dashboard/migracao/page.tsx#L46)) só marca o step do
-onboarding e mostra *"Migração iniciada!"*.
-
-Correção: guardar o `File` em estado, montar um `FormData` com `file` e
-`sourceErp` e postar em `/api/migration`, exibindo o resultado que a rota já
-devolve (`totalRecords`, `successRecords`, `errorRecords`, `errors`).
-
-Dois ajustes que vêm junto:
-
-- o toast promete *"você receberá uma notificação quando concluir"*, mas a rota
-  é síncrona e responde com o resultado na hora. Ajuste o texto (ou crie a
-  notificação de fato — o model `Notification` existe).
-- `/api/migration` só tem `POST`. Não há histórico de migrações, embora o model
-  guarde tudo. Um `GET` + lista é item separado, não bloqueia isto.
-
-Importar Omie / Bling / Tiny / Conta Azul é argumento de venda direto contra os
-concorrentes citados no arquivo de metas. Está a um formulário de distância.
-
-### 5. `/dashboard/integracoes` — decorativa por inteiro
-
-[src/app/dashboard/integracoes/page.tsx](src/app/dashboard/integracoes/page.tsx):
-array de 6 integrações hardcoded, `selectedIntegrations` é `useState` local,
-nada persiste, e o submit só marca o step do onboarding. Nenhuma das 6 tem
-implementação em lugar nenhum do código.
-
-**5.1 Tirar o WhatsApp:** remover o bloco `id: "whatsapp"`
-([linhas 43-50](src/app/dashboard/integracoes/page.tsx#L43-L50)). Como
-`categories` é derivado do próprio array
-([linha 159](src/app/dashboard/integracoes/page.tsx#L159)), a categoria
-"Comunicação" some sozinha — não há mais nada a mexer nesse arquivo.
-
-Fora do dashboard, o WhatsApp continua sendo **prometido ao cliente**:
-
-| Arquivo | O que diz |
+| Arquivo | Linha |
 |---|---|
-| [features/page.tsx:163](src/app/features/page.tsx#L163) | card "WhatsApp Business — Integração com WhatsApp para atendimento" |
-| [features/page.tsx:174](src/app/features/page.tsx#L174) | "Alertas por email, push e WhatsApp" |
-| [solucoes/[slug]/page.tsx](src/app/solucoes/[slug]/page.tsx) | linhas 324, 357, 372, 417 — confirmação de consulta, depoimento, comunicados |
+| [onboarding-control.tsx](src/components/onboarding-control.tsx#L77) | 77, 84 |
+| [OnboardingChecklist.tsx](src/components/onboarding/OnboardingChecklist.tsx#L97) | 97, 106 |
+| [vendas/novo/page.tsx](src/app/dashboard/vendas/novo/page.tsx#L224) | 224 (push do onboarding) |
+| [migracao/page.tsx](src/app/dashboard/migracao/page.tsx#L118) | 118, 183 |
+| [integracoes/page.tsx](src/app/dashboard/integracoes/page.tsx#L133) | 133 |
+| [dashboard/page.tsx](src/app/dashboard/page.tsx#L275) | 275 |
+| [configuracoes/page.tsx](src/app/dashboard/configuracoes/page.tsx#L131) | 131, 138 |
 
-Decida o alcance: se a decisão é "não vamos ter integração com WhatsApp", esse
-material de marketing está vendendo o que não existe e precisa sair junto. Já
-[contato/page.tsx:58](src/app/contato/page.tsx#L58) e
-[share-buttons.tsx:76](src/components/share-buttons.tsx#L76) são canal de
-contato e botão de compartilhar — não são integração, podem ficar.
+Nenhuma referência em `e2e/`. O middleware é prefixado em `/dashboard`
+([middleware.ts:6](src/middleware.ts#L6)), então as rotas continuam protegidas
+sem mexer em nada lá.
 
-**Sobre a tela inteira:** ela promete 6 integrações e não entrega nenhuma. O
-caminho barato é não linká-la no hub até existir uma integração real — ou
-marcar todas como `available: false` ("Em Breve") e tirar a linguagem de
-onboarding ("Etapa Opcional", "Pular Esta Etapa", "Concluir Onboarding").
+**Adicione redirects** em [next.config.ts](next.config.ts) (hoje não tem
+nenhum) — notificações e links de onboarding já enviados apontam para as URLs
+velhas:
 
-### Sobre os 4 serem "órfãos"
+```ts
+async redirects() {
+  return [
+    { source: "/dashboard/migracao", destination: "/dashboard/configuracoes/migracao", permanent: true },
+    { source: "/dashboard/integracoes", destination: "/dashboard/configuracoes/integracoes", permanent: true },
+  ];
+}
+```
 
-Órfãos **do hub de configurações**, não do app: as quatro telas são alcançáveis
-pelo onboarding
-([OnboardingChecklist.tsx:57,65,97,106](src/components/onboarding/OnboardingChecklist.tsx#L57),
-[onboarding-control.tsx:47,53,77,84](src/components/onboarding-control.tsx#L47))
-e a migração também pelo [dashboard/page.tsx:275](src/app/dashboard/page.tsx#L275).
+**Complete o `pathNameMap`** ([breadcrumbs.tsx:8](src/components/breadcrumbs.tsx#L8)).
+Ele só tem 9 entradas e o fallback é `charAt(0).toUpperCase()`, que produz
+`Migracao`, `Integracoes` e — já hoje, na tela de API Keys — `Api-keys`:
 
-O que falta é entrada em `/dashboard/configuracoes`, cujo nav lateral
-([linhas 76-112](src/app/dashboard/configuracoes/page.tsx#L76-L112)) só tem
-Perfil / Notificações / Segurança / Sistema (âncoras `#` da própria página) e
-API Keys (`<Link>`). Acrescentar 4 `<Link>` ali é diff de ~20 linhas — mas só
-depois de resolver o que cada tela faz quando o usuário clicar em salvar.
+```ts
+migracao: "Migração de Dados",
+integracoes: "Integrações",
+empresa: "Empresa",
+fiscal: "Fiscal",
+"api-keys": "API Keys",
+```
+
+**Sobrou linguagem de onboarding na migração.** Confirmado na tela de produção:
+o subtítulo ainda diz *"Etapa Opcional - Importe dados do seu ERP anterior"*
+([migracao/page.tsx:140](src/app/dashboard/migracao/page.tsx#L140)) e o botão
+*"Pular Esta Etapa"* continua lá ([linha 263](src/app/dashboard/migracao/page.tsx#L263)).
+A tela de integrações já foi limpa disso; a de migração ficou para trás. Como
+agora ela é item de configurações, o subtítulo tem que virar algo neutro
+("Importe clientes e produtos de outro ERP") e o "Pular" só faz sentido dentro
+do onboarding.
+
+### 3. Sobre o submenu colapsável na sidebar
+
+**Sou a favor, com duas ressalvas — e só depois de mover as rotas.**
+
+O motivo de ser a favor não é estética: depois do item 1/2, Configurações passa
+a ter 5 sub-rotas reais e a sidebar vira o espelho exato da árvore de URLs. Se
+você fizer o submenu **antes** de mover, o grupo "Configurações" vai listar
+`/dashboard/migracao` — um filho que não é filho, o mesmo defeito do breadcrumb
+com outra roupa.
+
+**Ressalva 1 — não misture âncoras com rotas.** O hub de configurações tem 9
+itens no nav lateral, mas só 5 são páginas
+([configuracoes/page.tsx:76-142](src/app/dashboard/configuracoes/page.tsx#L76)):
+
+- rotas reais: Empresa, Fiscal, Migração de Dados, Integrações, API Keys
+- âncoras da própria página: `#perfil`, `#notificacoes`, `#seguranca`, `#sistema`
+
+Só as 5 rotas entram no submenu da sidebar. Uma âncora `#perfil` clicada de
+dentro de `/dashboard/configuracoes/empresa` não vai a lugar nenhum — o alvo
+está em outra página.
+
+**Ressalva 2 — a sidebar colapsa.** [DashboardSidebar.tsx:43](src/components/DashboardSidebar.tsx#L43)
+tem `collapsed` (w-20, só ícones). Nesse estado não tente renderizar submenu
+inline; o comportamento mais barato que funciona é: colapsada, clicar em
+Configurações navega para o hub como hoje.
+
+Consequência que vale aceitar junto: com o submenu na sidebar, **a coluna de
+nav do hub vira duplicata** e pode ser deletada, deixando
+`/dashboard/configuracoes` como página de conteúdo em coluna única. Menos código
+e uma fonte só da navegação.
+
+Se quiser o caminho mais barato de todos: **faça 1 e 2 e pare aí.** O bug
+reportado é o breadcrumb; o submenu é conforto, e o hub já está a um clique.
+
+### Ordem sugerida
+
+1. Mover as duas pastas + atualizar as 11 referências + redirects no `next.config.ts`
+2. Completar o `pathNameMap`
+3. Limpar "Etapa Opcional" / "Pular Esta Etapa" da migração
+4. (opcional) Submenu na sidebar + deletar a coluna de nav do hub
+
+Verificação: `npx tsc --noEmit`, `npx next build`, e navegar as 5 sub-rotas
+conferindo o breadcrumb. `npm run smoke:auth` só se encostar em auth.
+
+---
+
+## ⚠️ Pendência aberta da sessão passada — leia antes de deployar
+
+**A migration `20260803120000_add_companies` está commitada mas nunca foi
+aplicada em produção.** O `vercel-build` roda `prisma migrate deploy`, então ela
+vai subir no próximo deploy.
+
+Não havia `.env`/`.env.local` na máquina daquela sessão, então **o check de
+drift obrigatório não foi executado**. Rode antes do próximo deploy:
+
+```bash
+npx prisma migrate diff --from-url "$DATABASE_URL" \
+  --to-schema-datamodel prisma/schema.prisma --script
+```
+
+Saída esperada, considerando que `add_companies` ainda não subiu: apenas o
+`CREATE TABLE "companies"`. **Qualquer coisa além disso é drift** — pare e
+resolva antes de deployar, senão a migration entra sobre um banco desalinhado.
 
 ---
 
 ## ⚠️ Leia antes de mexer no schema
 
-Isto derrubou a produção uma vez e é fácil repetir. Vale para o item 2/3, que
-pede model novo.
+Isto derrubou a produção uma vez e é fácil repetir.
 
 Alguém evoluiu `prisma/schema.prisma` com `prisma db push` e nunca gerou as
 migrations. O banco ficou sem metade do ERP enquanto o schema dizia que estava
@@ -215,17 +176,9 @@ endpoint respondia 500.
 
 **`prisma migrate status` não detecta isso.** Ele compara migrations aplicadas
 com os arquivos em `prisma/migrations/` — nunca compara o schema com o banco.
-Dizia "Database schema is up to date!" o tempo inteiro.
-
-O comando que revela a verdade:
-
-```bash
-npx prisma migrate diff --from-url "$DATABASE_URL" \
-  --to-schema-datamodel prisma/schema.prisma --script
-```
-
-Saída vazia (`-- This is an empty migration.`) = alinhado. Qualquer outra coisa
-= drift.
+Dizia "Database schema is up to date!" o tempo inteiro. O comando que revela a
+verdade é o `migrate diff` da seção acima; saída vazia
+(`-- This is an empty migration.`) = alinhado.
 
 Regras:
 
@@ -233,10 +186,13 @@ Regras:
 - Ao criar migration à mão, escreva o arquivo **sem BOM**. O
   `Out-File -Encoding utf8` do PowerShell 5.1 injeta BOM e o Postgres falha com
   `syntax error at or near "﻿"`. Use
-  `[System.IO.File]::WriteAllText($p, $sql, (New-Object System.Text.UTF8Encoding($false)))`.
+  `[System.IO.File]::WriteAllText($p, $sql, (New-Object System.Text.UTF8Encoding($false)))`
+  e confira com `Format-Hex` que o arquivo começa em `2D 2D`.
 - Depois de mudar o schema, rode `npx prisma generate` local antes do seed,
   senão o client velho quebra com `P2022`.
 - Mudar o schema exige **redeploy** para a Vercel regenerar o client.
+- Sem `.env` local, `prisma validate`/`generate` rodam com
+  `$env:DATABASE_URL = "postgresql://u:p@localhost:5432/db"` (não conectam).
 
 **Banco de produção é a porta 5449.** Existe outro no mesmo host na porta
 **5453** com as 5 migrations iniciais e tabelas vazias — migrado por engano,
@@ -246,25 +202,9 @@ O fail-open em [src/middleware.ts](src/middleware.ts) (o `catch` que libera
 acesso quando a consulta falha) foi o que manteve esse erro invisível por tanto
 tempo — engolia a exceção do banco em toda request. Continua aberto.
 
-`npm run smoke:auth` checa os guardas de rota sem cookie — rode depois de
-qualquer mexida em auth.
-
 ---
 
-## Pendências fora dos 5 itens
-
-### Agenda (era o item 8 do handoff anterior)
-
-Continua intocada, a pedido. Não existe nada: nenhum model de evento no schema,
-nenhuma rota de API.
-[src/components/calendar-dropdown.tsx](src/components/calendar-dropdown.tsx) é
-mock puro e o "Ver agenda completa" não navega para lugar nenhum.
-
-Antes de começar, decida se a agenda é entidade própria ou uma visão derivada
-do que já existe (vencimentos de `FinancialTransaction`, entregas de
-`SalesOrder`) — a segunda opção entrega valor sem model novo e cobre os
-exemplos que o próprio mock inventou. Sendo feature nova, **use o fluxo Spec
-Kit** se o projeto tiver `.specify/`.
+## Pendências fora do próximo passo
 
 ### Segurança, em ordem de urgência
 
@@ -283,8 +223,26 @@ price IDs em `/admin/planos` (o campo já existe) e configurar `STRIPE_SECRET_KE
 (use restricted key `rk_`) e `STRIPE_WEBHOOK_SECRET` na Vercel. Detalhes em
 [.env.example](.env.example).
 
+### Agenda
+
+Continua intocada, a pedido. Não existe nada: nenhum model de evento no schema,
+nenhuma rota de API.
+[src/components/calendar-dropdown.tsx](src/components/calendar-dropdown.tsx) é
+mock puro e o "Ver agenda completa" não navega para lugar nenhum.
+
+Antes de começar, decida se a agenda é entidade própria ou uma visão derivada
+do que já existe (vencimentos de `FinancialTransaction`, entregas de
+`SalesOrder`) — a segunda opção entrega valor sem model novo e cobre os
+exemplos que o próprio mock inventou. Sendo feature nova, **use o fluxo Spec
+Kit** se o projeto tiver `.specify/`.
+
 ### Menores
 
+- O select **"Tipo de Dados"** da migração é coletado e **ignorado** pela rota —
+  `/api/migration` decide tudo pelo parser do ERP. Ou o campo some, ou a rota
+  passa a respeitá-lo. (Visível na tela: campo obrigatório que não faz nada.)
+- `/api/migration` só tem `POST`. O model `DataMigration` guarda status, totais
+  e `completedAt`, mas não há `GET` nem tela de histórico.
 - **VAPID na Vercel** para web push de verdade. Hoje só existem `DATABASE_URL`,
   `NEXTAUTH_SECRET`, `AUTH_SECRET` e `NEXTAUTH_URL`. O resto do push já está
   implementado.
@@ -292,8 +250,9 @@ price IDs em `/admin/planos` (o campo já existe) e configurar `STRIPE_SECRET_KE
   decorativos — persistir exige coluna nova em `users`.
 - 3 testes falham em `NotificationBell.test.tsx` (formatação de tempo relativo),
   pré-existentes. Os outros 60 passam.
-- "Mercado Pago" em `dashboard/integracoes` e `features/page.tsx` é integração
-  que o *cliente* conecta no ERP, não provedor de cobrança. Não é resíduo.
+- Aviso de build: `middleware` está deprecado no Next 16, quer virar `proxy`.
+- "Mercado Pago" em integrações e `features/page.tsx` é integração que o
+  *cliente* conecta no ERP, não provedor de cobrança. Não é resíduo.
 - README desatualizado: diz "60%" e marca auth e database como "em
   desenvolvimento", ambos entregues.
 - MCP da Stripe não autorizado. Autorize via `claude mcp` numa sessão
@@ -301,3 +260,27 @@ price IDs em `/admin/planos` (o campo já existe) e configurar `STRIPE_SECRET_KE
 - **Não persiga SEO.** O Orion compete no cluster "ERP" contra TOTVS, Omie,
   Bling e Conta Azul; em 90 dias não sai do zero. O canal do primeiro pagante é
   outbound. Está fora de escopo no arquivo de metas.
+
+---
+
+## Histórico: o que foi entregue em `5cbc72f`
+
+1. **`/precos` voltar** — destino pela sessão (`useSession()` → `/dashboard` se
+   logado, `/` se não). Sem `router.back()`: quem chega por link de notificação
+   não tem histórico.
+2. **`empresa`** — model `Company` (1:1 com `User`), migration
+   `20260803120000_add_companies`, rota `/api/company` (GET + PUT upsert, zod).
+   A tela carrega o que está salvo e ganhou campo CNPJ. Antes descartava razão
+   social, CNPJ e endereço exibindo *"Configurações salvas!"*.
+3. **`fiscal`** — adiada. O formulário morto saiu; virou aviso honesto de "em
+   desenvolvimento" com link para Dados da Empresa. Emissão de NF-e é escopo
+   próprio e não tem backend nenhum.
+4. **`migracao`** — passou a postar em `/api/migration`, que já estava pronto e
+   nunca era chamado (o `<Input type="file">` não tinha `onChange`). Resultado
+   renderizado na própria tela.
+5. **`integracoes`** — as 6 marcadas `available: false`, seleção e linguagem de
+   onboarding removidas. Nenhuma tem implementação em lugar nenhum do código.
+   WhatsApp saiu daqui e do marketing (`features/page.tsx`,
+   `solucoes/[slug]/page.tsx`); `contato` e `share-buttons` ficaram, são canal
+   de contato e botão de compartilhar.
+6. **Hub de configurações** — 4 `<Link>` novos.
