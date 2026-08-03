@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import SearchCommand from "@/components/SearchCommand";
@@ -30,6 +31,40 @@ export default async function DashboardLayout({
 
   if (!session?.user) {
     redirect("/login?callbackUrl=/dashboard");
+  }
+
+  // Gate de trial. Mora aqui, e não no middleware, porque lá a query do Prisma
+  // falha e o antigo catch fail-open escondia isso. Sem try/catch de propósito:
+  // se o banco cair, o erro sobe e aparece, em vez de liberar acesso calado.
+  const account = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      subscriptionStatus: true,
+      trialEndsAt: true,
+      subscriptions: { where: { status: "ACTIVE" }, take: 1, select: { id: true } },
+    },
+  });
+
+  if (account && account.subscriptions.length === 0) {
+    const trialExpirou =
+      account.subscriptionStatus === "TRIAL" &&
+      account.trialEndsAt !== null &&
+      account.trialEndsAt.getTime() <= Date.now();
+
+    if (trialExpirou) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { subscriptionStatus: "EXPIRED" },
+      });
+    }
+
+    if (
+      trialExpirou ||
+      account.subscriptionStatus === "EXPIRED" ||
+      account.subscriptionStatus === "CANCELLED"
+    ) {
+      redirect("/precos?trial=expired&from=/dashboard");
+    }
   }
 
   const userInitials = session.user.name

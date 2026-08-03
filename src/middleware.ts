@@ -1,6 +1,11 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+
+// Só checagens que cabem no JWT. A verificação de trial vivia aqui com uma
+// query do Prisma que SEMPRE falhava neste contexto — o fail-open engolia o
+// erro, então o gate nunca funcionou em produção. Ela mora agora no
+// dashboard/layout.tsx, que é server component e roda onde o Prisma funciona.
+// Não traga banco de volta para cá.
 
 // Rotas que requerem autenticação
 const protectedRoutes = ["/perfil", "/assinaturas", "/dashboard"];
@@ -10,12 +15,6 @@ const authRoutes = ["/login", "/cadastro"];
 
 // Rotas apenas para admin
 const adminRoutes = ["/admin"];
-
-// Rotas que requerem trial/assinatura ativa (bloqueadas se trial expirado)
-const trialRestrictedRoutes = ["/dashboard"];
-
-// Rotas permitidas mesmo com trial expirado (para conversão)
-const trialExceptionRoutes = ["/precos", "/checkout", "/perfil"];
 
 export default auth(async (req) => {
   const { nextUrl } = req;
@@ -31,12 +30,6 @@ export default auth(async (req) => {
     nextUrl.pathname.startsWith(route)
   );
   const isAdminRoute = adminRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
-  const isTrialRestrictedRoute = trialRestrictedRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
-  const isTrialExceptionRoute = trialExceptionRoutes.some((route) =>
     nextUrl.pathname.startsWith(route)
   );
 
@@ -57,83 +50,16 @@ export default auth(async (req) => {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // Verificar status do trial para rotas restritas
-  if (isLoggedIn && isTrialRestrictedRoute && !isTrialExceptionRoute) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: req.auth!.user!.id },
-        select: {
-          subscriptionStatus: true,
-          trialEndsAt: true,
-          subscriptions: {
-            where: { status: "ACTIVE" },
-            take: 1,
-          },
-        },
-      });
-
-      if (user) {
-        // Se tem assinatura ativa, permitir acesso
-        if (user.subscriptions.length > 0) {
-          return NextResponse.next();
-        }
-
-        // Se está em trial, verificar se expirou
-        if (user.subscriptionStatus === "TRIAL") {
-          if (user.trialEndsAt) {
-            const now = new Date();
-            const trialEndsAt = new Date(user.trialEndsAt);
-            const isExpired = trialEndsAt.getTime() <= now.getTime();
-
-            if (isExpired) {
-              // Atualizar status para EXPIRED
-              await prisma.user.update({
-                where: { id: req.auth!.user!.id },
-                data: { subscriptionStatus: "EXPIRED" },
-              });
-
-              // Redirecionar para página de preços com mensagem
-              const pricingUrl = new URL("/precos", req.url);
-              pricingUrl.searchParams.set("trial", "expired");
-              pricingUrl.searchParams.set("from", nextUrl.pathname);
-              return NextResponse.redirect(pricingUrl);
-            }
-          }
-        }
-
-        // Se status é EXPIRED ou CANCELLED, bloquear acesso
-        if (user.subscriptionStatus === "EXPIRED" || user.subscriptionStatus === "CANCELLED") {
-          const pricingUrl = new URL("/precos", req.url);
-          pricingUrl.searchParams.set("trial", "expired");
-          pricingUrl.searchParams.set("from", nextUrl.pathname);
-          return NextResponse.redirect(pricingUrl);
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao verificar trial no middleware:", error);
-      // Fail closed. Liberar acesso aqui foi o que escondeu uma queda inteira de
-      // produção: o banco estava fora, o dashboard abria e todo endpoint dava
-      // 500. Melhor mandar para /precos com o motivo explícito.
-      const errorUrl = new URL("/precos", req.url);
-      errorUrl.searchParams.set("erro", "indisponivel");
-      errorUrl.searchParams.set("from", nextUrl.pathname);
-      return NextResponse.redirect(errorUrl);
-    }
-  }
-
   return NextResponse.next();
 });
 
 export const config = {
   matcher: [
-    // Proteger estas rotas e verificar trial
     "/perfil/:path*",
     "/assinaturas/:path*",
     "/dashboard/:path*",
     "/admin/:path*",
     "/login",
     "/cadastro",
-    "/precos",
-    "/checkout/:path*",
   ],
 };

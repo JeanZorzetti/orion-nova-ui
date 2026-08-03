@@ -40,8 +40,6 @@ function PrecosPageContent() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showTrialExpiredAlert, setShowTrialExpiredAlert] = useState(false);
-  // Middleware manda para cá quando a checagem de trial falha (banco fora).
-  const [showUnavailableAlert, setShowUnavailableAlert] = useState(false);
 
   // Verificar se foi redirecionado por trial expirado
   useEffect(() => {
@@ -49,7 +47,6 @@ function PrecosPageContent() {
     if (trialParam === "expired") {
       setShowTrialExpiredAlert(true);
     }
-    setShowUnavailableAlert(searchParams.get("erro") === "indisponivel");
   }, [searchParams]);
 
   useEffect(() => {
@@ -139,17 +136,6 @@ function PrecosPageContent() {
           </Alert>
         )}
 
-        {showUnavailableAlert && (
-          <Alert variant="destructive" className="mb-8">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Não conseguimos verificar sua conta</AlertTitle>
-            <AlertDescription>
-              O sistema está temporariamente indisponível. Tente novamente em
-              alguns minutos — se persistir, fale com o suporte.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {/* Title */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">
@@ -220,11 +206,13 @@ function PrecosPageContent() {
                           </span>
                         </li>
                       )}
-                      {features.storage && (
+                      {!!features.storage && (
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                           <span className="text-sm">
-                            {features.storage} GB de armazenamento
+                            {features.storage === -1
+                              ? "Armazenamento ilimitado"
+                              : `${features.storage} GB de armazenamento`}
                           </span>
                         </li>
                       )}
@@ -241,7 +229,9 @@ function PrecosPageContent() {
                           <span className="text-sm">Suporte: {features.support}</span>
                         </li>
                       )}
-                      {features.integrations && (
+                      {/* `{0 && …}` renderiza o próprio 0 na tela — o Starter
+                          tem integrations: 0 e mostrava um "0" solto no card. */}
+                      {!!features.integrations && (
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                           <span className="text-sm">
