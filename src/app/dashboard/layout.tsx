@@ -5,7 +5,6 @@ import SearchCommand from "@/components/SearchCommand";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notifications";
-import { CalendarDropdown } from "@/components/calendar-dropdown";
 import { AIAssistant } from "@/components/ai-assistant";
 import { Onboarding, ReopenOnboarding } from "@/components/onboarding";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -61,7 +60,6 @@ export default async function DashboardLayout({
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <NotificationBell />
-            <CalendarDropdown />
 
             {/* User Menu */}
             <DropdownMenu>
