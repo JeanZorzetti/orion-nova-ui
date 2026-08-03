@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Building2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Building2, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function EmpresaConfigPage() {
@@ -24,6 +24,7 @@ export default function EmpresaConfigPage() {
   const [formData, setFormData] = useState({
     companyName: "",
     tradeName: "",
+    cnpj: "",
     phone: "",
     email: "",
     website: "",
@@ -32,6 +33,21 @@ export default function EmpresaConfigPage() {
     state: "",
     zipCode: "",
   });
+
+  // Carrega o que já está salvo (a tela é de configurações, não só de onboarding)
+  useEffect(() => {
+    fetch("/api/company")
+      .then((r) => r.json())
+      .then(({ company }) => {
+        if (!company) return;
+        setFormData((prev) =>
+          Object.fromEntries(
+            Object.keys(prev).map((k) => [k, company[k] ?? ""])
+          ) as typeof prev
+        );
+      })
+      .catch(() => {});
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -45,32 +61,33 @@ export default function EmpresaConfigPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Criar API para salvar dados da empresa
-      // Por enquanto, apenas marcamos o step como completo
-      const response = await fetch("/api/user/onboarding", {
-        method: "POST",
+      const response = await fetch("/api/company", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          stepId: "company_setup",
-          action: "complete",
-        }),
+        body: JSON.stringify(formData),
       });
+
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Erro ao salvar configurações");
+        throw new Error(data.error || "Erro ao salvar configurações");
       }
 
-      toast({
-        title: "Configurações salvas!",
-        description: "Os dados da sua empresa foram salvos com sucesso.",
-      });
+      // Marca o step de onboarding (não bloqueia o save se falhar)
+      await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stepId: "company_setup", action: "complete" }),
+      }).catch(() => {});
 
-      // Redirecionar para próxima etapa
-      router.push("/dashboard/configuracoes/fiscal");
-    } catch (error) {
+      toast({
+        title: "Dados da empresa salvos!",
+        description: "As informações foram gravadas com sucesso.",
+      });
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Não foi possível salvar as configurações.",
+        description: error.message || "Não foi possível salvar as configurações.",
         variant: "destructive",
       });
     } finally {
@@ -87,9 +104,9 @@ export default function EmpresaConfigPage() {
             <Building2 className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Configurar Empresa</h1>
+            <h1 className="text-3xl font-bold">Dados da Empresa</h1>
             <p className="text-muted-foreground">
-              Passo 2 de 5 - Adicione os dados da sua empresa
+              Razão social, CNPJ e endereço usados em documentos e cobrança
             </p>
           </div>
         </div>
@@ -134,6 +151,18 @@ export default function EmpresaConfigPage() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
+                <Label htmlFor="cnpj">CNPJ</Label>
+                <Input
+                  id="cnpj"
+                  name="cnpj"
+                  value={formData.cnpj}
+                  onChange={handleChange}
+                  placeholder="00.000.000/0000-00"
+                  inputMode="numeric"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="phone">
                   Telefone <span className="text-red-500">*</span>
                 </Label>
@@ -147,7 +176,9 @@ export default function EmpresaConfigPage() {
                   required
                 />
               </div>
+            </div>
 
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>
@@ -162,18 +193,18 @@ export default function EmpresaConfigPage() {
                   required
                 />
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                name="website"
-                type="url"
-                value={formData.website}
-                onChange={handleChange}
-                placeholder="https://www.minhaempresa.com.br"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  name="website"
+                  type="url"
+                  value={formData.website}
+                  onChange={handleChange}
+                  placeholder="https://www.minhaempresa.com.br"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -253,25 +284,15 @@ export default function EmpresaConfigPage() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push("/dashboard/onboarding/welcome")}
+            onClick={() => router.push("/dashboard/configuracoes")}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar
           </Button>
 
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => router.push("/dashboard")}
-            >
-              Pular por Enquanto
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Salvar e Continuar"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Salvando..." : "Salvar"}
+          </Button>
         </div>
       </form>
 

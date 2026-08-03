@@ -20,13 +20,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Database, Upload, ArrowRight, Info } from "lucide-react";
+import { Database, Upload, ArrowRight, Info, CheckCircle2, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface MigrationResult {
+  totalRecords: number;
+  successRecords: number;
+  errorRecords: number;
+  errors: string[];
+}
 
 export default function MigracaoPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [result, setResult] = useState<MigrationResult | null>(null);
 
   const [formData, setFormData] = useState({
     sourceErp: "",
@@ -39,34 +48,49 @@ export default function MigracaoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!file) {
+      toast({
+        title: "Selecione um arquivo",
+        description: "Escolha o arquivo exportado do seu ERP anterior.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
+    setResult(null);
 
     try {
-      // Marcar step como completo
-      const response = await fetch("/api/user/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          stepId: "migration",
-          action: "complete",
-        }),
-      });
+      const body = new FormData();
+      body.append("file", file);
+      body.append("sourceErp", formData.sourceErp);
+
+      const response = await fetch("/api/migration", { method: "POST", body });
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Erro ao processar migração");
+        throw new Error(data.error || "Erro ao processar migração");
       }
 
-      toast({
-        title: "Migração iniciada!",
-        description:
-          "Seus dados estão sendo processados. Você receberá uma notificação quando concluir.",
-      });
+      setResult(data);
 
-      router.push("/dashboard/integracoes");
-    } catch (error) {
+      // Marcar step como completo (não bloqueia o resultado se falhar)
+      await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stepId: "migration", action: "complete" }),
+      }).catch(() => {});
+
+      toast({
+        title: "Migração concluída!",
+        description: `${data.successRecords} de ${data.totalRecords} registro(s) importado(s).`,
+        variant: data.errorRecords > 0 ? "destructive" : undefined,
+      });
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Não foi possível iniciar a migração.",
+        description: error.message || "Não foi possível processar a migração.",
         variant: "destructive",
       });
     } finally {
@@ -121,11 +145,49 @@ export default function MigracaoPage() {
 
       <Alert className="mb-6">
         <Info className="h-4 w-4" />
-        <AlertTitle>Migração Assistida</AlertTitle>
+        <AlertTitle>Importação Automática</AlertTitle>
         <AlertDescription>
-          Nossa equipe irá validar e importar seus dados com segurança.
+          O arquivo é validado e importado na hora. O resultado aparece nesta
+          tela ao final. Tamanho máximo: 10MB.
         </AlertDescription>
       </Alert>
+
+      {result && (
+        <Alert
+          className="mb-6"
+          variant={result.errorRecords > 0 ? "destructive" : undefined}
+        >
+          {result.errorRecords > 0 ? (
+            <XCircle className="h-4 w-4" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4" />
+          )}
+          <AlertTitle>Migração concluída</AlertTitle>
+          <AlertDescription>
+            <p>
+              {result.successRecords} de {result.totalRecords} registro(s)
+              importado(s)
+              {result.errorRecords > 0 && `, ${result.errorRecords} com erro`}.
+            </p>
+            {result.errors?.length > 0 && (
+              <ul className="mt-2 list-disc pl-4 text-xs space-y-1">
+                {result.errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
+              </ul>
+            )}
+            <Button
+              type="button"
+              size="sm"
+              className="mt-3"
+              onClick={() => router.push("/dashboard/integracoes")}
+            >
+              Continuar
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit}>
         <Card className="mb-6">
@@ -181,6 +243,7 @@ export default function MigracaoPage() {
                 id="file"
                 type="file"
                 accept=".csv,.xlsx,.xls,.json"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 required
               />
               <p className="text-xs text-muted-foreground">
@@ -201,7 +264,7 @@ export default function MigracaoPage() {
           </Button>
 
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Processando..." : "Iniciar Migração"}
+            {isLoading ? "Importando..." : "Importar Dados"}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

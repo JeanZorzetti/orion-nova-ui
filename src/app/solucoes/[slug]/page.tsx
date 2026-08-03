@@ -321,7 +321,7 @@ const segmentsData: Record<string, SegmentData> = {
     features: [
       {
         title: "Agendamento Online",
-        description: "Agenda com confirmação automática por WhatsApp e lembretes de consulta.",
+        description: "Agenda com confirmação automática por e-mail e lembretes de consulta.",
         icon: Clock,
       },
       {
@@ -354,7 +354,7 @@ const segmentsData: Record<string, SegmentData> = {
       "Redução de 70% nas faltas em consultas",
       "Prontuário eletrônico completo (PEP)",
       "Faturamento TISS automático",
-      "Confirmação de consultas por WhatsApp",
+      "Confirmação de consultas por e-mail",
       "Telemedicina integrada",
       "Controle de estoque médico",
       "Gestão de múltiplas unidades",
@@ -369,7 +369,7 @@ const segmentsData: Record<string, SegmentData> = {
       "Hospitais e UPAs",
     ],
     testimonial: {
-      quote: "Com o agendamento online e confirmação por WhatsApp, reduzimos as faltas em 70%. O faturamento TISS automático nos economiza dias de trabalho.",
+      quote: "Com o agendamento online e a confirmação automática, reduzimos as faltas em 70%. O faturamento TISS automático nos economiza dias de trabalho.",
       author: "Dr. Roberto Lima",
       role: "Diretor Clínico",
       company: "Clínica VidaSaúde",
@@ -414,7 +414,7 @@ const segmentsData: Record<string, SegmentData> = {
       },
       {
         title: "Comunicação",
-        description: "Envio de comunicados por app, e-mail e WhatsApp para pais e alunos.",
+        description: "Envio de comunicados por app e e-mail para pais e alunos.",
         icon: Zap,
       },
     ],

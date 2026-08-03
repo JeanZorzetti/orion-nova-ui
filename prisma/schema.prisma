@@ -45,8 +45,35 @@ model User {
   dataMigrations DataMigration[]
   pushSubscriptions PushSubscription[]
   apiKeys       ApiKey[]
+  company       Company?
 
   @@map("users")
+}
+
+// Dados cadastrais da empresa do usuário (1:1, como UserOnboarding).
+// ponytail: 1 empresa por usuário. Multi-empresa é outra feature, não um
+// campo — quando existir, isto vira Company[] + membership.
+model Company {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName String   // Razão social
+  tradeName   String?  // Nome fantasia
+  cnpj        String?  // Somente dígitos
+  phone       String?
+  email       String?
+  website     String?
+
+  address     String?
+  city        String?
+  state       String?  // UF
+  zipCode     String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("companies")
 }
 
 enum UserRole {

@@ -2,7 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Settings, User, Bell, Shield, Key } from "lucide-react";
+import {
+  Settings,
+  User,
+  Bell,
+  Shield,
+  Key,
+  Building2,
+  FileText,
+  Database,
+  Plug,
+} from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -103,6 +113,34 @@ export default function ConfiguracoesPage() {
               <Settings className="w-4 h-4" />
               Sistema
             </a>
+            <Link
+              href="/dashboard/configuracoes/empresa"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
+            >
+              <Building2 className="w-4 h-4" />
+              Empresa
+            </Link>
+            <Link
+              href="/dashboard/configuracoes/fiscal"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
+            >
+              <FileText className="w-4 h-4" />
+              Fiscal
+            </Link>
+            <Link
+              href="/dashboard/migracao"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
+            >
+              <Database className="w-4 h-4" />
+              Migração de Dados
+            </Link>
+            <Link
+              href="/dashboard/integracoes"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"
+            >
+              <Plug className="w-4 h-4" />
+              Integrações
+            </Link>
             <Link
               href="/dashboard/configuracoes/api-keys"
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-muted-foreground"

@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plug, Check, ArrowRight, ExternalLink } from "lucide-react";
+import { Plug, ArrowRight, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Integration {
@@ -27,10 +27,9 @@ export default function IntegracoesPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>(
-    []
-  );
 
+  // ponytail: nenhuma integração está implementada — a tela é informativa até
+  // a primeira existir. Selecionar/persistir volta junto com a implementação.
   const integrations: Integration[] = [
     {
       id: "mercadopago",
@@ -38,15 +37,7 @@ export default function IntegracoesPage() {
       description: "Receba pagamentos online",
       icon: "💳",
       category: "Pagamentos",
-      available: true,
-    },
-    {
-      id: "whatsapp",
-      name: "WhatsApp Business",
-      description: "Envie notificações e mensagens",
-      icon: "💬",
-      category: "Comunicação",
-      available: true,
+      available: false,
     },
     {
       id: "maps",
@@ -54,7 +45,7 @@ export default function IntegracoesPage() {
       description: "Rotas de entrega e logística",
       icon: "🗺️",
       category: "Logística",
-      available: true,
+      available: false,
     },
     {
       id: "analytics",
@@ -62,7 +53,7 @@ export default function IntegracoesPage() {
       description: "Análise de dados e métricas",
       icon: "📊",
       category: "Analytics",
-      available: true,
+      available: false,
     },
     {
       id: "mailchimp",
@@ -82,52 +73,7 @@ export default function IntegracoesPage() {
     },
   ];
 
-  const toggleIntegration = (id: string) => {
-    setSelectedIntegrations((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Marcar step como completo
-      const response = await fetch("/api/user/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          stepId: "integrations",
-          action: "complete",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao salvar integrações");
-      }
-
-      toast({
-        title: "Integrações salvas!",
-        description:
-          selectedIntegrations.length > 0
-            ? `${selectedIntegrations.length} integração(ões) selecionada(s).`
-            : "Você pode configurar integrações mais tarde.",
-      });
-
-      router.push("/dashboard");
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Não foi possível salvar as integrações.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSkip = async () => {
+  const handleContinue = async () => {
     setIsLoading(true);
 
     try {
@@ -141,14 +87,14 @@ export default function IntegracoesPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao pular etapa");
+        throw new Error("Erro ao concluir etapa");
       }
 
       router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Não foi possível pular a etapa.",
+        description: "Não foi possível concluir a etapa.",
         variant: "destructive",
       });
     } finally {
@@ -171,7 +117,7 @@ export default function IntegracoesPage() {
           <div>
             <h1 className="text-3xl font-bold">Integrações</h1>
             <p className="text-muted-foreground">
-              Etapa Opcional - Conecte-se com outras ferramentas
+              Conexões com outras ferramentas — em desenvolvimento
             </p>
           </div>
         </div>
@@ -181,14 +127,19 @@ export default function IntegracoesPage() {
       <Card className="mb-6 border-primary/20 bg-primary/5">
         <CardContent className="pt-6">
           <p className="text-sm">
-            🎯 Selecione as integrações que você deseja configurar. Você pode
-            ativá-las ou desativá-las a qualquer momento nas configurações.
+            🚧 Nenhuma destas integrações está disponível ainda. Esta é a lista
+            do que está no roteiro — avisaremos assim que a primeira sair. Para
+            trazer dados de outro ERP agora, use a{" "}
+            <a href="/dashboard/migracao" className="underline font-medium">
+              migração de dados
+            </a>
+            , que já funciona.
           </p>
         </CardContent>
       </Card>
 
       {/* Integrations by Category */}
-      <form onSubmit={handleSubmit}>
+      <div>
         <div className="space-y-6 mb-8">
           {categories.map((category) => (
             <div key={category}>
@@ -197,46 +148,24 @@ export default function IntegracoesPage() {
                 {integrations
                   .filter((i) => i.category === category)
                   .map((integration) => (
-                    <Card
-                      key={integration.id}
-                      className={`cursor-pointer transition-all ${
-                        selectedIntegrations.includes(integration.id)
-                          ? "border-primary bg-primary/5"
-                          : "hover:border-primary/50"
-                      } ${!integration.available ? "opacity-60" : ""}`}
-                      onClick={() =>
-                        integration.available &&
-                        toggleIntegration(integration.id)
-                      }
-                    >
+                    <Card key={integration.id} className="opacity-70">
                       <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-3xl">{integration.icon}</span>
-                            <div>
-                              <CardTitle className="text-base">
-                                {integration.name}
-                              </CardTitle>
-                              <CardDescription className="text-xs">
-                                {integration.description}
-                              </CardDescription>
-                            </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{integration.icon}</span>
+                          <div>
+                            <CardTitle className="text-base">
+                              {integration.name}
+                            </CardTitle>
+                            <CardDescription className="text-xs">
+                              {integration.description}
+                            </CardDescription>
                           </div>
-                          {selectedIntegrations.includes(integration.id) && (
-                            <Check className="h-5 w-5 text-primary flex-shrink-0" />
-                          )}
                         </div>
                       </CardHeader>
                       <CardContent>
-                        {integration.available ? (
-                          <Badge variant="outline" className="text-xs">
-                            Disponível
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="text-xs">
-                            Em Breve
-                          </Badge>
-                        )}
+                        <Badge variant="secondary" className="text-xs">
+                          Em Breve
+                        </Badge>
                       </CardContent>
                     </Card>
                   ))}
@@ -283,31 +212,13 @@ export default function IntegracoesPage() {
         </Card>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSkip}
-            disabled={isLoading}
-          >
-            Pular Esta Etapa
-          </Button>
-
-          <Button type="submit" disabled={isLoading}>
-            {isLoading
-              ? "Salvando..."
-              : selectedIntegrations.length > 0
-              ? `Salvar ${selectedIntegrations.length} Integração(ões)`
-              : "Concluir Onboarding"}
+        <div className="flex justify-end">
+          <Button type="button" onClick={handleContinue} disabled={isLoading}>
+            {isLoading ? "Aguarde..." : "Voltar ao Dashboard"}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
-      </form>
-
-      {/* Help Text */}
-      <p className="text-center text-sm text-muted-foreground mt-8">
-        ✨ Parabéns! Você está quase concluindo o onboarding
-      </p>
+      </div>
     </div>
   );
 }

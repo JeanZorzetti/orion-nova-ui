@@ -28,7 +28,6 @@ import {
   PieChart,
   Calendar,
   Mail,
-  MessageSquare,
   Plug,
   Settings,
   Lock,
@@ -159,11 +158,6 @@ const additionalFeatures = [
     description: "Envie campanhas segmentadas para seus clientes.",
   },
   {
-    icon: MessageSquare,
-    title: "WhatsApp Business",
-    description: "Integração com WhatsApp para atendimento.",
-  },
-  {
     icon: FileText,
     title: "Contratos",
     description: "Gestão de contratos com assinatura digital.",
@@ -171,7 +165,7 @@ const additionalFeatures = [
   {
     icon: Bell,
     title: "Notificações",
-    description: "Alertas por email, push e WhatsApp.",
+    description: "Alertas por email e push.",
   },
   {
     icon: TrendingUp,
