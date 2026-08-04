@@ -149,6 +149,21 @@ desenvolvimento" — ambos entregues — e declara "60%").
 
 ---
 
+## G8 — Emissão de NF-e por integração 🟡 em andamento (aberto 03/08/2026)
+
+| | |
+|---|---|
+| **S** | O cliente clica "Emitir NF-e" num pedido da Orion e recebe DANFE + XML autorizados pela SEFAZ, sem sair do produto e sem criar conta em provedor nenhum. |
+| **M** | 1 NF-e autorizada em homologação com CNPJ de teste, `NotaFiscal.status = AUTORIZADA` gravado por webhook (não por polling), `chaveAcesso` de 44 dígitos, DANFE e XML baixáveis pelo pedido. |
+| **Baseline** | 0 campos fiscais em `Product` (nem NCM), `Company` sem regime tributário nem IE, `Customer` sem `indIEDest` nem código IBGE, nenhum model de nota fiscal. |
+| **A** | Provedor: **PlugNotas (Tecnospeed)** — único dos avaliados com `POST /certificado` documentado, então a Orion repassa o `.pfx` e **não persiste certificado nenhum**. Nuvem Fiscal foi eliminada: serviço desativado em 31/07/2026. Focus NFe fica como plano B (preço por CNPJ não escala em SaaS). |
+| **R** | Hoje o Professional (R$ 189) entrega o mesmo produto do Starter com mais volume. NF-e é o primeiro módulo exclusivo — e o primeiro custo marginal por uso, então entra **com cota por plano**, no mesmo mecanismo do `maxAiMessages`. |
+| **T** | **28/09/2026** |
+
+**Ordem:** ✅ schema fiscal + config da empresa → certificado A1 → campos em Product/Customer → rota de emissão + webhook → botão no pedido → homologação SEFAZ → cota + textos públicos (`/precos`, `/features`, prompt da IA).
+
+---
+
 ## Critério de kill
 
 Em **01/11/2026**, com 0 pagante e < 3 trials externos: o Orion deixa de ser produto
@@ -165,4 +180,11 @@ Nada disso aproxima o primeiro pagante e por isso não entra:
 - Refatoração de arquitetura ou troca de stack
 - SEO/GEO — cluster errado, horizonte errado
 - i18n além do que já está pronto
-- App mobile, integrações fiscais, IA além do que já existe
+- App mobile, IA além do que já existe
+
+> **Decisão 03/08/2026 — "integrações fiscais" saiu de Fora de escopo.** Vira o
+> G8 abaixo. Motivo: é o único módulo exclusivo que o Professional pode ganhar
+> sem construir ERP do zero, porque o trabalho pesado é do provedor. Custo:
+> 6-9 dias e o primeiro custo marginal por uso do produto. **Não desloca o G3** —
+> a compra real continua sendo a prioridade, e o G8 não depende dela.
+> Levantamento completo em [../HANDOFF-NFE.md](../HANDOFF-NFE.md).

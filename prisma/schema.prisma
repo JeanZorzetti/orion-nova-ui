@@ -60,6 +60,7 @@ model User {
   pushSubscriptions PushSubscription[]
   apiKeys       ApiKey[]
   company       Company?
+  notasFiscais  NotaFiscal[]
 
   @@index([ownerId])
   @@map("users")
@@ -80,15 +81,48 @@ model Company {
   email       String?
   website     String?
 
-  address     String?
+  address     String?  // Logradouro
+  numero      String?
+  complemento String?
+  bairro      String?
   city        String?
   state       String?  // UF
   zipCode     String?
+
+  // --- Emitente da NF-e ---
+  // O regime tributário é a primeira pergunta: ele decide se o produto usa
+  // CSOSN (Simples) ou CST (Regime Normal). Sem ele nada mais faz sentido.
+  regimeTributario     RegimeTributario?
+  inscricaoEstadual    String?
+  inscricaoMunicipal   String?
+  cnae                 String?
+  codigoMunicipioIBGE  String?  // 7 dígitos, tabela do IBGE
+  serieNfe             Int      @default(1)
+  proximoNumeroNfe     Int      @default(1)
+  ambienteNfe          AmbienteFiscal @default(HOMOLOGACAO)
+  // ponytail: o .pfx vive no provedor. Guardamos a referência dele e a
+  // validade (para avisar o cliente antes de vencer) — nunca o arquivo nem a
+  // senha. Se um dia precisar guardar, isso é KMS, não uma coluna.
+  certificadoRef       String?
+  certificadoValidoAte DateTime?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("companies")
+}
+
+/// CRT da NF-e: 1, 2, 3 e 4 respectivamente.
+enum RegimeTributario {
+  SIMPLES_NACIONAL
+  SIMPLES_NACIONAL_EXCESSO
+  REGIME_NORMAL
+  MEI
+}
+
+enum AmbienteFiscal {
+  HOMOLOGACAO
+  PRODUCAO
 }
 
 enum UserRole {
@@ -445,10 +479,18 @@ model Customer {
   type          CustomerType @default(PESSOA_FISICA)
 
   // Endereço
-  address       String?
+  address       String?  // Logradouro
+  numero        String?
+  complemento   String?
+  bairro        String?
   city          String?
   state         String?
   zipCode       String?
+
+  // --- Destinatário da NF-e ---
+  inscricaoEstadual   String?
+  indIEDest           IndicadorIeDestinatario?
+  codigoMunicipioIBGE String?  // não dá para deduzir de city+state com segurança
 
   // Metadata
   notes         String?  @db.Text
@@ -471,6 +513,13 @@ enum CustomerType {
   PESSOA_JURIDICA
 }
 
+/// indIEDest da NF-e: 1, 2 e 9 respectivamente.
+enum IndicadorIeDestinatario {
+  CONTRIBUINTE
+  ISENTO
+  NAO_CONTRIBUINTE
+}
+
 // Produtos
 model Product {
   id            String   @id @default(cuid())
@@ -489,6 +538,19 @@ model Product {
   stockQuantity Int      @default(0)
   minStock      Int      @default(0)
   unit          String   @default("UN")
+
+  // --- Tributação da NF-e ---
+  // Sem NCM não sai nota. `cfop` e `origem` têm default porque cobrem a venda
+  // dentro do estado de mercadoria nacional — o caso da esmagadora maioria.
+  ncm               String?  // 8 dígitos
+  cest              String?  // só quando há substituição tributária
+  cfop              String?  @default("5102")
+  origem            String?  @default("0")
+  csosn             String?  // Simples Nacional
+  cstIcms           String?  // Regime Normal
+  cstPisCofins      String?
+  aliquotaIcms      Decimal? @db.Decimal(5, 2)
+  unidadeTributavel String?  // default: cai no `unit`
 
   // Metadata
   isActive      Boolean  @default(true)
@@ -544,8 +606,55 @@ model SalesOrder {
   user            User          @relation(fields: [userId], references: [id])
   items           OrderItem[]
   financialTransactions FinancialTransaction[]
+  notasFiscais    NotaFiscal[]
 
   @@map("sales_orders")
+}
+
+// Uma nota por tentativa de emissão: uma rejeitada não vira autorizada, o
+// cliente corrige e emite de novo. Por isso é lista, não 1:1.
+model NotaFiscal {
+  id          String     @id @default(cuid())
+
+  orderId     String
+  order       SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+
+  // A SEFAZ leva de segundos a minutos e pode rejeitar: nasce PENDENTE e o
+  // webhook do provedor é quem fecha o status. Nada disso é await na tela.
+  status      NotaFiscalStatus @default(PENDENTE)
+  ambiente    AmbienteFiscal   @default(HOMOLOGACAO)
+
+  numero      Int?
+  serie       Int?
+  chaveAcesso String?    @unique  // 44 dígitos
+  protocolo   String?
+  xmlUrl      String?
+  danfeUrl    String?
+
+  // Referência do documento no provedor. @unique porque o webhook reentrega o
+  // mesmo evento — mesmo motivo do stripeInvoiceId no G2.
+  providerRef String?    @unique
+  motivoRejeicao String? @db.Text
+
+  emitidaEm   DateTime?
+  canceladaEm DateTime?
+  justificativaCancelamento String? @db.Text
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([orderId])
+  @@index([userId])
+  @@map("notas_fiscais")
+}
+
+enum NotaFiscalStatus {
+  PENDENTE
+  AUTORIZADA
+  REJEITADA
+  CANCELADA
 }
 
 model OrderItem {

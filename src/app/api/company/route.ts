@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { companyFiscalSchema } from "@/lib/fiscal";
 
 const optionalText = z.string().trim().max(255).optional().or(z.literal(""));
 
-const companySchema = z.object({
+const companySchema = companyFiscalSchema.extend({
   companyName: z.string().trim().min(1, "Razão social é obrigatória").max(255),
   tradeName: optionalText,
   // Aceita com ou sem máscara; normalizado para 14 dígitos abaixo.
