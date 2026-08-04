@@ -6,6 +6,11 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
+Assunto aberto, em documento separado: **emissão de NF-e por integração** —
+levantamento, provedores e decisões pendentes em [HANDOFF-NFE.md](HANDOFF-NFE.md).
+Hoje está *fora de escopo* pelo arquivo de metas; a primeira decisão de lá é se
+isso muda.
+
 ---
 
 ## 🔴 Comece por aqui: duas env vars faltam e uma delas mata um bullet vendido
