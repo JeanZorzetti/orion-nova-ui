@@ -15,6 +15,7 @@ import {
 import { Building2, ArrowLeft, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { pendenciasEmitente, usaCsosn } from "@/lib/fiscal";
+import { ConexaoFiscal } from "@/components/fiscal/ConexaoFiscal";
 
 const REGIMES = [
   { value: "SIMPLES_NACIONAL", label: "Simples Nacional" },
@@ -494,6 +495,10 @@ export default function EmpresaConfigPage() {
           </Button>
         </div>
       </form>
+
+      {/* Fora do <form> acima de propósito: form aninhado é HTML inválido, e
+          conectar o provedor não deve depender de salvar o cadastro. */}
+      <ConexaoFiscal />
 
       {/* Help Text */}
       <p className="text-center text-sm text-muted-foreground mt-8">

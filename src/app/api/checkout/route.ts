@@ -77,6 +77,10 @@ export async function POST(request: NextRequest) {
       ...(previous?.stripeCustomerId
         ? { customer: previous.stripeCustomerId }
         : { customer_email: session.user.email ?? undefined }),
+      // Cupom de fundador em vez de baixar o preço de tabela: desconto expira
+      // sozinho, preço de tabela é porta de uma via só. O cupom é criado no
+      // painel da Stripe — nada aqui precisa mudar para ligar ou desligar.
+      allow_promotion_codes: true,
       client_reference_id: session.user.id,
       metadata: { userId: session.user.id, planId: plan.id },
       // O webhook de customer.subscription.* só enxerga o metadata da subscription.

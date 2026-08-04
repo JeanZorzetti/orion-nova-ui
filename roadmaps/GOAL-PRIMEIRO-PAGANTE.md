@@ -153,34 +153,50 @@ desenvolvimento" — ambos entregues — e declara "60%").
 
 | | |
 |---|---|
-| **S** | O cliente clica "Emitir NF-e" num pedido da Orion e recebe DANFE + XML autorizados pela SEFAZ, sem sair do produto e sem criar conta em provedor nenhum. |
+| **S** | O cliente conecta a conta dele na Focus NFe, clica "Emitir NF-e" num pedido da Orion e recebe DANFE + XML autorizados pela SEFAZ sem sair do produto. |
 | **M** | 1 NF-e autorizada em homologação com CNPJ de teste, `NotaFiscal.status = AUTORIZADA` gravado por webhook (não por polling), `chaveAcesso` de 44 dígitos, DANFE e XML baixáveis pelo pedido. |
 | **Baseline** | 0 campos fiscais em `Product` (nem NCM), `Company` sem regime tributário nem IE, `Customer` sem `indIEDest` nem código IBGE, nenhum model de nota fiscal. |
-| **A** | Provedor: **PlugNotas (Tecnospeed)** — único dos avaliados com `POST /certificado` documentado, então a Orion repassa o `.pfx` e **não persiste certificado nenhum**. Nuvem Fiscal foi eliminada: serviço desativado em 31/07/2026. Focus NFe fica como plano B (preço por CNPJ não escala em SaaS). |
-| **R** | Hoje o Professional (R$ 189) entrega o mesmo produto do Starter com mais volume. NF-e é o primeiro módulo exclusivo — e o primeiro custo marginal por uso, então entra **com cota por plano**, no mesmo mecanismo do `maxAiMessages`. |
+| **A** | **Modelo BYO com a Focus NFe.** Contratar provedor é contrato B2B e exige a ROI Labs enquadrada — inviável hoje por custo, e nenhum provedor contorna isso. No BYO quem contrata é o cliente ([cadastro self-service](https://focusnfe.com.br/cadastro/), 30 dias de teste, R$ 89,90/mês), e a Orion guarda só o token dele, cifrado. O PlugNotas era a escolha certa no modelo de revenda e é a errada aqui: contact-sales, o cliente final não contrata sozinho. Nuvem Fiscal saiu de vez — serviço desativado em 31/07/2026. |
+| **R** | Hoje o Professional (R$ 189) entrega o mesmo produto do Starter com mais volume. NF-e é o primeiro módulo exclusivo. **Sem custo marginal para a Orion** no BYO — quem paga por documento é o cliente, direto no provedor —, então a cota por plano deixa de ser necessária. |
 | **T** | **28/09/2026** |
 
-**Ordem:** ✅ schema fiscal + config da empresa → certificado A1 → campos em Product/Customer → rota de emissão + webhook → botão no pedido → homologação SEFAZ → cota + textos públicos (`/precos`, `/features`, prompt da IA).
+**Ordem:** ✅ schema fiscal + config da empresa → ✅ conexão BYO (token cifrado) → campos em Product/Customer → rota de emissão + webhook → botão no pedido → homologação SEFAZ → textos públicos (`/precos`, `/features`, prompt da IA).
 
-> 🔴 **Bloqueado em 03/08/2026, no mesmo dia em que abriu — não por código.**
-> Contratar provedor fiscal é contrato B2B e exige a ROI Labs enquadrada. Não é
-> viável agora por custo. **Nenhum provedor contorna isso**: o sandbox público
-> do PlugNotas dá para desenvolver contra, mas é mock — não fala com a SEFAZ.
-> Homologação real exige conta contratada.
+> **O que o BYO tirou do plano:** o passo de upload de certificado A1 (fica no
+> painel do cliente, a Orion nunca vê um `.pfx`) e a cota por plano. **O que
+> acrescentou:** o token do provedor por conta, cifrado em
+> [lib/crypto.ts](../src/lib/crypto.ts), e um webhook que passa a receber
+> callback de N contas de provedor diferentes — precisa de segredo por conta.
+> Estimativa caiu de 6-9 para ~5-7 dias.
 >
-> O que já foi feito fica: schema fiscal e `lib/fiscal.ts` são aditivos,
-> agnósticos de provedor e não custam manutenção parados.
+> **Custo comercial, assumido de olho aberto:** "conecte sua conta de emissão
+> fiscal" vende pior que "emita NF-e pela Orion", e o cliente ainda paga
+> R$ 89,90 por fora. O G8 foi aberto para dar ao Professional um módulo
+> exclusivo; ele entrega a feature, não o argumento de venda inteiro.
 >
-> **Quando destravar, reavaliar a forma.** A alternativa que não exige contrato
-> da Orion é o modelo BYO: o cliente contrata o provedor e a Orion guarda o
-> token dele por conta. Some o custo marginal por documento (é do cliente,
-> então a cota do passo 8 deixa de ser necessária) e some o upload de
-> certificado (fica no provedor do cliente). Em troca, perde o "como se fosse
-> a Orion" e ganha fricção no onboarding.
->
-> ⚠️ **Verificar se o mesmo enquadramento não bloqueia o G3.** Conta Stripe
-> recebendo em BRL como empresa também pede CNPJ. Se pedir, o G2.5 está
-> bloqueado pela mesma causa e isso é muito mais urgente que NF-e.
+> ⚠️ **Pendente de verificação na primeira conta real:** a recusa do token
+> master em [lib/focus-nfe.ts](../src/lib/focus-nfe.ts) foi escrita a partir da
+> documentação, sem token de verdade para testar.
+
+---
+
+## Preço — decisão 03/08/2026: tabela fica, desconto de fundador entra
+
+Os R$ 89/189/349 **não mudam**. O custo do provedor fiscal no BYO só atinge quem
+quer NF-e, e hoje ninguém quer, porque a feature não existe. Baixar a tabela para
+todos compensa um custo que quase ninguém tem.
+
+Mais forte que isso: **não há evidência de resistência a preço.** 0 trial externo,
+0 conversa registrada. Cortar preço agora otimiza a única variável que ainda não
+foi testada, enquanto o gargalo declarado no G7 é que ninguém chegou.
+
+E preço de tabela é porta de uma via só: subir depois queima quem entrou; desconto
+expira sozinho. Por isso a tração vem de **cupom de fundador na Stripe**
+(`allow_promotion_codes` já ligado em [api/checkout](../src/app/api/checkout/route.ts)),
+com `max_redemptions` — mesma tração, sem perder a âncora nem exigir 3 prices novos
+e um G2.5 refeito, que é o que mexer em `price` custaria.
+
+Reabrir se, e só se, aparecer resistência a preço em conversa real de venda.
 
 ---
 

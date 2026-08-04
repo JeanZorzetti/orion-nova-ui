@@ -100,11 +100,16 @@ model Company {
   serieNfe             Int      @default(1)
   proximoNumeroNfe     Int      @default(1)
   ambienteNfe          AmbienteFiscal @default(HOMOLOGACAO)
-  // ponytail: o .pfx vive no provedor. Guardamos a referência dele e a
-  // validade (para avisar o cliente antes de vencer) — nunca o arquivo nem a
-  // senha. Se um dia precisar guardar, isso é KMS, não uma coluna.
-  certificadoRef       String?
-  certificadoValidoAte DateTime?
+
+  // Modelo BYO: a conta na Focus NFe é do cliente, não da Orion. Ele cola aqui
+  // o token DA EMPRESA e o certificado A1 fica no painel dele — a Orion nunca
+  // vê um .pfx.
+  // ponytail: coluna com nome do provedor, não `providerToken` genérico. A
+  // abstração de provedor só existe quando existir um segundo provedor.
+  // Guardado cifrado (lib/crypto.ts): é credencial que emite documento fiscal.
+  focusNfeToken        String?
+  focusNfeCnpj         String?   // CNPJ que o token emite, devolvido pela Focus
+  focusNfeConectadoEm  DateTime?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
