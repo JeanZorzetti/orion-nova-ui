@@ -6,6 +6,12 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
+**Próxima tarefa, em documento separado:** suporte por **WhatsApp em todos os
+planos**, com botão verde na sidebar —
+[HANDOFF-SUPORTE-WHATSAPP.md](HANDOFF-SUPORTE-WHATSAPP.md). Nada codado ainda, e
+bloqueado numa pergunta de uma linha: **qual é o número real?** O que está no ar
+hoje em `/contato` é `5511999999999`, placeholder.
+
 Assunto aberto, em documento separado: **emissão de NF-e no modelo BYO** —
 decisões, estado do código e próximos passos em
 [HANDOFF-NFE-BYO.md](HANDOFF-NFE-BYO.md). Virou o **G8** no arquivo de metas em
