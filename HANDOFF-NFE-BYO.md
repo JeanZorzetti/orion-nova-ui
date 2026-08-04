@@ -78,6 +78,20 @@ de campos obrigatórios, que é maior do que qualquer documentação faz parecer
 todo o resto depende dela estar certa. Os campos do schema saíram de levantamento,
 não de uma nota que passou.
 
+**A conta na Focus já existe** (criada em 04/08, sessão 8) e o passo 1 já tem
+ferramenta — [scripts/nfe-homologacao.sh](scripts/nfe-homologacao.sh) emite uma
+nota e faz o poll até a SEFAZ responder:
+
+```bash
+FOCUS_TOKEN=<token de homologação> CNPJ_EMITENTE=<14 dígitos> \
+  bash scripts/nfe-homologacao.sh
+```
+
+O que falta para rodá-lo é **uma empresa cadastrada com certificado A1** — ver a
+armadilha 7. O payload dele já cobre todos os campos que o OpenAPI da Focus marca
+como obrigatórios; o que ele existe para descobrir é o que a **SEFAZ** exige além
+disso.
+
 Base URLs e auth (confirmados na doc):
 ```
 Homologação: https://homologacao.focusnfe.com.br
@@ -89,11 +103,15 @@ Auth:        HTTP Basic — token no usuário, senha vazia (curl -u "TOKEN:")
 
 ## As armadilhas — leia antes de codar
 
-**1. A recusa do token master nunca foi testada.** Em
+**1. A recusa do token master — a doc sustenta, o token real ainda não.** Em
 [focus-nfe.ts](src/lib/focus-nfe.ts), a lógica que distingue o token master do
-token da empresa saiu da documentação, sem token real. **Confirme na primeira
-conexão de verdade.** Se a Focus responder outra coisa, o pior caso é aceitar um
-master — que emite nota para qualquer CNPJ da conta do cliente.
+token da empresa saiu da documentação, sem token real. O OpenAPI de
+[criar_empresa](https://doc.focusnfe.com.br/reference/criar_empresa.md) **reforça
+a premissa**: o `EmpresaResponse` devolve `token_producao` e `token_homologacao`,
+então listar empresas é mesmo operação de conta, não de empresa. **Ainda assim
+confirme na primeira conexão de verdade** — doc concordar não é o mesmo que a API
+responder. Se a Focus responder outra coisa, o pior caso é aceitar um master, que
+emite nota para qualquer CNPJ da conta do cliente.
 
 **2. O webhook vai receber callback de N contas diferentes.** No BYO cada cliente
 tem a própria conta na Focus, todas apontando para a mesma URL da Orion. **Sem
@@ -120,6 +138,14 @@ pode rejeitar.
 Se isso não andar junto, o assistente dentro do produto pago nega uma
 funcionalidade que o cliente acabou de comprar. Foi o problema que o G4 gastou
 uma sessão inteira limpando.
+
+**7. Sem certificado A1 não existe passo 1 — e ele custa dinheiro.** A conta na
+Focus é grátis por 30 dias, mas emitir em homologação exige uma empresa cadastrada
+com certificado digital: a API recebe o PFX em `arquivo_certificado_base64` +
+`senha_certificado`, e a SEFAZ de homologação **assina de verdade**. Um A1 custa
+na faixa de R$ 150–250/ano e sai no CNPJ. Enquanto não houver um, o passo 1 não
+roda, e os passos 2 a 4 ficam construindo sobre campos não confirmados. **Este é
+o gargalo do G8, não a Focus.**
 
 **6. Reforma tributária.** O layout da NF-e está mudando para IBS/CBS. Terceirizar
 para provedor é justamente o que reduz esse risco — a atualização é problema
