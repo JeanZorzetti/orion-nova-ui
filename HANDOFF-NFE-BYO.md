@@ -102,10 +102,42 @@ função separada, e há um teste fixando que o mesmo MEI passa numa e é recusa
 na outra. Se um dia alguém "simplificar" unificando as duas, o teste quebra.
 
 **O que falta:** tela, emissão a partir do pedido e webhook — os mesmos passos 2
-a 4 da tabela abaixo, e na mesma ordem. **O passo 1 continua sendo o primeiro:**
-rodar o script e ver o que o ambiente nacional cobra além do que a doc diz. Dois
-valores do script são chute documentado e são os primeiros suspeitos numa
-rejeição: `COD_ISS=170600` (17.06, propaganda) e `OPCAO_SN=2` (optante MEI).
+a 4 da tabela abaixo, e na mesma ordem. Dois valores do script são chute
+documentado e são os primeiros suspeitos numa rejeição: `COD_ISS=170600` (17.06,
+propaganda) e `OPCAO_SN=2` (optante MEI).
+
+### 🔴 O passo 1 rodou e parou no certificado — medido, não suposto
+
+Empresa cadastrada na Focus em 04/08 **sem certificado** (ela deixa criar), token
+de homologação em mãos. O `POST /v2/nfsen` respondeu:
+
+```
+http=400  {"codigo":"empresa_nao_habilitada",
+           "mensagem":"Empresa ainda sem certificado digital definido"}
+```
+
+**A Focus exige certificado A1 também para NFS-e Nacional, também em
+homologação.** Era a dúvida em aberto e está fechada: trocar NF-e por NFS-e
+resolveu o problema da inscrição estadual, **não** o do certificado. Um A1 de
+CNPJ custa por volta de R$ 150–250/ano.
+
+Vale saber que o MEI emite NFS-e Nacional de graça pelo portal/app do gov.br,
+sem certificado — mas isso é o **portal**, não a API. Integração via provedor
+passa por certificado.
+
+**Enquanto não houver A1, o passo 1 não fecha e os passos 2 a 4 seriam construídos
+sobre campos que nenhuma nota validou** — exatamente o erro que este documento
+existe para evitar.
+
+### O que o token real já provou, de graça
+
+- **Token inválido → 401** `permissao_negada`. O primeiro ramo de `validarToken`
+  está correto.
+- **`/v2/empresas` só existe no host de produção.** Em homologação ele responde
+  404 `nao_encontrado` para qualquer token, então **a detecção de token master
+  não opera em homologação** — um master passaria por token de empresa. Está
+  anotado em [focus-nfe.ts](src/lib/focus-nfe.ts). Em produção, onde o token vale
+  dinheiro, a checagem funciona.
 
 ---
 

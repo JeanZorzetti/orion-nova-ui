@@ -53,9 +53,18 @@ JSON
 }
 
 echo "== POST /v2/nfsen?ref=${REF}"
-payload | curl -s -u "${FOCUS_TOKEN}:" -X POST \
+ENVIO=$(payload | curl -s -u "${FOCUS_TOKEN}:" -X POST \
   -H "Content-Type: application/json" --data @- \
-  "${BASE}/v2/nfsen?ref=${REF}"
+  "${BASE}/v2/nfsen?ref=${REF}")
+printf '%s\n' "$ENVIO"
+
+# Recusa na porta (certificado ausente, campo faltando) não gera nota nenhuma:
+# sem isto o loop abaixo consulta por 150s uma referência que não existe.
+if printf '%s' "$ENVIO" | grep -q '"codigo"'; then
+  echo
+  echo "A API recusou o envio. Não há o que consultar — resolva o erro acima."
+  exit 1
+fi
 
 echo
 echo "== consultando até a prefeitura/ambiente nacional responder"

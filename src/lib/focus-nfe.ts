@@ -98,9 +98,16 @@ export function consultarNfseNacional(
  * conta, e a Orion não tem por que guardar uma chave dessas. A Focus separa os
  * dois — /v2/empresas responde ao master e nega ao token de empresa.
  *
- * ponytail: os dois códigos abaixo saíram da doc, não de token real — não temos
- * conta. Confirmar na primeira conexão de verdade; se a Focus responder outra
- * coisa, o pior caso é aceitar um master, que é o comportamento de quem só avisa.
+ * Medido com token real em 04/08 (empresa de homologação):
+ *   - token inválido      → 401 `permissao_negada`, então o primeiro ramo funciona
+ *   - token de empresa    → /v2/empresas dá 401 em produção, e passa como não-master
+ *
+ * ⚠️ Mas em **homologação** /v2/empresas responde 404 `nao_encontrado` para
+ * qualquer token: o endpoint de empresas só existe no host de produção. Ou seja,
+ * a detecção de master **não opera em homologação** — um master passaria como
+ * token de empresa. Não há endpoint no host de homologação que os distinga, e
+ * inventar um heurístico seria pior que a falha conhecida. Em produção, onde o
+ * token vale dinheiro, a checagem funciona.
  */
 export async function validarToken(
   token: string,
