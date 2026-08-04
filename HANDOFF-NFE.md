@@ -1,5 +1,16 @@
 # Handoff — Emissão de NF-e por integração (aberto em 03/08/2026, sessão 7)
 
+> ⛔ **SUPERADO em 04/08/2026 — leia [HANDOFF-NFE-BYO.md](HANDOFF-NFE-BYO.md).**
+>
+> Este documento recomenda **PlugNotas** e o **modelo de revenda**. Os dois foram
+> abandonados: contratar provedor exige a ROI Labs enquadrada, o que não é
+> viável hoje. O modelo em vigor é **BYO com Focus NFe**, e já tem código no ar.
+>
+> O que continua válido aqui: o levantamento dos campos fiscais que faltam em
+> `Product`, `Customer` e `Company`, e as ressalvas sobre emissão assíncrona e
+> reforma tributária. **Ignore as seções de escolha de provedor e de cota por
+> plano** — no BYO o custo por documento é do cliente e a cota não existe.
+
 Documento de decisão para uma sessão nova. Leia o [HANDOFF.md](HANDOFF.md)
 primeiro para o estado geral do projeto; este aqui trata de **um** assunto.
 

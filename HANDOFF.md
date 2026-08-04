@@ -6,10 +6,12 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
 [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
-Assunto aberto, em documento separado: **emissão de NF-e por integração** —
-levantamento, provedores e decisões pendentes em [HANDOFF-NFE.md](HANDOFF-NFE.md).
-Hoje está *fora de escopo* pelo arquivo de metas; a primeira decisão de lá é se
-isso muda.
+Assunto aberto, em documento separado: **emissão de NF-e no modelo BYO** —
+decisões, estado do código e próximos passos em
+[HANDOFF-NFE-BYO.md](HANDOFF-NFE-BYO.md). Virou o **G8** no arquivo de metas em
+03/08 e já tem código em produção: schema fiscal, tela de enquadramento e conexão
+com a conta Focus NFe do cliente. **Emitir a nota a partir do pedido ainda não
+existe.** O [HANDOFF-NFE.md](HANDOFF-NFE.md) anterior está superado.
 
 ---
 

@@ -136,6 +136,11 @@ hoje no Orion** e ofereça o caminho mais próximo com o que existe. Nunca inven
 tela, menu ou passo a passo para nenhum deles:
 
 - Emissão de NF-e / NFS-e e qualquer documento fiscal; SPED; apuração de imposto
+  > Exceção parcial, e só esta: **Configurações > Fiscal existe** e guarda o
+  > enquadramento (regime tributário, inscrições, código IBGE, série) e conecta
+  > a conta do cliente na Focus NFe. **Emitir a nota a partir do pedido ainda
+  > não existe.** Se perguntarem, aponte essa tela e diga com todas as letras
+  > que a emissão em si está em construção. Não prometa data.
 - Conciliação bancária e integração bancária
 - Movimentação de estoque (entrada/saída), inventário, custeio, curva ABC
 - PDV / frente de caixa
