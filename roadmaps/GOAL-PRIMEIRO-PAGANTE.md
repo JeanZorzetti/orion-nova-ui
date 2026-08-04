@@ -162,6 +162,26 @@ desenvolvimento" — ambos entregues — e declara "60%").
 
 **Ordem:** ✅ schema fiscal + config da empresa → certificado A1 → campos em Product/Customer → rota de emissão + webhook → botão no pedido → homologação SEFAZ → cota + textos públicos (`/precos`, `/features`, prompt da IA).
 
+> 🔴 **Bloqueado em 03/08/2026, no mesmo dia em que abriu — não por código.**
+> Contratar provedor fiscal é contrato B2B e exige a ROI Labs enquadrada. Não é
+> viável agora por custo. **Nenhum provedor contorna isso**: o sandbox público
+> do PlugNotas dá para desenvolver contra, mas é mock — não fala com a SEFAZ.
+> Homologação real exige conta contratada.
+>
+> O que já foi feito fica: schema fiscal e `lib/fiscal.ts` são aditivos,
+> agnósticos de provedor e não custam manutenção parados.
+>
+> **Quando destravar, reavaliar a forma.** A alternativa que não exige contrato
+> da Orion é o modelo BYO: o cliente contrata o provedor e a Orion guarda o
+> token dele por conta. Some o custo marginal por documento (é do cliente,
+> então a cota do passo 8 deixa de ser necessária) e some o upload de
+> certificado (fica no provedor do cliente). Em troca, perde o "como se fosse
+> a Orion" e ganha fricção no onboarding.
+>
+> ⚠️ **Verificar se o mesmo enquadramento não bloqueia o G3.** Conta Stripe
+> recebendo em BRL como empresa também pede CNPJ. Se pedir, o G2.5 está
+> bloqueado pela mesma causa e isso é muito mais urgente que NF-e.
+
 ---
 
 ## Critério de kill
