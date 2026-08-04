@@ -164,9 +164,12 @@ Sem drift ele devolve `-- This is an empty migration.`
 
 ## O que bloqueia mais que isto
 
-O G8 **não é a prioridade**. `RESEND_API_KEY` continua ausente na Vercel, então
-nenhum e-mail sai — e "e-mail de confirmação recebido" é um dos 5 efeitos que o
-**G3** exige. O G3 é a primeira compra real e nunca foi feito: ninguém nunca
-provou que produção cobra.
+O G8 **não é a prioridade**. O G3 é a primeira compra real e nunca foi feito:
+ninguém nunca provou que produção cobra.
+
+A sessão 8 tirou o que bloqueava o G3 — `RESEND_API_KEY` está em produção e um
+e-mail disparado pela app chegou ao Gmail (detalhes no
+[HANDOFF.md](HANDOFF.md)). **Não sobrou desculpa técnica: o G3 agora é passar o
+cartão.**
 
 **Se você tem uma tarde, gaste no G3, não aqui.**

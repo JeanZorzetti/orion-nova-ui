@@ -15,28 +15,39 @@ existe.** O [HANDOFF-NFE.md](HANDOFF-NFE.md) anterior está superado.
 
 ---
 
-## 🔴 Comece por aqui: duas env vars faltam e uma delas mata um bullet vendido
+## ✅ As duas env vars que faltavam — resolvidas na sessão 8
 
-`vercel env ls` devolve **7 variáveis**, e nenhuma delas é `GROQ_API_KEY` nem
-`RESEND_API_KEY`. As duas quebram coisa que a sessão 7 acabou de publicar como
-verdadeira:
+`RESEND_API_KEY` e `GROQ_API_KEY` estão em produção com valor real, e houve
+redeploy. **O G3 não está mais bloqueado por e-mail.**
 
-| Falta | O que quebra | Onde |
+| Var | Estado | Prova |
 |---|---|---|
-| `GROQ_API_KEY` | **A Orion AI responde 500 em produção.** O chat é bullet dos 3 planos e o único diferencial real contra Tiny/Bling | [api/ai/chat:6](src/app/api/ai/chat/route.ts) devolve 500 sem a chave |
-| `RESEND_API_KEY` | **Nenhum e-mail sai.** Confirmação de pagamento, boas-vindas, redefinição de senha e o convite de equipe | [lib/email.ts:18](src/lib/email.ts) avisa no log e retorna sem enviar |
+| `RESEND_API_KEY` | ✅ ponta a ponta | `POST /api/auth/forgot-password` em produção enviou pela app e o Resend devolveu `last_event: delivered` (`ffe9afd1…`) |
+| `GROQ_API_KEY` | ⚠️ configurada, **não exercitada logada** | A chave responde 200 em `api.groq.com/v1/models` e está no env de produção. O chat checa `auth()` **antes** da chave ([chat:264](src/app/api/ai/chat/route.ts) 401, [chat:273](src/app/api/ai/chat/route.ts) 500), então sem sessão não dá para distinguir. **Abra o chat logado para fechar isto.** |
 
-Isto bloqueia o G3: a checklist da compra real exige "e-mail de confirmação
-recebido", e hoje ele não sai. E o convite de equipe cria o usuário mas o
-convidado nunca recebe o link para definir a senha.
+O domínio `orion.roilabs.com.br` está **verificado** no Resend (região
+`sa-east-1`, envio habilitado) — não é preciso reconfigurar DNS.
+
+### 🪤 A armadilha que isto revelou: `vercel env ls` mostra a variável, nunca o valor
+
+`GROQ_API_KEY` **aparecia na listagem** e mesmo assim a IA respondia 500: ela
+tinha sido gravada como **string vazia**. `""` é falsy, então
+`if (!GROQ_API_KEY)` disparava do mesmo jeito — com a var "presente". É pior que
+faltar, porque a listagem diz que está tudo certo.
+
+**Nunca conclua que uma env var está boa por ela aparecer no `env ls`.** Puxe o
+valor:
 
 ```bash
-vercel env add GROQ_API_KEY production      # dentro do diretório do projeto!
-vercel env add RESEND_API_KEY production
-vercel env ls                               # `add` fora do projeto falha calado
+vercel env pull /tmp/prod.env --environment=production --yes
+grep -E "GROQ|RESEND" /tmp/prod.env      # valor vazio = quebrado
 ```
 
-Depois de adicionar: **redeploy**, e confirme abrindo o chat da IA logado.
+O `.env` local guardava o mesmo estrago por outro caminho: a linha do
+`GROQ_API_KEY` **estava sem quebra de linha no fim** e o `ENCRYPTION_KEY` da
+linha seguinte grudou nela, virando um valor único e inválido. Corrigido. Se um
+segredo local parecer inexplicavelmente errado, rode `grep -n CHAVE .env | cat -A`
+e olhe onde a linha realmente termina.
 
 ---
 
@@ -190,7 +201,9 @@ errada, webhook secret errado e `success_url` apontando para localhost.
    [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) e
    reembolse pelo painel
 
-O efeito "e-mail chegou" **vai falhar** enquanto `RESEND_API_KEY` não existir.
+O efeito "e-mail chegou" **deixou de ser bloqueio na sessão 8** — a
+`RESEND_API_KEY` está em produção e um e-mail disparado pela própria app foi
+entregue. Agora o G3 depende só de você passar o cartão.
 
 Se falhar no meio, o MCP da Stripe está autorizado: dá para ler o evento, a
 Checkout Session e a subscription e comparar com o que o webhook gravou no
