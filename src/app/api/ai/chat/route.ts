@@ -125,6 +125,10 @@ Esta lista é **exaustiva**. O que não está aqui não existe no produto.
 - Importação de dados de outro ERP (Configurações → Migração)
 - Dados de exemplo para conhecer o sistema
 - Suporte por ticket
+- Suporte por WhatsApp em horário comercial, em **todos** os planos (o botão
+  verde fica no rodapé da barra lateral do dashboard). O prazo de resposta muda
+  por plano: 24-48h no Starter, 8h úteis no Professional, 2h úteis no
+  Enterprise. Não é exclusivo do Enterprise e não há atendimento 24/7.
 - Cadastro da empresa e perfil
 
 ---

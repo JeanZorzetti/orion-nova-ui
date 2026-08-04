@@ -23,6 +23,7 @@ import {
   CreditCard,
   Search,
   RefreshCw,
+  MessageCircle,
 } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -144,6 +145,11 @@ const additionalFeatures = [
     icon: FileText,
     title: "Suporte por ticket",
     description: "Abra chamados e acompanhe a resposta dentro do sistema.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Suporte por WhatsApp",
+    description: "Em todos os planos, direto do dashboard, em horário comercial.",
   },
   {
     icon: CreditCard,

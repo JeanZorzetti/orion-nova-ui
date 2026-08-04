@@ -93,6 +93,14 @@ describe("catálogo", () => {
     for (const id of ids) expect(id).toMatch(/^price_/);
   });
 
+  it("os três planos vendem WhatsApp — não é diferencial do Enterprise", () => {
+    // Decisão do dono: o canal é igual em todo plano, a gradação é o SLA.
+    // Este teste existe para ninguém "consertar" devolvendo a exclusividade.
+    for (const plan of PLANS) {
+      expect(plan.features.support, plan.slug).toMatch(/WhatsApp/);
+    }
+  });
+
   it("preço maior entrega mais: assentos e limites nunca regridem", () => {
     const porPreco = [...PLANS].sort((a, b) => a.price - b.price);
     const naoMenor = (a: number, b: number) => a === -1 || (b !== -1 && a >= b);

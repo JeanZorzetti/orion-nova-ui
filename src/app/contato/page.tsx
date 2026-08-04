@@ -31,6 +31,12 @@ import {
   Users,
 } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
+import {
+  WHATSAPP_SUPORTE,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_URL,
+  WHATSAPP_TEL,
+} from "@/lib/suporte";
 
 const contactReasons = [
   { value: "comercial", label: "Falar com Comercial" },
@@ -40,6 +46,8 @@ const contactReasons = [
   { value: "outros", label: "Outros Assuntos" },
 ];
 
+// Telefone e WhatsApp só entram quando existe número real — até então eram
+// `(11) 9999-9999`, que não é número de ninguém. Ver lib/suporte.ts.
 const contactInfo = [
   {
     icon: Mail,
@@ -47,18 +55,22 @@ const contactInfo = [
     value: "contato@orion.roilabs.com.br",
     link: "mailto:contato@orion.roilabs.com.br",
   },
-  {
-    icon: Phone,
-    title: "Telefone",
-    value: "(11) 9999-9999",
-    link: "tel:+5511999999999",
-  },
-  {
-    icon: MessageSquare,
-    title: "WhatsApp",
-    value: "(11) 9999-9999",
-    link: "https://wa.me/5511999999999",
-  },
+  ...(WHATSAPP_SUPORTE
+    ? [
+        {
+          icon: Phone,
+          title: "Telefone",
+          value: WHATSAPP_DISPLAY,
+          link: WHATSAPP_TEL,
+        },
+        {
+          icon: MessageSquare,
+          title: "WhatsApp",
+          value: WHATSAPP_DISPLAY,
+          link: WHATSAPP_URL,
+        },
+      ]
+    : []),
   {
     icon: MapPin,
     title: "Localização",
@@ -360,7 +372,8 @@ export default function ContatoPage() {
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-4">
-                    * Suporte técnico para clientes Enterprise: 24/7
+                    * Suporte por WhatsApp em todos os planos, dentro deste
+                    horário. Não há atendimento 24/7 em nenhum plano.
                   </p>
                 </div>
 
@@ -369,8 +382,10 @@ export default function ContatoPage() {
                   <h3 className="font-semibold mb-2">Tempo de Resposta</h3>
                   <p className="text-sm text-muted-foreground">
                     Nossa equipe responde em até <strong>4 horas úteis</strong> para
-                    assuntos comerciais e <strong>2 horas</strong> para suporte
-                    técnico (planos Professional e Enterprise).
+                    assuntos comerciais. No suporte técnico o prazo é o do seu
+                    plano: <strong>24-48h</strong> no Starter,{" "}
+                    <strong>8h úteis</strong> no Professional e{" "}
+                    <strong>2h úteis</strong> no Enterprise.
                   </p>
                 </div>
               </div>
