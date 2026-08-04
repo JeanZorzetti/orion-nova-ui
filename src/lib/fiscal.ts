@@ -136,12 +136,17 @@ export function pendenciasEmitente(company: EmitenteParcial): string[] {
  * o prestador de serviço se registra no **município** (ISS), não no estado
  * (ICMS). Cobrar inscrição estadual aqui bloquearia todo MEI de serviço, que
  * não tem nem pode ter uma.
+ *
+ * A inscrição **municipal** também não entra: no padrão Nacional o prestador é
+ * identificado por `cnpj_prestador` + `codigo_municipio_emissora`, e o payload
+ * do DPS não tem campo para ela — quem a exige é a NFS-e municipal, que não é
+ * o caminho escolhido. Cobrá-la travaria o MEI que nunca abriu cadastro
+ * mobiliário na prefeitura, que é a maioria.
  */
 export function pendenciasPrestador(company: PrestadorParcial): string[] {
   const obrigatorios: Array<[keyof PrestadorParcial, string]> = [
     ["cnpj", "CNPJ"],
     ["regimeTributario", "Regime tributário"],
-    ["inscricaoMunicipal", "Inscrição municipal"],
     ["codigoMunicipioIBGE", "Código IBGE do município"],
     ["address", "Logradouro"],
     ["numero", "Número"],

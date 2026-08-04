@@ -89,6 +89,12 @@ para o país e o MEI já é obrigado a ele. Não reabra sem um município que fo
 Migration `20260804120000_add_nfse_nacional` **aplicada**, `migrate diff` devolve
 migration vazia. 19 testes em `fiscal.test.ts`.
 
+**Inscrição municipal não é exigida.** No padrão Nacional o prestador é
+identificado por `cnpj_prestador` + `codigo_municipio_emissora`; o payload do DPS
+não tem campo para IM. Quem a exige é a NFS-e **municipal** (`Prestador` →
+`required: [cnpj, inscricao_municipal]`), que não é o caminho. Cobrá-la travaria
+o MEI que nunca abriu cadastro mobiliário na prefeitura — a maioria.
+
 **A armadilha que isto expôs, e que já estava no código:** `pendenciasEmitente`
 cobra inscrição **estadual**. Reusá-la para NFS-e bloquearia todo MEI de serviço
 — ou seja, o público mais provável do Orion. Por isso `pendenciasPrestador` é

@@ -117,9 +117,13 @@ describe("NFS-e: prestador de serviço não é emitente de mercadoria", () => {
     expect(pendenciasEmitente(prestadorMEI)).toEqual(["Inscrição estadual"]);
   });
 
-  it("cobra inscrição municipal, que é o registro do prestador", () => {
-    expect(pendenciasPrestador({ ...prestadorMEI, inscricaoMunicipal: "" })).toEqual([
-      "Inscrição municipal",
+  it("não cobra inscrição municipal: o DPS Nacional não tem campo para ela", () => {
+    expect(pendenciasPrestador({ ...prestadorMEI, inscricaoMunicipal: "" })).toEqual([]);
+  });
+
+  it("mas cobra o código IBGE, que é como o Nacional localiza o prestador", () => {
+    expect(pendenciasPrestador({ ...prestadorMEI, codigoMunicipioIBGE: null })).toEqual([
+      "Código IBGE do município",
     ]);
   });
 
