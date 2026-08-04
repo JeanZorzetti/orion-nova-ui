@@ -60,6 +60,8 @@ export const customerFiscalSchema = z.object({
 });
 
 export const productFiscalSchema = z.object({
+  codigoTributacaoNacionalISS: numerico(6, "Código de tributação nacional do ISS"),
+  aliquotaIss: vazioVira(z.coerce.number().min(0).max(100)),
   ncm: numerico(8, "NCM"),
   cest: numerico(7, "CEST"),
   cfop: numerico(4, "CFOP"),
@@ -99,6 +101,14 @@ type ProdutoParcial = {
   cstIcms?: string | null;
 };
 
+type PrestadorParcial = Omit<EmitenteParcial, "inscricaoEstadual"> & {
+  inscricaoMunicipal?: string | null;
+};
+
+type ServicoParcial = {
+  codigoTributacaoNacionalISS?: string | null;
+};
+
 const vazio = (v: unknown) => v === null || v === undefined || v === "";
 
 /**
@@ -119,6 +129,50 @@ export function pendenciasEmitente(company: EmitenteParcial): string[] {
     ["zipCode", "CEP"],
   ];
   return obrigatorios.filter(([campo]) => vazio(company[campo])).map(([, rotulo]) => rotulo);
+}
+
+/**
+ * Idem para quem emite NFS-e. É outra lista, não a mesma com um campo a menos:
+ * o prestador de serviço se registra no **município** (ISS), não no estado
+ * (ICMS). Cobrar inscrição estadual aqui bloquearia todo MEI de serviço, que
+ * não tem nem pode ter uma.
+ */
+export function pendenciasPrestador(company: PrestadorParcial): string[] {
+  const obrigatorios: Array<[keyof PrestadorParcial, string]> = [
+    ["cnpj", "CNPJ"],
+    ["regimeTributario", "Regime tributário"],
+    ["inscricaoMunicipal", "Inscrição municipal"],
+    ["codigoMunicipioIBGE", "Código IBGE do município"],
+    ["address", "Logradouro"],
+    ["numero", "Número"],
+    ["bairro", "Bairro"],
+    ["city", "Cidade"],
+    ["state", "UF"],
+    ["zipCode", "CEP"],
+  ];
+  return obrigatorios.filter(([campo]) => vazio(company[campo])).map(([, rotulo]) => rotulo);
+}
+
+/**
+ * O código de tributação nacional do ISSQN é para o serviço o que o NCM é para
+ * a mercadoria. Nada de CSOSN/CST aqui: quem tributa é o município.
+ */
+export function pendenciasServico(product: ServicoParcial): string[] {
+  const faltando: string[] = [];
+  if (vazio(product.codigoTributacaoNacionalISS)) {
+    faltando.push("Código de tributação nacional do ISS");
+  }
+  return faltando;
+}
+
+/**
+ * `codigo_opcao_simples_nacional` da DPS. Derivado do regime que já existe —
+ * não é campo novo de cadastro, seria perguntar duas vezes a mesma coisa.
+ */
+export function opcaoSimplesNacional(regime: string | null | undefined): 1 | 2 | 3 {
+  if (regime === "MEI") return 2;
+  if (regime === "SIMPLES_NACIONAL" || regime === "SIMPLES_NACIONAL_EXCESSO") return 3;
+  return 1; // não optante
 }
 
 /** Idem para o produto. Depende do regime: CSOSN no Simples, CST no normal. */

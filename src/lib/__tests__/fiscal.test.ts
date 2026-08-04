@@ -6,6 +6,9 @@ import {
   chaveAcessoSchema,
   pendenciasEmitente,
   pendenciasProduto,
+  pendenciasPrestador,
+  pendenciasServico,
+  opcaoSimplesNacional,
 } from "../fiscal";
 
 const emitenteCompleto = {
@@ -87,5 +90,55 @@ describe("pendências antes de emitir", () => {
     expect(pendenciasProduto({ ...produto, csosn: "102" }, "REGIME_NORMAL")).toEqual([
       "CST de ICMS",
     ]);
+  });
+});
+
+describe("NFS-e: prestador de serviço não é emitente de mercadoria", () => {
+  // MEI de serviço: tem inscrição municipal, não tem nem pode ter estadual.
+  // Foi o caso que provou que reusar pendenciasEmitente aqui estava errado.
+  const prestadorMEI = {
+    cnpj: "57493675000137",
+    regimeTributario: "MEI" as const,
+    inscricaoMunicipal: "123456",
+    codigoMunicipioIBGE: "5201405",
+    address: "Rua Teste",
+    numero: "100",
+    bairro: "Centro",
+    city: "Aparecida de Goiânia",
+    state: "GO",
+    zipCode: "74900000",
+  };
+
+  it("prestador sem inscrição estadual está pronto — ela não é exigida no ISS", () => {
+    expect(pendenciasPrestador(prestadorMEI)).toEqual([]);
+  });
+
+  it("e o mesmo MEI é rejeitado como emitente de NF-e, por falta de IE", () => {
+    expect(pendenciasEmitente(prestadorMEI)).toEqual(["Inscrição estadual"]);
+  });
+
+  it("cobra inscrição municipal, que é o registro do prestador", () => {
+    expect(pendenciasPrestador({ ...prestadorMEI, inscricaoMunicipal: "" })).toEqual([
+      "Inscrição municipal",
+    ]);
+  });
+
+  it("serviço sem código de tributação nacional não sai, como produto sem NCM", () => {
+    expect(pendenciasServico({})).toEqual(["Código de tributação nacional do ISS"]);
+    expect(pendenciasServico({ codigoTributacaoNacionalISS: "170600" })).toEqual([]);
+  });
+
+  it("opção pelo Simples sai do regime, sem perguntar de novo no cadastro", () => {
+    expect(opcaoSimplesNacional("MEI")).toBe(2);
+    expect(opcaoSimplesNacional("SIMPLES_NACIONAL")).toBe(3);
+    expect(opcaoSimplesNacional("REGIME_NORMAL")).toBe(1);
+  });
+
+  it("código de tributação do ISS tem 6 dígitos", () => {
+    expect(
+      productFiscalSchema.parse({ codigoTributacaoNacionalISS: "170600" })
+        .codigoTributacaoNacionalISS
+    ).toBe("170600");
+    expect(() => productFiscalSchema.parse({ codigoTributacaoNacionalISS: "1706" })).toThrow();
   });
 });

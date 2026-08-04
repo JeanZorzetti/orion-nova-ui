@@ -44,6 +44,53 @@ export type ResultadoConexao = {
 };
 
 /**
+ * NFS-e no padrão **Nacional** (DPS), não no municipal. O municipal exige uma
+ * integração por prefeitura; o nacional é um endpoint só para o país inteiro, e
+ * o MEI já é obrigado a ele. Por isso `/nfsen` e não `/nfse`.
+ *
+ * Assíncrono como a NF-e: responde `processando_autorizacao` e quem fecha o
+ * status é o webhook. Nada aqui espera a prefeitura responder.
+ */
+export type DpsNacional = {
+  data_emissao: string;
+  serie_dps: number;
+  numero_dps: number;
+  data_competencia: string;
+  emitente_dps: number;
+  codigo_municipio_emissora: number;
+  cnpj_prestador: string;
+  codigo_opcao_simples_nacional: number;
+  regime_especial_tributacao: number;
+  cnpj_tomador?: string;
+  cpf_tomador?: string;
+  codigo_municipio_prestacao: number;
+  codigo_tributacao_nacional_iss: string;
+  descricao_servico: string;
+  valor_servico: number;
+  tributacao_iss: number;
+};
+
+export function emitirNfseNacional(
+  token: string,
+  ambiente: AmbienteFiscal,
+  ref: string,
+  dps: DpsNacional
+): Promise<Response> {
+  return focusFetch(token, ambiente, `/v2/nfsen?ref=${encodeURIComponent(ref)}`, {
+    method: "POST",
+    body: JSON.stringify(dps),
+  });
+}
+
+export function consultarNfseNacional(
+  token: string,
+  ambiente: AmbienteFiscal,
+  ref: string
+): Promise<Response> {
+  return focusFetch(token, ambiente, `/v2/nfsen/${encodeURIComponent(ref)}`);
+}
+
+/**
  * Confere se o token serve antes de guardar, para o cliente descobrir o erro
  * de digitação agora e não na primeira venda.
  *

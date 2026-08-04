@@ -62,6 +62,47 @@ dev e prod compartilham o banco, chave diferente = token que não decifra.
 
 ---
 
+## NFS-e Nacional — por que existe, decidido em 04/08
+
+**O CNPJ disponível não emite NF-e, e nunca vai.** É um MEI de serviço
+(CNAEs 7319-0/02, 5819-1/00, 8219-9/99), sem inscrição estadual — e sem direito
+a uma, porque IE é registro de contribuinte de **ICMS** e ele não circula
+mercadoria. Sem IE não há credenciamento na SEFAZ, e sem credenciamento a NF-e
+modelo 55 é rejeitada **inclusive em homologação**. Comprar um certificado A1
+para esse CNPJ não resolveria nada.
+
+O documento fiscal dele é **NFS-e**. Daí o módulo.
+
+**Padrão Nacional (`/v2/nfsen`), não municipal (`/v2/nfse`).** O municipal exige
+integração por prefeitura, cada uma com suas regras; o Nacional é um endpoint só
+para o país e o MEI já é obrigado a ele. Não reabra sem um município que force.
+
+| Peça | Onde |
+|---|---|
+| `TipoNota` + `NotaFiscal.tipo` | [schema.prisma](prisma/schema.prisma) — uma coluna, não uma segunda tabela |
+| Numeração da DPS (`serieDps`, `proximoNumeroDps`) | idem — sequência **própria**, compartilhar com a NF-e furaria as duas |
+| `codigoTributacaoNacionalISS`, `aliquotaIss` em `Product` | idem — o código do ISS é o NCM do serviço |
+| `pendenciasPrestador`, `pendenciasServico`, `opcaoSimplesNacional` | [fiscal.ts](src/lib/fiscal.ts) |
+| `emitirNfseNacional`, `consultarNfseNacional` | [focus-nfe.ts](src/lib/focus-nfe.ts) |
+| Passo 1 do módulo | [scripts/nfse-homologacao.sh](scripts/nfse-homologacao.sh) |
+
+Migration `20260804120000_add_nfse_nacional` **aplicada**, `migrate diff` devolve
+migration vazia. 19 testes em `fiscal.test.ts`.
+
+**A armadilha que isto expôs, e que já estava no código:** `pendenciasEmitente`
+cobra inscrição **estadual**. Reusá-la para NFS-e bloquearia todo MEI de serviço
+— ou seja, o público mais provável do Orion. Por isso `pendenciasPrestador` é
+função separada, e há um teste fixando que o mesmo MEI passa numa e é recusado
+na outra. Se um dia alguém "simplificar" unificando as duas, o teste quebra.
+
+**O que falta:** tela, emissão a partir do pedido e webhook — os mesmos passos 2
+a 4 da tabela abaixo, e na mesma ordem. **O passo 1 continua sendo o primeiro:**
+rodar o script e ver o que o ambiente nacional cobra além do que a doc diz. Dois
+valores do script são chute documentado e são os primeiros suspeitos numa
+rejeição: `COD_ISS=170600` (17.06, propaganda) e `OPCAO_SN=2` (optante MEI).
+
+---
+
 ## O próximo passo, em ordem
 
 | # | Passo | Custo |

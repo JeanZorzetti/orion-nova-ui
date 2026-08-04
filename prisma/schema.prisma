@@ -99,6 +99,12 @@ model Company {
   codigoMunicipioIBGE  String?  // 7 dígitos, tabela do IBGE
   serieNfe             Int      @default(1)
   proximoNumeroNfe     Int      @default(1)
+
+  // --- Prestador da NFS-e Nacional (DPS) ---
+  // Numeração própria: a DPS é outro documento fiscal, com sequência separada
+  // da NF-e. Compartilhar o contador furaria as duas.
+  serieDps             Int      @default(1)
+  proximoNumeroDps     Int      @default(1)
   ambienteNfe          AmbienteFiscal @default(HOMOLOGACAO)
 
   // Modelo BYO: a conta na Focus NFe é do cliente, não da Orion. Ele cola aqui
@@ -557,6 +563,12 @@ model Product {
   aliquotaIcms      Decimal? @db.Decimal(5, 2)
   unidadeTributavel String?  // default: cai no `unit`
 
+  // --- Tributação da NFS-e (só faz sentido quando type = SERVICE) ---
+  // O código de tributação nacional do ISSQN é para o serviço o que o NCM é
+  // para a mercadoria: sem ele não sai nota. 6 dígitos, tabela nacional.
+  codigoTributacaoNacionalISS String?
+  aliquotaIss                 Decimal? @db.Decimal(5, 2)
+
   // Metadata
   isActive      Boolean  @default(true)
   image         String?
@@ -631,9 +643,15 @@ model NotaFiscal {
   status      NotaFiscalStatus @default(PENDENTE)
   ambiente    AmbienteFiscal   @default(HOMOLOGACAO)
 
+  // NF-e (mercadoria, SEFAZ) e NFS-e (serviço, ISS) são documentos diferentes,
+  // com endpoint, campos e numeração próprios. Uma coluna evita duas tabelas
+  // que só divergiriam em três campos.
+  tipo        TipoNota   @default(NFE)
+
   numero      Int?
   serie       Int?
-  chaveAcesso String?    @unique  // 44 dígitos
+  // 44 dígitos na NF-e, 50 na NFS-e Nacional — por isso sem validação aqui.
+  chaveAcesso String?    @unique
   protocolo   String?
   xmlUrl      String?
   danfeUrl    String?
@@ -660,6 +678,11 @@ enum NotaFiscalStatus {
   AUTORIZADA
   REJEITADA
   CANCELADA
+}
+
+enum TipoNota {
+  NFE   // mercadoria, modelo 55, autorizada pela SEFAZ
+  NFSE  // serviço, padrão Nacional (DPS), ISS municipal
 }
 
 model OrderItem {
