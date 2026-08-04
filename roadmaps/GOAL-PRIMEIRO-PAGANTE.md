@@ -73,11 +73,23 @@ não entra nesta lista.
 | **R** | Test mode esconde chave de produção errada, webhook secret errado e `NEXT_PUBLIC_APP_URL` errado nas `success_url`/`return_url`. Só a compra real prova. |
 | **T** | **31/08/2026** |
 
-> 🔴 **Bloqueado por env var.** `RESEND_API_KEY` nunca foi configurada na Vercel,
-> então nenhum e-mail sai — e "e-mail de confirmação recebido" é um dos 5
-> efeitos que o G3 exige. `GROQ_API_KEY` também falta, e sem ela a Orion AI
-> responde 500 em produção, quebrando um bullet dos 3 planos. Ver o topo do
-> [HANDOFF.md](../HANDOFF.md).
+> ✅ **Desbloqueado em 04/08 (sessão 8).** `RESEND_API_KEY` e `GROQ_API_KEY`
+> estão em produção com valor real. Um e-mail disparado pela própria app foi
+> entregue (`last_event: delivered`). Detalhes no [HANDOFF.md](../HANDOFF.md).
+>
+> ⏸️ **Dispensado por decisão do dono em 04/08.** A mesma configuração de Stripe
+> já foi feita em outros projetos dele e faturava, então a compra de teste não
+> será executada. **Não reabrir como pendência** — é decisão, não esquecimento.
+>
+> O que essa decisão cobre e o que não cobre, para quem for depurar a primeira
+> cobrança real: a experiência anterior cobre a **configuração da Stripe**
+> (chave de produção, webhook secret, `success_url`). Ela não alcança o que o
+> Orion faz **depois** do pagamento — `Subscription.status = ACTIVE` gravado
+> pelo webhook, gate de trial destravando `/dashboard`, portal em
+> `/assinaturas`. Esse caminho passa por `session.user.accountId` e pelo gate em
+> [dashboard/layout.tsx](../src/app/dashboard/layout.tsx), ambos mexidos na
+> sessão 7 e **nunca exercitados com request autenticado**. Se a primeira compra
+> de verdade falhar, comece por aí, não pela Stripe.
 
 ---
 

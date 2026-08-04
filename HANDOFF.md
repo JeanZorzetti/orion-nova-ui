@@ -203,7 +203,14 @@ errada, webhook secret errado e `success_url` apontando para localhost.
 
 O efeito "e-mail chegou" **deixou de ser bloqueio na sessão 8** — a
 `RESEND_API_KEY` está em produção e um e-mail disparado pela própria app foi
-entregue. Agora o G3 depende só de você passar o cartão.
+entregue.
+
+**⏸️ O G3 foi dispensado pelo dono em 04/08**: a mesma configuração de Stripe já
+foi feita em outros projetos dele e faturava. **Não reabra como pendência.** O
+que continua sem prova é o trecho do Orion depois do pagamento — webhook
+gravando `ACTIVE`, gate de trial, portal —, que passa por código mexido na
+sessão 7 e nunca exercitado logado. Ver a nota no
+[roadmap](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
 Se falhar no meio, o MCP da Stripe está autorizado: dá para ler o evento, a
 Checkout Session e a subscription e comparar com o que o webhook gravou no
