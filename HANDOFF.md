@@ -23,7 +23,7 @@ redeploy. **O G3 não está mais bloqueado por e-mail.**
 | Var | Estado | Prova |
 |---|---|---|
 | `RESEND_API_KEY` | ✅ ponta a ponta | `POST /api/auth/forgot-password` em produção enviou pela app e o Resend devolveu `last_event: delivered` (`ffe9afd1…`) |
-| `GROQ_API_KEY` | ⚠️ configurada, **não exercitada logada** | A chave responde 200 em `api.groq.com/v1/models` e está no env de produção. O chat checa `auth()` **antes** da chave ([chat:264](src/app/api/ai/chat/route.ts) 401, [chat:273](src/app/api/ai/chat/route.ts) 500), então sem sessão não dá para distinguir. **Abra o chat logado para fechar isto.** |
+| `GROQ_API_KEY` | ✅ ponta a ponta | Chat aberto logado em produção em 04/08: a Orion AI respondeu. A rota checa `auth()` antes da chave, então sonda anônima não servia — só o caminho logado prova, e ele passou. |
 
 O domínio `orion.roilabs.com.br` está **verificado** no Resend (região
 `sa-east-1`, envio habilitado) — não é preciso reconfigurar DNS.
