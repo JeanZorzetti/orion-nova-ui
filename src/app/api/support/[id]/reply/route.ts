@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { notifyTicketReply } from "@/lib/notifications";
 
 // POST /api/support/[id]/reply - Adicionar resposta ao ticket
 export async function POST(
@@ -61,6 +62,13 @@ export async function POST(
         isStaff: isAdmin, // Se for admin, marca como resposta da equipe
       },
     });
+
+    await notifyTicketReply(
+      id,
+      existingTicket.userId,
+      existingTicket.subject,
+      isAdmin
+    );
 
     // Atualizar status do ticket se for resposta do admin
     if (isAdmin && existingTicket.status === "WAITING_CUSTOMER") {

@@ -117,16 +117,29 @@ export default function ContatoPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [erro, setErro] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErro("");
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    // Só diz "Enviada!" se foi mesmo: até 05/08/26 isto era um setTimeout que
+    // descartava os dados e mostrava sucesso.
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Não foi possível enviar sua mensagem.");
+      setIsSubmitted(true);
+    } catch (e: any) {
+      setErro(e.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -288,6 +301,10 @@ export default function ContatoPage() {
                           required
                         />
                       </div>
+
+                      {erro && (
+                        <p className="text-sm text-destructive text-center">{erro}</p>
+                      )}
 
                       <Button
                         type="submit"

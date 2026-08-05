@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { notifyNewTicket, notifyTicketReply } from "@/lib/notifications";
 
 // GET /api/support - Listar tickets de suporte
 export async function GET(request: NextRequest) {
@@ -138,6 +139,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    await notifyNewTicket(subject, message, ticket.user.name || ticket.user.email);
+
     return NextResponse.json(ticket, { status: 201 });
   } catch (error) {
     console.error("Erro ao criar ticket:", error);
@@ -238,6 +241,8 @@ export async function PUT(request: NextRequest) {
           isStaff: isAdmin,
         },
       });
+
+      await notifyTicketReply(id, ticket.userId, ticket.subject, isAdmin);
 
       // Se não for admin, mudar status para WAITING_CUSTOMER
       if (!isAdmin) {

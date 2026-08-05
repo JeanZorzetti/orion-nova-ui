@@ -12,6 +12,7 @@ import {
   ChevronDown,
   FileText,
   MessageCircle,
+  LifeBuoy,
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -22,6 +23,7 @@ import { settingsNav } from "@/lib/settings-nav";
 import { WHATSAPP_SUPORTE, WHATSAPP_URL } from "@/lib/suporte";
 
 const SETTINGS_HREF = "/dashboard/configuracoes";
+const SUPORTE_HREF = "/dashboard/suporte";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -164,9 +166,26 @@ const DashboardSidebar = ({ name, initials, role }: DashboardSidebarProps) => {
         </ul>
       </nav>
 
-      {/* Suporte — fora do <ul> de propósito: é link externo, não tem rota
-          interna nem estado ativo por pathname. Some enquanto não houver
-          número real (ver lib/suporte.ts). */}
+      {/* Suporte — fora do <ul> de propósito: fica no rodapé, junto do
+          WhatsApp, para o cliente com problema ter UM lugar só. */}
+      <div className="px-3 pb-2">
+        <Link
+          href={SUPORTE_HREF}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+            pathname.startsWith(SUPORTE_HREF)
+              ? "gradient-primary text-primary-foreground glow-effect"
+              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground",
+            collapsed && "justify-center"
+          )}
+        >
+          <LifeBuoy className="w-5 h-5 flex-shrink-0 group-hover:text-primary" />
+          {!collapsed && <span className="text-sm font-medium">Suporte</span>}
+        </Link>
+      </div>
+
+      {/* WhatsApp — link externo, sem rota interna nem estado ativo por
+          pathname. Some enquanto não houver número real (ver lib/suporte.ts). */}
       {WHATSAPP_SUPORTE && (
         <div className="px-3 pb-2">
           <a

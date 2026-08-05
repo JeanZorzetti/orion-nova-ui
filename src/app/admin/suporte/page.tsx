@@ -28,17 +28,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  HeadphonesIcon,
-  Search,
-  Eye,
-  Loader2,
-  Send,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  XCircle,
-} from "lucide-react";
+import { HeadphonesIcon, Search, Eye, Loader2, Send, AlertCircle } from "lucide-react";
+import { statusConfig, priorityConfig, formatTicketDate } from "@/lib/ticket-labels";
 
 interface Ticket {
   id: string;
@@ -162,43 +153,7 @@ export default function AdminSuportePage() {
       ticket.user.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const formatDate = (date: string) => {
-    return new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(date));
-  };
-
-  const statusConfig: Record<
-    string,
-    {
-      label: string;
-      icon: any;
-      variant: "default" | "secondary" | "destructive" | "outline";
-    }
-  > = {
-    OPEN: { label: "Aberto", icon: AlertCircle, variant: "destructive" },
-    IN_PROGRESS: { label: "Em Andamento", icon: Clock, variant: "default" },
-    WAITING_CUSTOMER: {
-      label: "Aguardando Cliente",
-      icon: Clock,
-      variant: "secondary",
-    },
-    RESOLVED: { label: "Resolvido", icon: CheckCircle2, variant: "outline" },
-    CLOSED: { label: "Fechado", icon: XCircle, variant: "secondary" },
-  };
-
-  const priorityConfig: Record<
-    string,
-    { label: string; variant: "default" | "secondary" | "destructive" }
-  > = {
-    LOW: { label: "Baixa", variant: "secondary" },
-    MEDIUM: { label: "Média", variant: "default" },
-    HIGH: { label: "Alta", variant: "destructive" },
-    URGENT: { label: "Urgente", variant: "destructive" },
-  };
+  const formatDate = formatTicketDate;
 
   const getStatusCount = (status: string) => {
     return tickets.filter((t) => t.status === status).length;

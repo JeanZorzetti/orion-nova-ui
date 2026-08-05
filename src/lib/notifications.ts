@@ -387,6 +387,66 @@ export async function createGenericNotification(
   }
 }
 
+/**
+ * Avisa a equipe que um chamado nasceu. Sem isto, `POST /api/support` grava
+ * uma linha que ninguém olha — um canal anunciado que não responde.
+ *
+ * ponytail: destinatário é quem tem papel de admin no banco, não uma env var
+ * nova. Uma env var a mais é mais uma coisa que fica desatualizada.
+ */
+export async function notifyNewTicket(
+  subject: string,
+  message: string,
+  autorNome: string
+) {
+  try {
+    const admins = await prisma.user.findMany({
+      where: { role: { in: ["ADMIN", "SUPER_ADMIN"] } },
+      select: { email: true, name: true },
+    });
+
+    await Promise.all(
+      admins
+        .filter((a) => a.email)
+        .map((a) =>
+          sendGenericNotificationEmail(
+            a.email!,
+            a.name || "Equipe",
+            `Novo chamado: ${subject}`,
+            `${autorNome} abriu um chamado:\n\n${message}`,
+            "Ver chamado",
+            `${appUrl()}/admin/suporte`
+          )
+        )
+    );
+  } catch (error) {
+    // Nunca falha o POST: o ticket já está gravado, o e-mail é o aviso.
+    console.error("Erro ao avisar admins do novo ticket:", error);
+  }
+}
+
+/**
+ * Avisa o cliente que a equipe respondeu. Chamado pelos DOIS caminhos de
+ * escrita de resposta (`[id]/reply` e o `reply` do `PUT /api/support`) — pôr só
+ * em um deixa metade das respostas silenciosas.
+ */
+export async function notifyTicketReply(
+  ticketId: string,
+  clienteId: string,
+  subject: string,
+  isStaff: boolean
+) {
+  if (!isStaff) return null; // resposta do próprio cliente não notifica ele mesmo
+
+  return createGenericNotification(
+    clienteId,
+    "SUPPORT",
+    "A equipe respondeu seu chamado",
+    subject,
+    `/dashboard/suporte/${ticketId}`
+  );
+}
+
 // Criar notificação em massa para múltiplos usuários
 export async function createBroadcastNotification(
   userIds: string[],
