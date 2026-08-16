@@ -231,14 +231,6 @@ export default function BlogPage() {
                     </Link>
                   ))}
                 </div>
-
-                {/* Load More */}
-                <div className="text-center mt-8">
-                  <Button variant="outline">
-                    Carregar Mais Artigos
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
               </div>
 
               {/* Sidebar */}
