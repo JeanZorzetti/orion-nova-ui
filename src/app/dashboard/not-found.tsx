@@ -1,24 +1,47 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Compass } from "lucide-react";
+import { ArrowLeft, LifeBuoy, Package, ShoppingCart, Users } from "lucide-react";
+
+const quickLinks = [
+  { label: "Clientes", href: "/dashboard/clientes", icon: Users },
+  { label: "Produtos", href: "/dashboard/produtos", icon: Package },
+  { label: "Vendas", href: "/dashboard/vendas", icon: ShoppingCart },
+  { label: "Suporte", href: "/dashboard/suporte", icon: LifeBuoy },
+];
 
 export default function DashboardNotFound() {
   return (
-    <div className="glass-card max-w-md mx-auto mt-12 p-10 text-center">
-      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary text-primary-foreground">
-        <Compass className="h-7 w-7" />
-      </div>
-      <p className="text-sm font-medium text-primary mb-2">Erro 404</p>
-      <h1 className="text-2xl font-semibold mb-3">Página não encontrada</h1>
-      <p className="text-muted-foreground mb-8">
-        Esta tela do sistema não existe ou foi movida.
+    <div className="glass-card mx-auto mt-12 max-w-lg p-10 text-center">
+      <p className="mb-4 inline-block rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-medium uppercase tracking-widest text-primary">
+        Erro 404
       </p>
-      <Link href="/dashboard">
-        <Button className="w-full">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar para o dashboard
-        </Button>
+
+      <p className="gradient-text text-6xl font-bold leading-none">404</p>
+
+      <h1 className="mt-5 text-2xl font-semibold">Essa tela saiu de órbita</h1>
+      <p className="mt-3 text-muted-foreground text-balance">
+        A página que você tentou abrir não existe ou foi movida para outro lugar do sistema.
+      </p>
+
+      <Link
+        href="/dashboard"
+        className="btn-primary mt-8 inline-flex w-full items-center justify-center gap-2"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar para o dashboard
       </Link>
+
+      <div className="mt-8 grid grid-cols-2 gap-3">
+        {quickLinks.map(({ label, href, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex items-center gap-3 rounded-xl border border-border/60 p-3 text-left text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+          >
+            <Icon className="h-4 w-4 shrink-0 text-primary" />
+            <span className="font-medium">{label}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
