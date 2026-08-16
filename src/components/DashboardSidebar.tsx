@@ -64,7 +64,9 @@ const DashboardSidebar = ({ name, initials, role }: DashboardSidebarProps) => {
     >
       {/* Logo */}
       <div className="p-6 flex items-center justify-between">
-        <OrionLogo collapsed={collapsed} />
+        <Link href="/dashboard" aria-label="Início">
+          <OrionLogo collapsed={collapsed} />
+        </Link>
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1.5 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors"
