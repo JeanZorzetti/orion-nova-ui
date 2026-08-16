@@ -1,49 +1,38 @@
-// Gerada por scripts/gen-logo.mjs — não editar as coordenadas à mão.
-// Constelação de Órion nas coordenadas celestes reais (J2000, projeção gnomônica).
-// Cada estrela é um módulo do dashboard e o raio dela vem das linhas de código do módulo:
-// Betelgeuse = clientes (964 loc), Bellatrix = relatorios (1355 loc), Alnitak = produtos (1063 loc), Alnilam = vendas (1695 loc), Mintaka = financeiro (709 loc), Saiph = suporte (413 loc), Rigel = configuracoes (2154 loc).
-// Regerar: node scripts/gen-logo.mjs
+/**
+ * Logo Orion — a ampulheta de Órion montada em lajes, gerada por fórmula, nada
+ * posicionado à mão.
+ *
+ * A silhueta é o asterismo real: Betelgeuse, Bellatrix, Mintaka, Rigel, Saiph e
+ * Alnitak nas coordenadas celestes J2000, projetadas em gnomônica. As lajes são os
+ * 7 módulos do dashboard, cada uma com altura proporcional ao tamanho real do
+ * módulo em linhas de código — a constelação e o sistema na mesma silhueta.
+ *
+ * Receita de regeração (viewBox 0 0 48.6 100):
+ *   1. gnomônica centrada no centroide dos 6 astros; x negado (a AR cresce para
+ *      leste, que aparece à esquerda numa carta celeste)
+ *   2. gira por atan2(dx, dy) do eixo do corpo (meio dos ombros -> meio dos pés)
+ *      para o corpo ficar de pé; normaliza a bbox para y 0..100
+ *   3. altura da laje i = (100 - 6*1.8) * loc_i / loc_total; recorta o hexágono
+ *      contra a faixa [y, y+h] (Sutherland-Hodgman, 2 semiplanos)
+ *   4. ordem: ranking por loc alternando topo/base, então a menor laje cai no
+ *      cinturão. Sem isso a menor cai numa borda inclinada e vira lasca.
+ *
+ * loc por módulo: configuracoes 2154, vendas 1695, relatorios 1355, produtos 1063,
+ * clientes 964, financeiro 709, suporte 413.
+ * Recontar: find src/app/dashboard/<mod> \( -name '*.tsx' -o -name '*.ts' \) -exec cat {} + | wc -l
+ *
+ * As frestas fecham abaixo de 24px: /favicon.svg usa a silhueta cheia, com cor fixa.
+ */
+const Logo = ({ className = "h-10 w-auto" }: { className?: string }) => (
+  <svg viewBox="0 0 48.6 100" fill="currentColor" className={className} role="img" aria-label="Orion ERP">
+    <path d="M3.21 0L45.39 12.38L40.98 23L8.5 23Z" />
+    <path d="M40.23 24.8L34.23 39.27L12.24 39.27L8.91 24.8Z" />
+    <path d="M33.49 41.07L30.1 49.22L30.91 51.37L15.02 51.37L12.65 41.07Z" />
+    <path d="M31.59 53.17L33.25 57.58L16 57.58L16.28 56.84L15.43 53.17Z" />
+    <path d="M33.93 59.38L36.78 66.95L12.47 66.95L15.32 59.38Z" />
+    <path d="M37.46 68.75L41.74 80.1L7.51 80.1L11.79 68.75Z" />
+    <path d="M42.41 81.9L48.6 98.31L0 100L6.83 81.9Z" />
+  </svg>
+);
 
-export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      role="img"
-      aria-label="Orion ERP"
-      {...props}
-    >
-      <path
-        d="M17.23 7L39.1 10.18M17.23 7L27.75 34.37M39.1 10.18L34.1 29.6M27.75 34.37L31.05 32.22M31.05 32.22L34.1 29.6M27.75 34.37L22.7 57M34.1 29.6L46.77 52.73M22.7 57L46.77 52.73"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.3"
-      />
-      {/* Betelgeuse — clientes */}
-      <circle cx="17.23" cy="7" r="3.48" fill="currentColor" opacity="0.16" />
-      <circle cx="17.23" cy="7" r="1.45" fill="currentColor" />
-      {/* Bellatrix — relatorios */}
-      <circle cx="39.1" cy="10.18" r="3.79" fill="currentColor" opacity="0.16" />
-      <circle cx="39.1" cy="10.18" r="1.58" fill="currentColor" />
-      {/* Alnitak — produtos */}
-      <circle cx="27.75" cy="34.37" r="3.58" fill="currentColor" opacity="0.16" />
-      <circle cx="27.75" cy="34.37" r="1.49" fill="currentColor" />
-      {/* Alnilam — vendas */}
-      <circle cx="31.05" cy="32.22" r="4.03" fill="currentColor" opacity="0.16" />
-      <circle cx="31.05" cy="32.22" r="1.68" fill="currentColor" />
-      {/* Mintaka — financeiro */}
-      <circle cx="34.1" cy="29.6" r="3.26" fill="currentColor" opacity="0.16" />
-      <circle cx="34.1" cy="29.6" r="1.36" fill="currentColor" />
-      {/* Saiph — suporte */}
-      <circle cx="22.7" cy="57" r="2.93" fill="currentColor" opacity="0.16" />
-      <circle cx="22.7" cy="57" r="1.22" fill="currentColor" />
-      {/* Rigel — configuracoes */}
-      <circle cx="46.77" cy="52.73" r="4.30" fill="currentColor" opacity="0.16" />
-      <circle cx="46.77" cy="52.73" r="1.79" fill="currentColor" />
-    </svg>
-  )
-}
+export default Logo;

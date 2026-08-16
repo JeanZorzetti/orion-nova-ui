@@ -6,7 +6,5 @@
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="8" fill="#0a0a0f"/>
-  <circle cx="7.00" cy="22.76" r="5.47" fill="url(#o)"/><!-- Alnitak = produtos -->
-  <circle cx="16.35" cy="16.67" r="5.80" fill="url(#o)"/><!-- Alnilam = vendas -->
-  <circle cx="25.00" cy="9.24" r="5.23" fill="url(#o)"/><!-- Mintaka = financeiro -->
+  <g transform="translate(10.17 4) scale(0.24)"><path d="M3.21 0.00L45.39 12.38L30.10 49.22L48.60 98.31L0.00 100.00L16.28 56.84Z" fill="url(#o)"/></g>
 </svg>

@@ -1,11 +1,9 @@
-import { Logo } from "./Logo";
+import Logo from "./Logo";
 
 const OrionLogo = ({ collapsed = false }: { collapsed?: boolean }) => {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative w-10 h-10 flex items-center justify-center">
-        <Logo className="w-full h-full text-primary" />
-      </div>
+      <Logo className="h-9 w-auto text-primary" />
       {!collapsed && (
         <div className="flex flex-col">
           <span className="text-lg font-semibold tracking-wide gradient-text">
