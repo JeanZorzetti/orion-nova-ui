@@ -31,6 +31,12 @@ model User {
   aiMessagesUsed    Int       @default(0)
   aiMessagesPeriod  String?   // "2026-08": mês a que aiMessagesUsed se refere
 
+  // Preferências de notificação. Ficam no usuário porque quem recebe é a pessoa,
+  // não a conta — dois membros da mesma empresa escolhem separado.
+  notifyNewOrders Boolean @default(true)
+  notifyLowStock  Boolean @default(true)
+  notifyDueBills  Boolean @default(true)
+
   // Equipe. Um membro aponta para o dono da conta; o dono tem ownerId nulo.
   // Todo dado do ERP (Customer, Product, SalesOrder, FinancialTransaction...)
   // continua gravado no id do DONO — é isso que faz os dois usuários enxergarem
@@ -803,6 +809,7 @@ model DataMigration {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   sourceErp       SourceErp         // ERP de origem (Omie, Bling, Tiny, etc)
+  dataType        MigrationDataType @default(ALL) // O que importar deste arquivo
   status          MigrationStatus   @default(PENDING)
 
   // Dados da migração
@@ -842,6 +849,17 @@ enum SourceErp {
   SAP
   TOTVS
   OTHER
+}
+
+// O select "Tipo de Dados" da tela de migração. Era coletado na UI e jogado
+// fora: a rota importava clientes E produtos, escolhesse o usuário o que
+// escolhesse.
+// Sem SALES: nenhum parser em lib/migration/parsers.ts preenche `sales`. A opção
+// existia no select e importava zero pedidos em silêncio.
+enum MigrationDataType {
+  CUSTOMERS
+  PRODUCTS
+  ALL
 }
 
 enum MigrationStatus {

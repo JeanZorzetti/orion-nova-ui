@@ -5,6 +5,7 @@ import {
   createOnboardingStepCompletedNotification,
   createOnboardingCompletedNotification,
 } from "@/lib/notifications";
+import { G5_REPORT_STEP } from "@/lib/g5";
 
 // GET /api/user/onboarding - Buscar progresso do onboarding
 export async function GET(req: NextRequest) {
@@ -31,14 +32,31 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    const completedSteps = Array.isArray(onboarding.completedSteps)
+      ? onboarding.completedSteps
+      : [];
+
+    // Marcos do G5. Derivados do banco em vez de flags para não dessincronizar:
+    // findFirst com select do id é uma linha lida, não um count da tabela.
+    const accountId = session.user.accountId;
+    const [cliente, produto, pedido] = await Promise.all([
+      prisma.customer.findFirst({ where: { userId: accountId }, select: { id: true } }),
+      prisma.product.findFirst({ where: { userId: accountId }, select: { id: true } }),
+      prisma.salesOrder.findFirst({ where: { userId: accountId }, select: { id: true } }),
+    ]);
+
     return NextResponse.json({
       currentStep: onboarding.currentStep,
-      completedSteps: Array.isArray(onboarding.completedSteps)
-        ? onboarding.completedSteps
-        : [],
+      completedSteps,
       isCompleted: onboarding.isCompleted,
       skipTour: onboarding.skipTour,
       skipMigration: onboarding.skipMigration,
+      g5: {
+        customer: !!cliente,
+        product: !!produto,
+        sale: !!pedido,
+        report: completedSteps.includes(G5_REPORT_STEP),
+      },
     });
   } catch (error: any) {
     console.error("Erro ao buscar onboarding:", error);
@@ -116,10 +134,17 @@ export async function POST(req: NextRequest) {
         first_sale: "Primeira Venda",
         migration: "Migração de Dados",
         integrations: "Integrações",
+        [G5_REPORT_STEP]: "Primeiro Relatório",
       };
 
+      // Step fora da trilha ordenada (first_report) não mexe no ponteiro. Antes
+      // disto, indexOf devolvia -1 e o currentStep voltava para "welcome" —
+      // qualquer stepId desconhecido rebobinava o onboarding do usuário.
       const currentIndex = steps.indexOf(stepId);
-      const nextStep = steps[currentIndex + 1] || null;
+      const nextStep =
+        currentIndex === -1
+          ? onboarding.currentStep
+          : steps[currentIndex + 1] || null;
 
       // Verificar se todos os steps obrigatórios foram completados
       const requiredSteps = [

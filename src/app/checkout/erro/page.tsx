@@ -56,7 +56,7 @@ export default function CheckoutErroPage() {
 
             <div className="pt-4 border-t">
               <Link
-                href="/suporte"
+                href="/contato"
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
               >
                 <HelpCircle className="mr-2 h-4 w-4" />

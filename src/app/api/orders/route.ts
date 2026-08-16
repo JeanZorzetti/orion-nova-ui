@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { authOrApiKey } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -47,7 +47,7 @@ async function generateOrderNumber(userId: string): Promise<string> {
 // GET /api/orders - Listar pedidos
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await authOrApiKey(request);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
 // POST /api/orders - Criar pedido
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await authOrApiKey(request);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }

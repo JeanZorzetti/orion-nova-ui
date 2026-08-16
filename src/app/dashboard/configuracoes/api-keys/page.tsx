@@ -330,11 +330,19 @@ export default function ApiKeysPage() {
       <div className="glass-card p-6 mb-6">
         <h3 className="font-medium mb-2">Como usar sua API Key</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Inclua sua API key no header Authorization das requisições:
+          Inclua sua API key no header <code className="font-mono">x-api-key</code> das
+          requisições para <code className="font-mono">/api/customers</code>,{" "}
+          <code className="font-mono">/api/products</code>,{" "}
+          <code className="font-mono">/api/orders</code> e{" "}
+          <code className="font-mono">/api/financial</code>:
         </p>
         <code className="block p-3 bg-muted rounded-lg text-sm font-mono">
-          Authorization: Bearer sk_live_...
+          x-api-key: sk_live_...
         </code>
+        <p className="text-xs text-muted-foreground mt-2">
+          O header <code className="font-mono">Authorization: Bearer sk_live_...</code>{" "}
+          também é aceito. Sem chave válida a resposta é 401.
+        </p>
       </div>
 
       {/* API Keys Table */}
@@ -379,7 +387,11 @@ export default function ApiKeysPage() {
                     </code>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {key.lastUsed ? formatDate(key.lastUsed) : "Nunca"}
+                    {key.lastUsed ? (
+                      formatDate(key.lastUsed)
+                    ) : (
+                      <Badge variant="outline">Ociosa — aguardando primeira chamada</Badge>
+                    )}
                   </TableCell>
                   <TableCell>{key.requestCount.toLocaleString("pt-BR")}</TableCell>
                   <TableCell>

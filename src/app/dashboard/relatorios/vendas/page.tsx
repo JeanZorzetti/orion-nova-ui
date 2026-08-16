@@ -1,6 +1,7 @@
 "use client";
 
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { G5_REPORT_STEP } from "@/lib/g5";
 
 import { useEffect, useState } from "react";
 import { ArrowLeft, Download, BarChart3, TrendingUp } from "lucide-react";
@@ -96,6 +97,13 @@ export default function RelatorioVendasPage() {
 
       if (response.ok) {
         setReportData(data);
+        // 4º marco do G5. É o único que não dá para derivar do banco, e só conta
+        // se o relatório realmente renderizou. Falhar aqui não quebra a tela.
+        fetch("/api/user/onboarding", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stepId: G5_REPORT_STEP, action: "complete" }),
+        }).catch(() => {});
       } else {
         alert(data.error || "Erro ao carregar relatório");
       }

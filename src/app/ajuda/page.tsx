@@ -379,14 +379,8 @@ export default function AjudaPage() {
                 </div>
               ))}
             </div>
-            <div className="text-center mt-8">
-              <Button variant="outline" asChild>
-                <Link href="/ajuda/faq">
-                  Ver Todas as Perguntas
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            </div>
+            {/* O botão "Ver Todas as Perguntas" apontava para /ajuda/faq, que
+                não existe. Estas são todas as perguntas que existem. */}
           </div>
         </section>
 

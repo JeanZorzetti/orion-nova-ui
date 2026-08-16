@@ -84,7 +84,7 @@ export const openApiSpec = {
           },
           "401": { $ref: "#/components/responses/Unauthorized" },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
       post: {
         tags: ["Customers"],
@@ -110,7 +110,7 @@ export const openApiSpec = {
           "400": { $ref: "#/components/responses/BadRequest" },
           "401": { $ref: "#/components/responses/Unauthorized" },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
     },
     "/customers/{id}": {
@@ -136,7 +136,7 @@ export const openApiSpec = {
           },
           "404": { $ref: "#/components/responses/NotFound" },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
       put: {
         tags: ["Customers"],
@@ -168,7 +168,7 @@ export const openApiSpec = {
           },
           "404": { $ref: "#/components/responses/NotFound" },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
       delete: {
         tags: ["Customers"],
@@ -185,7 +185,7 @@ export const openApiSpec = {
           "204": { description: "Cliente deletado" },
           "404": { $ref: "#/components/responses/NotFound" },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
     },
     "/products": {
@@ -223,7 +223,7 @@ export const openApiSpec = {
             },
           },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
       post: {
         tags: ["Products"],
@@ -246,7 +246,7 @@ export const openApiSpec = {
             },
           },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
     },
     "/orders": {
@@ -276,7 +276,7 @@ export const openApiSpec = {
             },
           },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
     },
     "/financial": {
@@ -313,7 +313,7 @@ export const openApiSpec = {
             },
           },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
     },
   },
@@ -448,6 +448,13 @@ export const openApiSpec = {
         scheme: "bearer",
         bearerFormat: "JWT",
         description: "Token JWT obtido via autenticação",
+      },
+      apiKeyAuth: {
+        type: "apiKey",
+        in: "header",
+        name: "x-api-key",
+        description:
+          "API key gerada em /dashboard/configuracoes/api-keys. Sem ela (ou com chave inválida/expirada) a resposta é 401.",
       },
     },
   },

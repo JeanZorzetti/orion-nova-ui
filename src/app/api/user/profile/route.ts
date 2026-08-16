@@ -3,10 +3,24 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-// Schema de validação
+// Schema de validação. Todos opcionais: a tela de perfil manda só `name`, a de
+// notificações manda só o toggle que mudou — um PATCH parcial de verdade.
 const updateProfileSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
+  name: z.string().min(1, "Nome é obrigatório").optional(),
+  notifyNewOrders: z.boolean().optional(),
+  notifyLowStock: z.boolean().optional(),
+  notifyDueBills: z.boolean().optional(),
 });
+
+const PERFIL_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  notifyNewOrders: true,
+  notifyLowStock: true,
+  notifyDueBills: true,
+} as const;
 
 // PATCH /api/user/profile - Atualizar perfil do usuário
 export async function PATCH(request: NextRequest) {
@@ -19,18 +33,12 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const validatedData = updateProfileSchema.parse(body);
 
-    // Atualizar usuário
+    // Atualizar usuário. `data` só leva as chaves enviadas — Zod já removeu as
+    // ausentes, então um toggle não apaga o nome.
     const user = await prisma.user.update({
       where: { id: session.user.id },
-      data: {
-        name: validatedData.name,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
+      data: validatedData,
+      select: PERFIL_SELECT,
     });
 
     return NextResponse.json(user);
@@ -59,13 +67,7 @@ export async function GET(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
+      select: { ...PERFIL_SELECT, createdAt: true },
     });
 
     if (!user) {

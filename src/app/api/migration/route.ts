@@ -1,8 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getParser, type SourceErp } from "@/lib/migration/parsers";
+import { getParser } from "@/lib/migration/parsers";
 import * as XLSX from "xlsx";
+import { z } from "zod";
+
+const migrationInputSchema = z.object({
+  sourceErp: z.enum(["OMIE", "BLING", "TINY", "CONTA_AZUL", "SAP", "TOTVS", "OTHER"], {
+    errorMap: () => ({ message: "Selecione o ERP de origem" }),
+  }),
+  dataType: z.enum(["CUSTOMERS", "PRODUCTS", "ALL"], {
+    errorMap: () => ({ message: "Selecione o tipo de dados" }),
+  }),
+});
+
+// GET /api/migration - Histórico de migrações da conta
+export async function GET() {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
+    const migrations = await prisma.dataMigration.findMany({
+      where: { userId: session.user.accountId },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        createdAt: true,
+        sourceErp: true,
+        dataType: true,
+        status: true,
+        fileName: true,
+        totalRecords: true,
+        processedRecords: true,
+        successRecords: true,
+        errorRecords: true,
+      },
+    });
+
+    return NextResponse.json({ migrations });
+  } catch (error: any) {
+    console.error("Erro ao listar migrações:", error);
+    return NextResponse.json(
+      { error: error.message || "Erro ao listar migrações" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,14 +61,29 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const sourceErp = formData.get("sourceErp") as SourceErp;
 
-    if (!file || !sourceErp) {
+    if (!file) {
       return NextResponse.json(
-        { error: "Arquivo e ERP de origem são obrigatórios" },
+        { error: "Arquivo é obrigatório" },
         { status: 400 }
       );
     }
+
+    // O `dataType` vinha do select e era descartado aqui: a rota importava
+    // clientes e produtos independentemente da escolha.
+    const entrada = migrationInputSchema.safeParse({
+      sourceErp: formData.get("sourceErp"),
+      dataType: formData.get("dataType"),
+    });
+
+    if (!entrada.success) {
+      return NextResponse.json(
+        { error: entrada.error.errors[0]?.message || "Dados inválidos" },
+        { status: 400 }
+      );
+    }
+
+    const { sourceErp, dataType } = entrada.data;
 
     // Validar tamanho do arquivo (máximo 10MB)
     if (file.size > 10 * 1024 * 1024) {
@@ -36,6 +98,7 @@ export async function POST(req: NextRequest) {
       data: {
         userId: session.user.accountId,
         sourceErp,
+        dataType,
         fileName: file.name,
         fileSize: file.size,
         fileType: file.type,
@@ -108,7 +171,7 @@ export async function POST(req: NextRequest) {
       const errors: string[] = [];
 
       // Importar clientes
-      if (parsedData.customers) {
+      if (parsedData.customers && dataType !== "PRODUCTS") {
         for (const customer of parsedData.customers) {
           try {
             await prisma.customer.create({
@@ -126,7 +189,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Importar produtos
-      if (parsedData.products) {
+      if (parsedData.products && dataType !== "CUSTOMERS") {
         for (const product of parsedData.products) {
           try {
             await prisma.product.create({

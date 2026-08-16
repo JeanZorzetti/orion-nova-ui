@@ -17,8 +17,29 @@ export async function populateSampleData(userId: string) {
       where: { userId, name: { contains: "[EXEMPLO]" } },
     });
 
+    // Idempotente: dois cliques seguidos no botão de ativação não podem virar
+    // dois conjuntos de dados nem um erro na cara de quem está no minuto 2 do
+    // trial. Já tem? Responde sucesso com o que já existe.
     if (existingData) {
-      throw new Error("Dados de exemplo já existem. Remova-os primeiro.");
+      const [customers, products, salesOrders, financialTransactions] =
+        await Promise.all([
+          prisma.customer.count({ where: { userId, name: { contains: "[EXEMPLO]" } } }),
+          prisma.product.count({ where: { userId, name: { contains: "[EXEMPLO]" } } }),
+          // Mesmo critério do clearSampleData: o pedido de exemplo se identifica
+          // pelo cliente [EXEMPLO], não por um campo próprio.
+          prisma.salesOrder.count({
+            where: { userId, customer: { name: { contains: "[EXEMPLO]" } } },
+          }),
+          prisma.financialTransaction.count({
+            where: { userId, description: { contains: "[EXEMPLO]" } },
+          }),
+        ]);
+
+      return {
+        success: true,
+        message: "Os dados de exemplo já estavam prontos.",
+        data: { customers, products, salesOrders, financialTransactions },
+      };
     }
 
     // 1. Criar clientes de exemplo (com sufixo único)

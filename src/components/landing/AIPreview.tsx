@@ -260,7 +260,7 @@ export default function AIPreview() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <Link href="/recursos">
+                <Link href="/features">
                   Ver Todos os Recursos
                 </Link>
               </Button>

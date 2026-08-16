@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
+import StepTracker from "@/components/dashboard/StepTracker";
+import type { G5Flags } from "@/lib/g5";
 import {
   Clock,
   Sparkles,
@@ -30,6 +32,7 @@ interface OnboardingData {
   currentStep: string;
   completedSteps: string[];
   isCompleted: boolean;
+  g5?: G5Flags;
 }
 
 interface DashboardStats {
@@ -117,6 +120,9 @@ export default function DashboardPage() {
             Aqui está um resumo da sua conta e atividades
           </p>
         </div>
+
+        {/* Ativação G5: cliente → produto → pedido → relatório */}
+        <StepTracker flags={onboarding?.g5 ?? null} onRefresh={fetchDashboardData} />
 
         {/* Trial Alert */}
         {trialStatus && trialStatus.status === "TRIAL" && (
@@ -223,7 +229,7 @@ export default function DashboardPage() {
                 <CardDescription>Acesse as funcionalidades principais</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Link href="/dashboard/vendas/nova">
+                <Link href="/dashboard/vendas/novo">
                   <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                     <ShoppingCart className="h-6 w-6" />
                     <span className="text-xs">Nova Venda</span>
