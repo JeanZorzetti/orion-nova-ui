@@ -259,7 +259,7 @@ O arquivo `src/app/sitemap.ts` deve ser atualizado em paralelo para incluir:
 - URLs dinâmicos gerados a partir de dados (artigos, etc.)
 
 ### Checklist de Atualização:
-- [ ] Adicionar URL em `doc/urls.md`
+- [ ] Adicionar URL em `docs/urls.md`
 - [ ] Adicionar URL em `src/app/sitemap.ts` (se público)
 - [ ] Atualizar contagem total no topo
 - [ ] Verificar prioridades no sitemap

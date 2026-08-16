@@ -75,7 +75,7 @@ não entra nesta lista.
 
 > ✅ **Desbloqueado em 04/08 (sessão 8).** `RESEND_API_KEY` e `GROQ_API_KEY`
 > estão em produção com valor real. Um e-mail disparado pela própria app foi
-> entregue (`last_event: delivered`). Detalhes no [HANDOFF.md](../HANDOFF.md).
+> entregue (`last_event: delivered`). Detalhes no [HANDOFF.md](../handoffs/HANDOFF.md).
 >
 > ⏸️ **Dispensado por decisão do dono em 04/08.** A mesma configuração de Stripe
 > já foi feita em outros projetos dele e faturava, então a compra de teste não
@@ -235,4 +235,4 @@ Nada disso aproxima o primeiro pagante e por isso não entra:
 > sem construir ERP do zero, porque o trabalho pesado é do provedor. Custo:
 > 6-9 dias e o primeiro custo marginal por uso do produto. **Não desloca o G3** —
 > a compra real continua sendo a prioridade, e o G8 não depende dela.
-> Levantamento completo em [../HANDOFF-NFE.md](../HANDOFF-NFE.md).
+> Levantamento completo em [../handoffs/HANDOFF-NFE.md](../handoffs/HANDOFF-NFE.md).

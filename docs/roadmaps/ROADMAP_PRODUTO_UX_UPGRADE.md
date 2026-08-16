@@ -192,7 +192,7 @@
 - [x] **Preparar Dados de Demonstração**
   - ✅ Dataset realista nos screenshots do sistema
   - ✅ Dados mascarados para privacidade
-  - ✅ Especificação completa em `docs/DEMO_INTERATIVA_SPEC.md`
+  - ✅ Especificação completa em `docs/specs/DEMO_INTERATIVA_SPEC.md`
 
 ### 1.2 Implementação da Demo ✅ Completo
 
@@ -318,7 +318,7 @@ interface Hotspot {
   - 4 eventos implementados (started, hotspot_clicked, completed, skipped)
 
 - [x] ✅ **Documentação completa**
-  - `docs/DEMO_INTERATIVA_SPEC.md` (700+ linhas)
+  - `docs/specs/DEMO_INTERATIVA_SPEC.md` (700+ linhas)
   - Especificação técnica detalhada com user journey, componentes, analytics
 
 **Commits Realizados:**

@@ -46,6 +46,7 @@ README.md
 CHANGELOG.md
 LICENSE
 *.md
+docs/
 .editorconfig
 .prettierrc*
 .eslintrc*

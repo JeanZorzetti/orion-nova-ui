@@ -1,7 +1,7 @@
 # Handoff — NF-e no modelo BYO (04/08/2026, sessão 8)
 
 Leia o [HANDOFF.md](HANDOFF.md) para o estado geral e
-[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) para as
+[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](../roadmaps/GOAL-PRIMEIRO-PAGANTE.md) para as
 metas. Este documento trata só do **G8 — emissão de NF-e**.
 
 > ⚠️ O [HANDOFF-NFE.md](HANDOFF-NFE.md) está **superado**. Ele recomenda

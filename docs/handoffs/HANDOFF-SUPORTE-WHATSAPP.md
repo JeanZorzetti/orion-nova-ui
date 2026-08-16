@@ -1,7 +1,7 @@
 # Handoff — Suporte por WhatsApp em todos os planos (próxima sessão)
 
 Leia o [HANDOFF.md](HANDOFF.md) para o estado geral e
-[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) para as
+[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](../roadmaps/GOAL-PRIMEIRO-PAGANTE.md) para as
 metas. Este documento trata só de **suporte por WhatsApp**.
 
 **O pedido, na íntegra:** suporte por WhatsApp para **todos os planos**, com um

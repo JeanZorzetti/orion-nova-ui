@@ -4,7 +4,7 @@ Next.js 16 App Router, Prisma + PostgreSQL, NextAuth v5. O `vite` em
 `node_modules` vem do vitest — não é build tool aqui.
 
 Meta em vigor: **1º cliente pagante até 01/11/2026**, critérios em
-[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
+[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](../roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
 **Próxima tarefa, em documento separado:** suporte por **WhatsApp em todos os
 planos**, com botão verde na sidebar —
@@ -204,7 +204,7 @@ errada, webhook secret errado e `success_url` apontando para localhost.
 2. Confirme os 5 efeitos: e-mail chegou · `Subscription.status = ACTIVE` ·
    dashboard destravado · portal abrindo em `/assinaturas` · reembolso
 3. Registre `payment_intent` + timestamp em
-   [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) e
+   [roadmaps/GOAL-PRIMEIRO-PAGANTE.md](../roadmaps/GOAL-PRIMEIRO-PAGANTE.md) e
    reembolse pelo painel
 
 O efeito "e-mail chegou" **deixou de ser bloqueio na sessão 8** — a
@@ -216,7 +216,7 @@ foi feita em outros projetos dele e faturava. **Não reabra como pendência.** O
 que continua sem prova é o trecho do Orion depois do pagamento — webhook
 gravando `ACTIVE`, gate de trial, portal —, que passa por código mexido na
 sessão 7 e nunca exercitado logado. Ver a nota no
-[roadmap](roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
+[roadmap](../roadmaps/GOAL-PRIMEIRO-PAGANTE.md).
 
 Se falhar no meio, o MCP da Stripe está autorizado: dá para ler o evento, a
 Checkout Session e a subscription e comparar com o que o webhook gravou no

@@ -215,7 +215,7 @@ Após concluir o setup do database:
 **✅ Dia 1 COMPLETO!**
 
 ➡️ **Dia 2:** Sistema de Autenticação
-- Siga o roadmap: [roadmaps/01-autenticacao.md](roadmaps/01-autenticacao.md)
+- Siga o roadmap: [roadmaps/01-autenticacao.md](../roadmaps/01-autenticacao.md)
 - Ou continue com o Quick Start Guide
 
 ---
@@ -228,4 +228,4 @@ Após concluir o setup do database:
 
 ---
 
-**Dúvidas?** Consulte o [Quick Start Guide](roadmaps/QUICK-START.md) ou os roadmaps detalhados.
+**Dúvidas?** Consulte o [Quick Start Guide](../roadmaps/QUICK-START.md) ou os roadmaps detalhados.

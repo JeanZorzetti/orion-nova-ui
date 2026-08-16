@@ -56,17 +56,17 @@ Acesse http://localhost:3000
 
 Documentação completa para transformar o Orion em um site institucional:
 
-### 📚 [Roadmaps Completos →](/roadmaps)
+### 📚 [Toda a documentação →](docs/README.md) · [Roadmaps →](docs/roadmaps/)
 
 | Roadmap | Descrição | Status |
 |---------|-----------|--------|
-| 🚀 [**Quick Start**](/roadmaps/QUICK-START.md) | Comece HOJE com plano de 7 dias | ⭐ **Recomendado** |
-| 🏗️ [**Site Institucional**](/roadmaps/site-institucional.md) | Visão geral completa (9 fases) | 📋 Planejamento |
-| 🔐 [**01 - Autenticação**](/roadmaps/01-autenticacao.md) | NextAuth.js + OAuth | 🚧 Em progresso |
-| 🗄️ [**02 - Database Setup**](/roadmaps/02-database-setup.md) | PostgreSQL + Prisma | 🚧 Em progresso |
-| 💳 [**03 - Checkout**](/roadmaps/03-checkout-pagamentos.md) | Stripe + Webhooks | 📝 Planejado |
+| 🚀 [**Quick Start**](docs/roadmaps/QUICK-START.md) | Comece HOJE com plano de 7 dias | ⭐ **Recomendado** |
+| 🏗️ [**Site Institucional**](docs/roadmaps/site-institucional.md) | Visão geral completa (9 fases) | 📋 Planejamento |
+| 🔐 [**01 - Autenticação**](docs/roadmaps/01-autenticacao.md) | NextAuth.js + OAuth | 🚧 Em progresso |
+| 🗄️ [**02 - Database Setup**](docs/roadmaps/02-database-setup.md) | PostgreSQL + Prisma | 🚧 Em progresso |
+| 💳 [**03 - Checkout**](docs/roadmaps/03-checkout-pagamentos.md) | Stripe + Webhooks | 📝 Planejado |
 
-**👉 Comece pelo [Quick Start Guide](/roadmaps/QUICK-START.md) para implementar o MVP em 7 dias!**
+**👉 Comece pelo [Quick Start Guide](docs/roadmaps/QUICK-START.md) para implementar o MVP em 7 dias!**
 
 ---
 
@@ -259,7 +259,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ### Documentação
 - 📚 [Roadmaps Completos](/roadmaps)
-- 🚀 [Quick Start Guide](/roadmaps/QUICK-START.md)
+- 🚀 [Quick Start Guide](docs/roadmaps/QUICK-START.md)
 - 📖 [Next.js Docs](https://nextjs.org/docs)
 - 📖 [Prisma Docs](https://www.prisma.io/docs)
 

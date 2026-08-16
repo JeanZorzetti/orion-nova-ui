@@ -66,7 +66,7 @@ Três ressalvas que precisam estar claras antes de vender isso:
 
 ## ⚠️ Antes de qualquer coisa: isto está fora de escopo hoje
 
-[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](roadmaps/GOAL-PRIMEIRO-PAGANTE.md) lista,
+[roadmaps/GOAL-PRIMEIRO-PAGANTE.md](../roadmaps/GOAL-PRIMEIRO-PAGANTE.md) lista,
 em "Fora de escopo (até 01/11)", a linha **"integrações fiscais"** — junto com
 "módulo novo de ERP". A meta em vigor é *um* cliente pagante até 01/11/2026, e o
 G3 (a primeira compra real, com cartão de verdade) **ainda não foi feito**.
