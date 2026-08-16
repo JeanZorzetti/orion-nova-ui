@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
 import StepTracker from "@/components/dashboard/StepTracker";
-import type { G5Flags } from "@/lib/g5";
+import { progressoG5, type G5Flags } from "@/lib/g5";
 import {
   Clock,
   Sparkles,
@@ -100,6 +100,9 @@ export default function DashboardPage() {
       </div>
     );
   }
+
+  // Sem dados ainda: trata como incompleto para não piscar os dois checklists.
+  const g5Completo = onboarding?.g5 ? progressoG5(onboarding.g5).completo : false;
 
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -259,7 +262,12 @@ export default function DashboardPage() {
 
           {/* Sidebar - Onboarding */}
           <div className="space-y-6">
-            {onboarding && !onboarding.isCompleted && (
+            {/* Um onboarding de cada vez. Enquanto o ciclo G5 não fecha, ele é o
+                único checklist na tela — "Primeiros Passos" tem 8 etapas e
+                dilui os 4 passos que levam ao primeiro valor em 10 minutos.
+                Fechado o G5, o tracker some e este assume o resto (empresa,
+                fiscal, migração, integrações). */}
+            {onboarding && !onboarding.isCompleted && g5Completo && (
               <OnboardingChecklist
                 currentStep={onboarding.currentStep}
                 completedSteps={onboarding.completedSteps}
