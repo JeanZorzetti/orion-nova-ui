@@ -1,65 +1,28 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-// Só checagens que cabem no JWT. A verificação de trial vivia aqui com uma
-// query do Prisma que SEMPRE falhava neste contexto — o fail-open engolia o
-// erro, então o gate nunca funcionou em produção. Ela mora agora no
-// dashboard/layout.tsx, que é server component e roda onde o Prisma funciona.
-// Não traga banco de volta para cá.
+// Fora do ar desde 21/10/2026, a pedido do dono: todo endereço responde 410 com noindex,
+// para o Google tirar o site do índice. Para religar, reverter este commit.
+const PAGINA = `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Site fora do ar</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 system-ui,sans-serif;background:#fafafa;color:#222}main{max-width:32rem;padding:2rem 1rem;text-align:center}</style>
+</head>
+<body><main><h1>Este site saiu do ar</h1><p>O endereço não está mais em uso.</p></main></body>
+</html>`;
 
-// Rotas que requerem autenticação
-const protectedRoutes = ["/perfil", "/assinaturas", "/dashboard"];
+export default function middleware() {
+  return new NextResponse(PAGINA, {
+    status: 410,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "X-Robots-Tag": "noindex",
+      "Cache-Control": "no-store",
+    },
+  });
+}
 
-// Rotas apenas para não autenticados
-const authRoutes = ["/login", "/cadastro"];
-
-// Rotas apenas para admin
-const adminRoutes = ["/admin"];
-
-export default auth(async (req) => {
-  const { nextUrl } = req;
-  // req.auth existe mesmo sem sessão; só `user` distingue. Os server components
-  // checam `session?.user` — critério diferente aqui gera loop de redirect.
-  const isLoggedIn = !!req.auth?.user;
-  const isAdmin = req.auth?.user?.role === "ADMIN" || req.auth?.user?.role === "SUPER_ADMIN";
-
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
-  const isAuthRoute = authRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
-  const isAdminRoute = adminRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
-
-  // Redirecionar usuários logados que tentam acessar login/cadastro
-  if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
-
-  // Redirecionar usuários não logados que tentam acessar rotas protegidas
-  if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Redirecionar não admins que tentam acessar rotas de admin
-  if (isAdminRoute && !isAdmin) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
-
-  return NextResponse.next();
-});
-
-export const config = {
-  matcher: [
-    "/perfil/:path*",
-    "/assinaturas/:path*",
-    "/dashboard/:path*",
-    "/admin/:path*",
-    "/login",
-    "/cadastro",
-  ],
-};
+export const config = { matcher: "/:path*" };
