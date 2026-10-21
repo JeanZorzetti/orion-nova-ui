@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo 'site fora do ar: sem instalação'",
+  "buildCommand": "echo 'site fora do ar: sem build'",
+  "outputDirectory": "public",
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "/fora-do-ar.html",
+      "status": 410,
+      "headers": { "X-Robots-Tag": "noindex", "Cache-Control": "no-store" }
+    }
+  ]
+}
